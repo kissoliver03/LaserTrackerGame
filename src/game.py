@@ -1,4 +1,5 @@
 import pygame, os
+from src.classes.menu import MainMenu
 
 class Game():
     def __init__(self):
@@ -10,6 +11,8 @@ class Game():
         self.window = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
         self.font_name = os.path.abspath("assets\\font\\8-BIT WONDER.TTF")
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
+        self.curr_menu = MainMenu(self)
+
 
     def game_loop(self):
         while self.playing:
@@ -19,7 +22,7 @@ class Game():
                 self.playing = False
 
             self.display.fill(self.BLACK)
-            self.draw_test('PLAY', 20, self.DISPLAY_W/2, self.DISPLAY_H/2)
+            self.draw_text('Under construction', 20, self.DISPLAY_W/2, self.DISPLAY_H/2)
 
             self.window.blit(self.display, (0, 0))
 
@@ -31,20 +34,21 @@ class Game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running, self.playing = False, False
+                self.curr_menu.run_display = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     self.START_KEY = True
-                if event.type == pygame.K_BACKSPACE:
+                if event.key == pygame.K_BACKSPACE:
                     self.BACK_KEY = True
-                if event.type == pygame.K_DOWN:
+                if event.key == pygame.K_DOWN:
                     self.DOWN_KEY = True
-                if event.type == pygame.K_UP:
+                if event.key == pygame.K_UP:
                     self.UP_KEY = True
 
     def reset_keys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
 
-    def draw_test(self, text, size, x, y):
+    def draw_text(self, text, size, x, y):
         font = pygame.font.Font(self.font_name, size)
         text_surface = font.render(text, True, self.WHITE)
         text_rect = text_surface.get_rect()
