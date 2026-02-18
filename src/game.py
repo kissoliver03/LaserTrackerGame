@@ -6,12 +6,19 @@ class Game:
         pygame.init()
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.ESC_KEY = False, False, False, False, False
-        # self.DISPLAY_W, self.DISPLAY_H = 480, 270
-        self.DISPLAY_W, self.DISPLAY_H = 1920, 1080
+
+        self.DISPLAY_W, self.DISPLAY_H = 1920, 1080     ##TODO: resolutions change in options
+        self.TARGET_W, self.TARGET_H = 1920, 1080
+
+        self.ratio = self.DISPLAY_H / self.TARGET_H
+
         self.display = pygame.Surface((self.DISPLAY_W, self.DISPLAY_H))
         self.window = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
+
         self.font_name = os.path.abspath("assets\\font\\8-BIT WONDER.TTF")
+
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
+
         self.main_menu = MainMenu(self)
         self.game_selector = GameSelector(self)
         self.options = Options(self)

@@ -5,10 +5,22 @@ class Menu:
         self.game = game
         self.mid_w, self.mid_h = self.game.DISPLAY_W/2, self.game.DISPLAY_H/2
         self.run_display = True
-        self.cursor_rect = pygame.Rect(0, 0, 20, 20)
+
+        base_font_size = 40
+        base_gap = 60
+        base_padding = 20
+        base_cursor_size = 35
+
+
+        self.font_size = int(base_font_size * self.game.ratio)
+        self.gap = int(base_gap * self.game.ratio)
+        self.padding = int(base_padding * self.game.ratio)
+        self.cursor_size = int(base_cursor_size * self.game.ratio)
+
+        self.cursor_rect = pygame.Rect(0, 0, self.cursor_size, self.cursor_size)
 
     def draw_cursor(self):
-        self.game.draw_text('*', 15, self.cursor_rect.x, self.cursor_rect.y, self.game.WHITE)
+        self.game.draw_text('*', self.cursor_size, self.cursor_rect.x, self.cursor_rect.y, self.game.WHITE)
 
     def blit_screen(self):
         self.game.window.blit(self.game.display, (0,0))
@@ -16,14 +28,12 @@ class Menu:
         self.game.reset_keys()
 
     def calculate_cursor_pos(self, text, y_position):
-        padding = 10
-
-        font = pygame.font.Font(self.game.font_name, 20)
+        font = pygame.font.Font(self.game.font_name, self.font_size)
 
         text_surface = font.render(text, True, self.game.WHITE)
         text_width = text_surface.get_width()
 
-        x_position = self.mid_w - (text_width / 2) - padding
+        x_position = self.mid_w - (text_width / 2) - self.padding
 
         self.cursor_rect.midtop = (x_position, y_position)
 
@@ -31,10 +41,12 @@ class MainMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
         self.state = "Play"
-        self.play_x, self.play_y = self.mid_w, self.mid_h - 20
-        self.screen_calibration_x, self.screen_calibration_y = self.mid_w, self.mid_h + 5
-        self.options_x, self.options_y = self.mid_w, self.mid_h + 30
-        self.quit_x, self.quit_y = self.mid_w, self.mid_h + 55
+
+        self.play_x, self.play_y = self.mid_w, self.mid_h
+        self.screen_calibration_x, self.screen_calibration_y = self.mid_w, self.mid_h + self.gap
+        self.options_x, self.options_y = self.mid_w, self.mid_h + (self.gap * 2)
+        self.quit_x, self.quit_y = self.mid_w, self.mid_h + (self.gap * 3)
+
         self.calculate_cursor_pos("Play", self.play_y)
 
     def display_menu(self):
@@ -43,11 +55,15 @@ class MainMenu(Menu):
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text("Main Menu", 20, self.game.DISPLAY_W/2, self.game.DISPLAY_H/2 - 70, self.game.WHITE)
-            self.game.draw_text("Play", 20, self.play_x, self.play_y, self.game.WHITE)
-            self.game.draw_text("Screen Calibration", 20, self.screen_calibration_x, self.screen_calibration_y, self.game.WHITE)
-            self.game.draw_text("Options", 20, self.options_x, self.options_y, self.game.WHITE)
-            self.game.draw_text("Quit", 20, self.quit_x, self.quit_y, self.game.WHITE)
+
+            title_size = int(self.font_size * 1.5)
+            self.game.draw_text("Main Menu", title_size, self.mid_w, self.mid_h - (self.gap * 4), self.game.WHITE)
+
+            self.game.draw_text("Play", self.font_size, self.play_x, self.play_y, self.game.WHITE)
+            self.game.draw_text("Screen Calibration", self.font_size, self.screen_calibration_x, self.screen_calibration_y, self.game.WHITE)
+            self.game.draw_text("Options", self.font_size, self.options_x, self.options_y, self.game.WHITE)
+            self.game.draw_text("Quit", self.font_size, self.quit_x, self.quit_y, self.game.WHITE)
+
             self.draw_cursor()
             self.blit_screen()
 
@@ -96,7 +112,7 @@ class MainMenu(Menu):
 class GameSelector(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.start_x, self.start_y = self.mid_w, self.mid_h + 75
+        self.start_x, self.start_y = self.mid_w, self.mid_h + (self.gap * 5)
 
 
     def display_menu(self):
@@ -105,7 +121,7 @@ class GameSelector(Menu):
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text("Start", 20, self.start_x, self.start_y, self.game.WHITE)
+            self.game.draw_text("Start", self.font_size, self.start_x, self.start_y, self.game.WHITE)
             self.blit_screen()
 
     def check_input(self):
