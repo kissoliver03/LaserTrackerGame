@@ -1,5 +1,7 @@
 import pygame, os
 from src.classes.menu import *
+from src.classes.laserbuffer import LaserBuffer
+from src.classes.vision import VisionCore
 
 class Game:
     def __init__(self):
@@ -25,9 +27,12 @@ class Game:
         self.screen_calibrations = ScreenCalibration(self)
         self.curr_menu = self.main_menu
 
+        self.laser_buffer = LaserBuffer()
+        self.vision_core = VisionCore(self.laser_buffer)
+        self.vision_core.start()
+
 
     def game_loop(self):
-        pass
         # while self.playing:
         #     self.check_events()
         #
@@ -42,6 +47,28 @@ class Game:
         #     pygame.display.update()
         #
         #     self.reset_keys()
+        while self.playing:
+            self.check_events()
+
+            if self.ESC_KEY:
+                self.playing = False
+
+            self.display.fill(self.BLACK)
+
+            self.draw_text('Game is running Press ESC to exit', 20, self.DISPLAY_W / 2, 30, self.WHITE)
+
+            pointer_state = self.laser_buffer.get_latest()
+
+            if pointer_state and pointer_state.laser_visible:
+                x = int(pointer_state.x)
+                y = int(pointer_state.y)
+                pygame.draw.circle(self.display, (255, 0, 0), (x, y), 20)
+
+            self.window.blit(self.display, (0, 0))
+            pygame.display.update()
+
+            self.reset_keys()
+
 
     def check_events(self):
         for event in pygame.event.get():

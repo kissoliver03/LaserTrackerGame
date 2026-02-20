@@ -100,7 +100,8 @@ class MainMenu(Menu):
         self.move_cursor()
         if self.game.START_KEY:
             if self.state == "Play":
-                self.game.curr_menu = self.game.game_selector
+            #    self.game.curr_menu = self.game.game_selector
+                self.game.playing = True
             elif self.state == "Screen Calibration":
                 self.game.curr_menu = self.game.screen_calibrations
             elif self.state == "Options":
