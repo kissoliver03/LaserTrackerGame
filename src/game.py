@@ -33,20 +33,6 @@ class Game:
 
 
     def game_loop(self):
-        # while self.playing:
-        #     self.check_events()
-        #
-        #     if self.START_KEY:
-        #         self.playing = False
-        #
-        #     self.display.fill(self.BLACK)
-        #     self.draw_text('Under construction', 20, self.DISPLAY_W/2, self.DISPLAY_H/2, self.game.WHITE)
-        #
-        #     self.window.blit(self.display, (0, 0))
-        #
-        #     pygame.display.update()
-        #
-        #     self.reset_keys()
         while self.playing:
             self.check_events()
 
@@ -55,13 +41,13 @@ class Game:
 
             self.display.fill(self.BLACK)
 
-            self.draw_text('Game is running Press ESC to exit', 20, self.DISPLAY_W / 2, 30, self.WHITE)
+            self.draw_text('Press ESC to exit', 20, self.DISPLAY_W / 2, 30, self.WHITE)
 
             pointer_state = self.laser_buffer.get_latest()
 
-            if pointer_state and pointer_state.laser_visible:
-                x = int(pointer_state.x)
-                y = int(pointer_state.y)
+            if pointer_state:
+                x = pointer_state.x
+                y = pointer_state.y
                 pygame.draw.circle(self.display, (255, 0, 0), (x, y), 20)
 
             self.window.blit(self.display, (0, 0))

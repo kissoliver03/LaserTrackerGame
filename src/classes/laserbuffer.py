@@ -1,4 +1,4 @@
-import threading, queue, time
+import threading, queue
 
 class PointerState:
     def __init__(self, x: float, y: float, laser_visible: bool, timestamp: float):
