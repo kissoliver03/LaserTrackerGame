@@ -1,4 +1,5 @@
 import pygame
+import os
 
 class Menu:
     def __init__(self, game):
@@ -51,6 +52,7 @@ class MainMenu(Menu):
 
     def display_menu(self):
         self.run_display = True
+
         while self.run_display:
             self.game.check_events()
             self.check_input()
@@ -112,22 +114,120 @@ class MainMenu(Menu):
 class GameSelector(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
+
+        self.DARK_GREEN = (0, 150, 0)
+        self.LIGHT_GREEN = (0, 255, 0)
+        self.GREY = (100, 100, 100)
+
         self.start_x, self.start_y = self.mid_w, self.mid_h + (self.gap * 5)
+
+        self.games_dir = os.path.abspath('assets/games')
+        self.game_files = []
+
+        self.current_index = 0
+        self.last_index = 0
+        self.selected_game = None
+        self.last_selected_game = None
+        self.on_start_button = False
+
+        self.box_w = int(200 * self.game.ratio)
+        self.box_h = int(150 * self.game.ratio)
+        self.box_padding = int(50 * self.game.ratio)
+
+
+    def load_game_files(self):
+        if os.path.exists(self.games_dir):
+            self.game_files = [files for files in os.listdir(self.games_dir) if files.endswith(".yaml")]
+        else:
+            self.game_files = []
+
 
 
     def display_menu(self):
+        self.current_index = 0
+        self.last_index = 0
+        self.selected_game = None
+        self.last_selected_game = None
+        self.on_start_button = False
+
+        self.load_game_files()
+
         self.run_display = True
+
         while self.run_display:
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text("Start", self.font_size, self.start_x, self.start_y, self.game.WHITE)
+
+            self.game.draw_text("Select Game", int(self.font_size * 1.25), self.mid_w, self.mid_h - self.gap * 7, self.game.WHITE)
+
+
+            number_of_games = len(self.game_files)
+            if number_of_games == 0:
+                self.game.draw_text("No games were found", self.font_size, self.mid_w, self.mid_h, self.game.WHITE)
+            else:
+                total_width = (number_of_games * self.box_w) + (number_of_games - 1) * self.box_padding
+
+                box_start_x = self.mid_w - (total_width / 2)
+                box_start_y = self.mid_h - (self.box_h / 2)
+
+                for i, file_name in enumerate(self.game_files):
+                    x_pos = box_start_x + (i * (self.box_w + self.box_padding))
+                    rect = pygame.Rect(x_pos, box_start_y, self.box_w, self.box_h)
+
+                    if file_name == self.selected_game:
+                        color = self.DARK_GREEN
+                    elif i == self.current_index and not self.on_start_button:
+                        color = self.LIGHT_GREEN
+                    else:
+                        color = self.GREY
+
+                    pygame.draw.rect(self.game.display, color, rect)
+
+                    display_name = file_name.replace(".yaml", "")
+                    self.game.draw_text(display_name, int(self.font_size * 0.6), x_pos + self.box_w/2, box_start_y + self.box_h/2, self.game.WHITE)
+
+            if self.on_start_button:
+                start_button_color = self.LIGHT_GREEN
+            else:
+                start_button_color = self.GREY
+
+            self.game.draw_text("Start", self.font_size, self.start_x, self.start_y, start_button_color)
+
+            if self.on_start_button:
+                self.calculate_cursor_pos("Start", self.start_y)
+                self.draw_cursor()
+
             self.blit_screen()
 
     def check_input(self):
         if self.game.ESC_KEY:
-            self.game.curr_menu = self.game.main_menu
-            self.run_display = False
+            if not self.on_start_button:
+                self.game.curr_menu = self.game.main_menu
+                self.run_display = False
+            else:
+                self.current_index = self.last_index
+                self.selected_game = None
+                self.on_start_button = False
+
+        elif self.game.LEFT_KEY:
+            if not self.on_start_button and len(self.game_files) > 0:
+                self.current_index = (self.current_index - 1) % len(self.game_files)
+
+        elif self.game.RIGHT_KEY:
+            if not self.on_start_button and len(self.game_files) > 0:
+                self.current_index = (self.current_index + 1) % len(self.game_files)
+
+        elif self.game.START_KEY:
+            if not self.on_start_button:
+                self.selected_game = self.game_files[self.current_index]
+                self.last_selected_game = self.selected_game
+                self.last_index = self.current_index
+                self.on_start_button = True
+            else:
+                self.selected_game = os.path.join(self.games_dir, self.selected_game)
+                self.game.playing = True
+                self.run_display = False
 
 class ScreenCalibration(Menu):
     def __init__(self, game):
@@ -135,6 +235,7 @@ class ScreenCalibration(Menu):
 
     def display_menu(self):
         self.run_display = True
+
         while self.run_display:
             self.game.check_events()
             self.check_input()
@@ -152,6 +253,7 @@ class Options(Menu):
 
     def display_menu(self):
         self.run_display = True
+
         while self.run_display:
             self.game.check_events()
             self.check_input()

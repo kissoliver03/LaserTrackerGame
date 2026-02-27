@@ -1,10 +1,10 @@
 import threading, time, pygame
-from src.classes.laserbuffer import LaserBuffer, PointerState
+from src.classes.laserbuffer import PointerState
 
 class VisionCore:
     def __init__(self, laser_buffer):
-        self.laserBuffer = laser_buffer
-        self.pointerState = PointerState
+        self.laser_buffer = laser_buffer
+        self.pointer_state = PointerState
         self.running = False
         self.thread = None
 
@@ -30,8 +30,8 @@ class VisionCore:
                 if laser_visible:
                     self.last_x, self.last_y = pygame.mouse.get_pos()
 
-                current_state = PointerState(self.last_x, self.last_y, laser_visible, time.time())
+                current_state = self.pointer_state(self.last_x, self.last_y, laser_visible, time.time())
 
-                self.laserBuffer.put_latest(current_state)
+                self.laser_buffer.put_latest(current_state)
 
                 time.sleep(0.0416)
