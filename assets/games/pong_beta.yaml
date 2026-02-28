@@ -18,12 +18,14 @@ entities:
     grid_pos: [10, 10] # Középről indul
     size: [1, 1]       # 1x1 grid méretű
     shape: "circle"
+    model: ""
     
   - name: "paddle"
     type: "kinematic"
     grid_pos: [0, 8]   # Bal szélen (X=0), középtájt indul
     size: [1, 4]       # 1 grid széles, 4 grid magas (ez az ütő formája)
     shape: "rect"
+    model: ""
     constraints: ["y"] # Csak függőlegesen mozoghat
 
   # --- PÁLYA HATÁRAI (FALAK) ---
