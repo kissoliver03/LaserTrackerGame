@@ -163,6 +163,7 @@ class GameSelector(Menu):
 
 
             number_of_games = len(self.game_files)
+
             if number_of_games == 0:
                 self.game.draw_text("No games were found", self.font_size, self.mid_w, self.mid_h, self.game.WHITE)
             else:
@@ -189,14 +190,13 @@ class GameSelector(Menu):
 
             if self.on_start_button:
                 start_button_color = self.LIGHT_GREEN
+
+                self.calculate_cursor_pos("Start", self.start_y)
+                self.draw_cursor()
             else:
                 start_button_color = self.GREY
 
             self.game.draw_text("Start", self.font_size, self.start_x, self.start_y, start_button_color)
-
-            if self.on_start_button:
-                self.calculate_cursor_pos("Start", self.start_y)
-                self.draw_cursor()
 
             self.blit_screen()
 
