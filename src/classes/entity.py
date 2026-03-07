@@ -3,8 +3,9 @@ import os
 import pygame
 
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, data_dict, cell_w, cell_h):
+    def __init__(self, game, data_dict, cell_w, cell_h):
         super().__init__()
+        self.game = game
 
         self.WHITE = (255, 255, 255)
 
@@ -35,9 +36,11 @@ class Entity(pygame.sprite.Sprite):
 
             except FileNotFoundError:
                 is_image_loaded = False
+                self.game.error_popup("Model not found.")
 
             except pygame.error as exc:
                 is_image_loaded = False
+                self.game.error_popup("Image error")
 
         if not is_image_loaded:
             self.image = pygame.Surface((width, height), pygame.SRCALPHA)

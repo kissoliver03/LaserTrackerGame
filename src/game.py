@@ -1,4 +1,3 @@
-import pygame, os
 from src.classes.menu import *
 from src.classes.laserbuffer import LaserBuffer
 from src.classes.vision import VisionCore
@@ -33,7 +32,7 @@ class Game:
         self.vision_core = VisionCore(self.laser_buffer)
         self.vision_core.start()
 
-        self.game_loader = GameLoader()
+        self.game_loader = GameLoader(self)
 
         self.selected_game = None
         self.is_game_selected = False
@@ -46,6 +45,13 @@ class Game:
 
                 if is_level_loaded:
                     self.playing = True
+
+                else:
+                    self.playing = False
+                    self.is_game_selected = False
+                    self.curr_menu = self.game_selector
+
+                    return
 
         while self.playing:
             self.selected_game = None
@@ -101,3 +107,39 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.center = (x, y)
         self.display.blit(text_surface, text_rect)
+
+    def error_popup(self, text):
+        popup_running = True
+
+        self.reset_keys()
+
+        while popup_running:
+            self.check_events()
+
+            text_length = len(text) * 40
+
+            box_w = int(text_length * self.ratio)
+            box_h = int(300 * self.ratio)
+            box_x = (self.DISPLAY_W - box_w) / 2
+            box_y = (self.DISPLAY_H - box_h) / 2
+
+            if self.START_KEY:
+                popup_running = False
+                self.reset_keys()
+
+            pygame.draw.rect(self.display, (30, 30, 30), (box_x, box_y, box_w, box_h))
+            pygame.draw.rect(self.display, self.WHITE, (box_x, box_y, box_w, box_h), 4)
+
+            self.draw_text("ERROR", int(40 * self.ratio), self.DISPLAY_W / 2, box_y + (50 * self.ratio), (255, 50, 50))
+            self.draw_text(text, int(20 * self.ratio), self.DISPLAY_W / 2, self.DISPLAY_H / 2, self.WHITE)
+
+            ok_y = box_y + box_h - (50 * self.ratio)
+            self.draw_text("OK", int(30 * self.ratio), self.DISPLAY_W / 2, ok_y, (0, 255, 0))
+            self.draw_text("*", int(35 * self.ratio), (self.DISPLAY_W / 2) - (50 * self.ratio), ok_y, self.WHITE)
+
+            self.window.blit(self.display, (0, 0))
+            pygame.display.update()
+
+            self.reset_keys()
+
+        return
