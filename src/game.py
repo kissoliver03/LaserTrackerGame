@@ -2,10 +2,12 @@ import pygame, os
 from src.classes.menu import *
 from src.classes.laserbuffer import LaserBuffer
 from src.classes.vision import VisionCore
+from src.classes.gameloader import GameLoader
 
 class Game:
     def __init__(self):
         pygame.init()
+
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.ESC_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False, False
 
@@ -31,9 +33,22 @@ class Game:
         self.vision_core = VisionCore(self.laser_buffer)
         self.vision_core.start()
 
+        self.game_loader = GameLoader()
+
+        self.selected_game = None
+        self.is_game_selected = False
+
 
     def game_loop(self):
+        if self.is_game_selected:
+            if self.selected_game:
+                is_level_loaded = self.game_loader.load_game(self.selected_game)
+
+                if is_level_loaded:
+                    self.playing = True
+
         while self.playing:
+            self.selected_game = None
             self.check_events()
 
             if self.ESC_KEY:

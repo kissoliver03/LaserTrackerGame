@@ -115,6 +115,7 @@ class GameSelector(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
 
+
         self.DARK_GREEN = (0, 150, 0)
         self.LIGHT_GREEN = (0, 255, 0)
         self.GREY = (100, 100, 100)
@@ -225,8 +226,8 @@ class GameSelector(Menu):
                 self.last_index = self.current_index
                 self.on_start_button = True
             else:
-                self.selected_game = os.path.join(self.games_dir, self.selected_game)
-                self.game.playing = True
+                self.game.selected_game = os.path.join(self.games_dir, self.selected_game)
+                self.game.is_game_selected = True
                 self.run_display = False
 
 class ScreenCalibration(Menu):
