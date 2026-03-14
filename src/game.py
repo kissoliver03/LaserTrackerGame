@@ -2,6 +2,7 @@ from src.classes.menu import *
 from src.classes.laserbuffer import LaserBuffer
 from src.classes.vision import VisionCore
 from src.classes.gameloader import GameLoader
+from src.classes.entity import Entity
 
 class Game:
     def __init__(self):
@@ -37,6 +38,47 @@ class Game:
         self.selected_game = None
         self.is_game_selected = False
 
+        self.all_sprites = None
+
+        self.background_color = self.BLACK
+
+    # def game_loop(self):
+    #     if self.is_game_selected:
+    #         if self.selected_game:
+    #             is_level_loaded = self.game_loader.load_game(self.selected_game)
+    #
+    #             if is_level_loaded:
+    #                 self.playing = True
+    #
+    #             else:
+    #                 self.playing = False
+    #                 self.is_game_selected = False
+    #                 self.curr_menu = self.game_selector
+    #
+    #                 return
+    #
+    #     while self.playing:
+    #         self.selected_game = None
+    #         self.check_events()
+    #
+    #         if self.ESC_KEY:
+    #             self.playing = False
+    #
+    #         self.display.fill(self.BLACK)
+    #
+    #         self.draw_text('Press ESC to exit', 20, self.DISPLAY_W / 2, 30, self.WHITE)
+    #
+    #         pointer_state = self.laser_buffer.get_latest()
+    #
+    #         if pointer_state:
+    #             x = pointer_state.x
+    #             y = pointer_state.y
+    #             pygame.draw.circle(self.display, (255, 0, 0), (x, y), 20)
+    #
+    #         self.window.blit(self.display, (0, 0))
+    #         pygame.display.update()
+    #
+    #         self.reset_keys()
 
     def game_loop(self):
         if self.is_game_selected:
@@ -44,28 +86,51 @@ class Game:
                 is_level_loaded = self.game_loader.load_game(self.selected_game)
 
                 if is_level_loaded:
+                    self.all_sprites = pygame.sprite.Group()
+
+                    layout_data = self.game_loader.data.get('layout', {})
+
+                    map_size = layout_data.get('map_size', [20, 20])
+                    self.background_color = layout_data.get('background_color', [0, 0, 0])
+
+                    cell_w = self.TARGET_W / map_size[0]
+                    cell_h = self.TARGET_H / map_size[1]
+
+                    entities_data = self.game_loader.get_entities()
+                    for entity in entities_data:
+                        new_entity = Entity(self, entity, cell_w, cell_h)
+                        self.all_sprites.add(new_entity)
+
                     self.playing = True
 
                 else:
                     self.playing = False
                     self.is_game_selected = False
-                    self.curr_menu = self.game_selector
-
+                    self.curr_menu.run_display = True
                     return
 
+            else:
+                self.playing = False
+                self.is_game_selected = False
+                self.curr_menu = self.game_selector
+
+                return
+
         while self.playing:
-            self.selected_game = None
             self.check_events()
 
             if self.ESC_KEY:
                 self.playing = False
+                self.is_game_selected = False
+                self.curr_menu = self.game_selector
 
-            self.display.fill(self.BLACK)
+            self.display.fill(self.background_color)
+            self.all_sprites.update()
+            self.all_sprites.draw(self.display)
 
             self.draw_text('Press ESC to exit', 20, self.DISPLAY_W / 2, 30, self.WHITE)
 
             pointer_state = self.laser_buffer.get_latest()
-
             if pointer_state:
                 x = pointer_state.x
                 y = pointer_state.y
@@ -75,6 +140,9 @@ class Game:
             pygame.display.update()
 
             self.reset_keys()
+
+
+
 
 
     def check_events(self):
@@ -141,5 +209,3 @@ class Game:
             pygame.display.update()
 
             self.reset_keys()
-
-        return

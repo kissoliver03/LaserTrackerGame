@@ -15,10 +15,10 @@ class Entity(pygame.sprite.Sprite):
         self.shape = data_dict.get('shape', 'rect')
 
         grid_pos = data_dict.get('grid_pos', [0, 0])
-        grid_size = data_dict.get('grid_size', [1, 1])
+        size = data_dict.get('size', [1, 1])
 
-        width = int(grid_size[0] * cell_w)
-        height = int(grid_size[1] * cell_h)
+        width = int(size[0] * cell_w)
+        height = int(size[1] * cell_h)
         x_pos = int(grid_pos[0] * cell_w)
         y_pos = int(grid_pos[1] * cell_h)
 
@@ -40,16 +40,16 @@ class Entity(pygame.sprite.Sprite):
 
             except pygame.error as exc:
                 is_image_loaded = False
-                self.game.error_popup("Image error")
+                self.game.error_popup("Model error")
 
         if not is_image_loaded:
             self.image = pygame.Surface((width, height), pygame.SRCALPHA)
 
             if self.shape == 'rect':
-                pygame.draw.rect(self.image, self.WHITE, [x_pos, y_pos, width, height])
+                pygame.draw.rect(self.image, self.WHITE, [0,0, width, height])
             elif self.shape == 'circle':
                 radius = int(width / 2)
-                pygame.draw.circle(self.image, self.WHITE, [x_pos, y_pos], radius)
+                pygame.draw.circle(self.image, self.WHITE, [radius, radius], radius)
 
         self.rect = self.image.get_rect(topleft=(x_pos, y_pos))
 

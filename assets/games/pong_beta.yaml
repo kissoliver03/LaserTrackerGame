@@ -7,8 +7,8 @@ globals:
   score: 3 #3 pont szükséges a nyeréshez
   
 layout:
-  grid_size: [20, 20] # 20x20-as rács
-  background: [0, 0, 0] # Fekete háttér RGB-ben
+  map_size: [20, 20] # 20x20-as rács
+  background_color: [0,0,0] # Fekete háttér RGB-ben
   
 entities:
   # --- JÁTÉKOS ÉS LABDA ---
@@ -16,7 +16,7 @@ entities:
     type: "dynamic"
     velocity: [10, 10] # X és Y irányú kezdősebesség is kell a mozgáshoz
     grid_pos: [10, 10] # Középről indul
-    size: [1, 1]       # 1x1 grid méretű
+    size: [0.5, 0.5]       # 1x1 grid méretű
     shape: "circle"
     model: ""
     
