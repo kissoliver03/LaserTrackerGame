@@ -7,12 +7,11 @@ class Entity(pygame.sprite.Sprite):
         super().__init__()
         self.game = game
 
-        self.WHITE = (255, 255, 255)
-
         self.name = data_dict.get('name', 'unknown')
         self.group = data_dict.get('group', self.name)
         self.type = data_dict.get('type', 'static')
         self.shape = data_dict.get('shape', 'rect')
+        self.constraints = data_dict.get('constraints', [])
 
         grid_pos = data_dict.get('grid_pos', [0, 0])
         size = data_dict.get('size', [1, 1])
@@ -46,10 +45,10 @@ class Entity(pygame.sprite.Sprite):
             self.image = pygame.Surface((width, height), pygame.SRCALPHA)
 
             if self.shape == 'rect':
-                pygame.draw.rect(self.image, self.WHITE, [0,0, width, height])
+                pygame.draw.rect(self.image, self.game.WHITE, [0,0, width, height])
             elif self.shape == 'circle':
                 radius = int(width / 2)
-                pygame.draw.circle(self.image, self.WHITE, [radius, radius], radius)
+                pygame.draw.circle(self.image, self.game.WHITE, [radius, radius], radius)
 
         self.rect = self.image.get_rect(topleft=(x_pos, y_pos))
 

@@ -22,6 +22,7 @@ class Game:
         self.font_name = os.path.abspath("assets/font/8-BIT WONDER.TTF")
 
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
+        self.background_color = self.BLACK
 
         self.main_menu = MainMenu(self)
         self.game_selector = GameSelector(self)
@@ -40,7 +41,9 @@ class Game:
 
         self.all_sprites = None
 
-        self.background_color = self.BLACK
+        self.entities_by_name = {}
+        self.active_inputs = {}
+        self.input_bindings = {}
 
     # def game_loop(self):
     #     if self.is_game_selected:
@@ -87,10 +90,12 @@ class Game:
 
                 if is_level_loaded:
                     self.all_sprites = pygame.sprite.Group()
+                    self.entities_by_name = {}
+                    self.input_bindings = {}
 
                     layout_data = self.game_loader.data.get('layout', {})
-
                     map_size = layout_data.get('map_size', [20, 20])
+
                     self.background_color = layout_data.get('background_color', [0, 0, 0])
 
                     cell_w = self.TARGET_W / map_size[0]
@@ -100,6 +105,16 @@ class Game:
                     for entity in entities_data:
                         new_entity = Entity(self, entity, cell_w, cell_h)
                         self.all_sprites.add(new_entity)
+
+                        self.entities_by_name[new_entity.name] = new_entity
+
+                    input_data = self.game_loader.get_inputs()
+                    for input in input_data:
+                        source = input.get('source')
+                        target = input.get('target')
+
+                        if target in self.entities_by_name:
+                            self.input_bindings[source] = self.entities_by_name[target]
 
                     self.playing = True
 
@@ -135,6 +150,16 @@ class Game:
                 x = pointer_state.x
                 y = pointer_state.y
                 pygame.draw.circle(self.display, (255, 0, 0), (x, y), 20)
+
+                target_entity = self.input_bindings.get("laser_red")
+                if target_entity:
+                    if "y" in target_entity.constraints:
+                        target_entity.rect.center_y = y
+                    elif "x" in target_entity.constraints:
+                        target_entity.rect.center_x = x
+                    else:
+                        target_entity.rect.center = (x, y)
+
 
             self.window.blit(self.display, (0, 0))
             pygame.display.update()
