@@ -85,7 +85,7 @@ class Game:
 
     def game_loop(self):
         if self.is_game_selected:
-            if self.selected_game:
+            if self.selected_game:  #selectec game path
                 is_level_loaded = self.game_loader.load_game(self.selected_game)
 
                 if is_level_loaded:
@@ -93,7 +93,7 @@ class Game:
                     self.entities_by_name = {}
                     self.input_bindings = {}
 
-                    layout_data = self.game_loader.data.get('layout', {})
+                    layout_data = self.game_loader.get_layout()
                     map_size = layout_data.get('map_size', [20, 20])
 
                     self.background_color = layout_data.get('background_color', [0, 0, 0])
@@ -143,7 +143,7 @@ class Game:
             self.all_sprites.update()
             self.all_sprites.draw(self.display)
 
-            self.draw_text('Press ESC to exit', 20, self.DISPLAY_W / 2, 30, self.WHITE)
+            self.draw_text('Press ESC to exit', 20, self.DISPLAY_W / 2, self.DISPLAY_H/2, (100, 100, 100))
 
             pointer_state = self.laser_buffer.get_latest()
             if pointer_state:
