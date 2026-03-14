@@ -154,9 +154,9 @@ class Game:
                 target_entity = self.input_bindings.get("laser_red")
                 if target_entity:
                     if "y" in target_entity.constraints:
-                        target_entity.rect.center_y = y
+                        target_entity.rect.centery = y
                     elif "x" in target_entity.constraints:
-                        target_entity.rect.center_x = x
+                        target_entity.rect.centerx = x
                     else:
                         target_entity.rect.center = (x, y)
 
