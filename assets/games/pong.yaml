@@ -2,85 +2,95 @@ meta:
   id: "pong_1"
   title: "singleplayer_pong"
   version: "1.0.0"
-  
+
 globals:
-  score: 3 #3 pont szükséges a nyeréshez
-  
+  score: 3 # 3 points to win
+
 layout:
-  map_size: [20, 20] # 20x20-as rács
-  background_color: [0,0,0] # Fekete háttér RGB-ben
-  
+  map_size: [20, 20] # 20x20 grid
+  background_color: [0,0,0]
+
 entities:
-  # --- JÁTÉKOS ÉS LABDA ---
   - name: "ball"
     type: "dynamic"
-    velocity: [2, 2] # X és Y irányú kezdősebesség is kell a mozgáshoz
-    grid_pos: [10, 10] # Középről indul
-    size: [1, 1]       # 1x1 grid méretű
+    velocity: [2, 2] # X and Y start speed
+    grid_pos: [10, 10]
+    size: [1, 1]
     shape: "circle"
     model: ""
-    
+
   - name: "paddle"
     type: "kinematic"
-    grid_pos: [0, 8]   # Bal szélen (X=0), középtájt indul
-    size: [1, 4]       # 1 grid széles, 4 grid magas (ez az ütő formája)
+    grid_pos: [0, 8]
+    size: [1, 4]       # 1 grid horizontally and 4 grid vertically
     shape: "rect"
     model: ""
-    constraints: ["y"] # Csak függőlegesen mozoghat
+    constraints: ["y"] # Only moves vertically
 
-  # --- PÁLYA HATÁRAI (FALAK) ---
   - name: "wall_top"
-    group: "walls_x"   # X tengelyen pattintó falak csoportja
+    group: "walls_x"   # Horizontal walls group
     type: "static"
     grid_pos: [0, 0]
-    size: [20, 1]      # Teljes szélességű (20), 1 rács magas
+    size: [20, 1]      # 1 width full screen-width
     shape: "rect"
 
   - name: "wall_bottom"
     group: "walls_x"
     type: "static"
-    grid_pos: [0, 19]  # A rács alján van
+    grid_pos: [0, 19]  # Down
     size: [20, 1]
     shape: "rect"
 
   - name: "wall_right"
-    group: "walls_y"   # Y tengelyen pattintó falak csoportja
+    group: "walls_y"   # Vertical walls group
     type: "static"
-    grid_pos: [19, 0]  # Jobb szélen
-    size: [1, 20]      # 1 rács széles, végigérő magasságú (20)
+    grid_pos: [19, 0]  # Right side
+    size: [1, 20]      # 1 width top to bottom
     shape: "rect"
-    
+
 inputs:
   - name: "player_1"
     source: "laser_red"
     target: "paddle"
-  
+
 rules:
-  # Pattanás az ütőről és a jobb falról (X irányú fordulás)
+  # X bounce from paddle
   - condition:
-      collision: "between [ball, paddle]"
+      type: "collision"
+      targets: ["ball", "paddle"]
     action:
-      - "bounce_x"
-      
-  - condition:
-      collision: "between [ball, walls_x]"
-    action:
-      - "bounce_y"
+      - type: "bounce"
+        axis: "x"
 
-  # Pattanás a padlóról és a plafonról (X irányú fordulás)
+  # X bounce from horizontal walls
   - condition:
-      collision: "between [ball, walls_y]"
+      type: "collision"
+      targets: ["ball", "walls_x"]
     action:
-      - "bounce_x"
-      - "score_add(player_1, 1)" # Pontot kap, ha elérte a falat
+      - type: "bounce"
+        axis: "y"
 
-  # Életvesztés (Ha a labda X pozíciója kisebb mint 0, vagyis kiment balra)
+  # Y bounce form vertical walls
   - condition:
-      position:
+      type: "collision"
+      targets: ["ball", "walls_y"]
+    action:
+      - type: "bounce"
+        axis: "x"
+      - type: "score"
+        target: "player_1"
+        amount: 1
+
+  # -1 HP when the ball goes out of bound and respawn to [10, 10]
+  - condition:
+      type: "position"
+      target: "ball"
+      axis: "x"
+      operator: "<"
+      value: 0
+    action:
+      - type: "damage"
+        target: "player_1"
+      - type: "respawn"
         target: "ball"
-        operator: "<"
-        value: 0
-    action:
-      - "damage(player_1)"
-      - "respawn(ball, [10, 10])" # 10, 10 pozícióra
-      - "set_velocity(ball, [10, 10])" # X és Y irányú kezdősebesség is kell a mozgáshoz
+        pos: [10, 10]
