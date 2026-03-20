@@ -78,19 +78,19 @@ rules:
       - type: "bounce"
         axis: "x"
       - type: "score"
-        target: "player_1"
+        targets: ["player_1"]
         amount: 1
 
   # -1 HP when the ball goes out of bound and respawn to [10, 10]
   - condition:
       type: "position"
-      target: "ball"
+      targets: ["ball"]
       axis: "x"
       operator: "<"
       value: 0
     action:
       - type: "damage"
-        target: "player_1"
+        targets: ["player_1"]
       - type: "respawn"
         target: "ball"
         pos: [10, 10]
