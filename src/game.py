@@ -1,3 +1,5 @@
+from typing import Any
+
 from src.classes.menu import *
 from src.classes.laserbuffer import LaserBuffer
 from src.classes.vision import VisionCore
@@ -44,6 +46,7 @@ class Game:
         self.entities_by_name = {}
         self.active_inputs = {}
         self.input_bindings = {}
+        self.sprite_groups = {}
 
     # def game_loop(self):
     #     if self.is_game_selected:
@@ -92,6 +95,7 @@ class Game:
                     self.all_sprites = pygame.sprite.Group()
                     self.entities_by_name = {}
                     self.input_bindings = {}
+                    self.sprite_groups = {}
 
                     layout_data = self.game_loader.get_layout()
                     map_size = layout_data.get('map_size', [20, 20])
@@ -101,6 +105,8 @@ class Game:
                     cell_w = self.TARGET_W / map_size[0]
                     cell_h = self.TARGET_H / map_size[1]
 
+
+                    #Get entities from parsed .YAML
                     entities_data = self.game_loader.get_entities()
                     for entity in entities_data:
                         new_entity = Entity(self, entity, cell_w, cell_h)
@@ -108,6 +114,13 @@ class Game:
 
                         self.entities_by_name[new_entity.name] = new_entity
 
+                        group_name = new_entity.group
+                        if group_name not in self.sprite_groups:
+                            self.sprite_groups[group_name] = pygame.sprite.Group()
+                        self.sprite_groups[group_name].add(new_entity)
+
+
+                    #Get inputs from parsed .YAML
                     input_data = self.game_loader.get_inputs()
                     for input in input_data:
                         source = input.get('source')
@@ -140,7 +153,9 @@ class Game:
                 self.curr_menu = self.game_selector
 
             self.display.fill(self.background_color)
+
             self.all_sprites.update()
+            self.rule_processor()
             self.all_sprites.draw(self.display)
 
             self.draw_text('Press ESC to exit', 20, self.DISPLAY_W / 2, self.DISPLAY_H/2, (100, 100, 100))
@@ -234,3 +249,35 @@ class Game:
             pygame.display.update()
 
             self.reset_keys()
+
+
+    def rule_processor(self):
+        rules_data = self.game_loader.get_rules()
+
+        for rule in rules_data:
+            condition = rule.get("condition", {})
+            actions = rule.get("action", [])
+
+            if "collision" in condition:
+                collision_str = condition.get("collision")
+
+                if collision_str and collision_str.startswith("between"):
+                    target_str = collision_str.replace("between [", "").replace("]", "")
+                    targets = target_str.split(", ")
+
+                    if len(targets) == 2:
+                        group_1 = self.sprite_groups.get(targets[0])
+                        group_2 = self.sprite_groups.get(targets[1])
+
+                        if group_1 and group_2:
+                            collisions = pygame.sprite.groupcollide(group_1, group_2, False, False)
+
+                            if collisions:
+                                for sprite_1, sprite_2 in collisions.items():
+                                    for action in actions:
+                                        if action == "bounce_x":
+                                            sprite_1.vel_x *= -1
+                                            sprite_1.rect.x += sprite_1.vel_x
+                                        elif action == "bounce_y":
+                                            sprite_1.vel_y *= -1
+                                            sprite_1.rect.y += sprite_1.vel_y

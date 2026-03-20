@@ -47,8 +47,10 @@ class Entity(pygame.sprite.Sprite):
             if self.shape == 'rect':
                 pygame.draw.rect(self.image, self.game.WHITE, [0,0, width, height])
             elif self.shape == 'circle':
-                radius = int(width / 2)
-                pygame.draw.circle(self.image, self.game.WHITE, [radius, radius], radius)
+                center_x = int(width / 2)
+                center_y = int(height / 2)
+                radius = int(min(width, height) / 2)
+                pygame.draw.circle(self.image, self.game.WHITE, [center_x, center_y], radius)
 
         self.rect = self.image.get_rect(topleft=(x_pos, y_pos))
 

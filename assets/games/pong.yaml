@@ -14,9 +14,9 @@ entities:
   # --- JÁTÉKOS ÉS LABDA ---
   - name: "ball"
     type: "dynamic"
-    velocity: [10, 10] # X és Y irányú kezdősebesség is kell a mozgáshoz
+    velocity: [2, 2] # X és Y irányú kezdősebesség is kell a mozgáshoz
     grid_pos: [10, 10] # Középről indul
-    size: [0.5, 0.5]       # 1x1 grid méretű
+    size: [1, 1]       # 1x1 grid méretű
     shape: "circle"
     model: ""
     
