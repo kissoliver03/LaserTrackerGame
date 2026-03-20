@@ -43,48 +43,13 @@ class Game:
 
         self.all_sprites = None
 
+        self.cell_h = None
+        self.cell_w = None
+
         self.entities_by_name = {}
         self.active_inputs = {}
         self.input_bindings = {}
         self.sprite_groups = {}
-
-    # def game_loop(self):
-    #     if self.is_game_selected:
-    #         if self.selected_game:
-    #             is_level_loaded = self.game_loader.load_game(self.selected_game)
-    #
-    #             if is_level_loaded:
-    #                 self.playing = True
-    #
-    #             else:
-    #                 self.playing = False
-    #                 self.is_game_selected = False
-    #                 self.curr_menu = self.game_selector
-    #
-    #                 return
-    #
-    #     while self.playing:
-    #         self.selected_game = None
-    #         self.check_events()
-    #
-    #         if self.ESC_KEY:
-    #             self.playing = False
-    #
-    #         self.display.fill(self.BLACK)
-    #
-    #         self.draw_text('Press ESC to exit', 20, self.DISPLAY_W / 2, 30, self.WHITE)
-    #
-    #         pointer_state = self.laser_buffer.get_latest()
-    #
-    #         if pointer_state:
-    #             x = pointer_state.x
-    #             y = pointer_state.y
-    #             pygame.draw.circle(self.display, (255, 0, 0), (x, y), 20)
-    #
-    #         self.window.blit(self.display, (0, 0))
-    #         pygame.display.update()
-    #
-    #         self.reset_keys()
 
     def game_loop(self):
         if self.is_game_selected:
@@ -102,14 +67,14 @@ class Game:
 
                     self.background_color = layout_data.get('background_color', [0, 0, 0])
 
-                    cell_w = self.TARGET_W / map_size[0]
-                    cell_h = self.TARGET_H / map_size[1]
+                    self.cell_w = self.TARGET_W / map_size[0]
+                    self.cell_h = self.TARGET_H / map_size[1]
 
 
                     #Get entities from parsed .YAML
                     entities_data = self.game_loader.get_entities()
                     for entity in entities_data:
-                        new_entity = Entity(self, entity, cell_w, cell_h)
+                        new_entity = Entity(self, entity, self.cell_w, self.cell_h)
                         self.all_sprites.add(new_entity)
 
                         self.entities_by_name[new_entity.name] = new_entity
@@ -258,26 +223,34 @@ class Game:
             condition = rule.get("condition", {})
             actions = rule.get("action", [])
 
-            if "collision" in condition:
-                collision_str = condition.get("collision")
+            condition_type = condition.get("type", {})
+            condition_target = condition.get("targets", [])
 
-                if collision_str and collision_str.startswith("between"):
-                    target_str = collision_str.replace("between [", "").replace("]", "")
-                    targets = target_str.split(", ")
+            rule_triggered = False
+            triggered_entities = []
 
-                    if len(targets) == 2:
-                        group_1 = self.sprite_groups.get(targets[0])
-                        group_2 = self.sprite_groups.get(targets[1])
+            if condition_type == "collision":
+                group_1 = self.sprite_groups.get(condition_target[0])
+                group_2 = self.sprite_groups.get(condition_target[1])
 
-                        if group_1 and group_2:
-                            collisions = pygame.sprite.groupcollide(group_1, group_2, False, False)
+                if group_1 and group_2:
+                    collisions = pygame.sprite.groupcollide(group_1, group_2, False, False)
 
-                            if collisions:
-                                for sprite_1, sprite_2 in collisions.items():
-                                    for action in actions:
-                                        if action == "bounce_x":
-                                            sprite_1.vel_x *= -1
-                                            sprite_1.rect.x += sprite_1.vel_x
-                                        elif action == "bounce_y":
-                                            sprite_1.vel_y *= -1
-                                            sprite_1.rect.y += sprite_1.vel_y
+                    if collisions:
+                        rule_triggered = True
+                        triggered_entities.extend(collisions.keys())
+
+            if rule_triggered:
+                for action in actions:
+                    action_type = action.get("type", {})
+
+                    if action_type == "bounce":
+                        axis = action.get("axis", {})
+
+                        for entity in triggered_entities:
+                            if axis == "x":
+                                entity.vel_x *= -1
+                                entity.rect.x += entity.vel_x
+                            elif axis == "y":
+                                entity.vel_y *= -1
+                                entity.rect.y += entity.vel_y
