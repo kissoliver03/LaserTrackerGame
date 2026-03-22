@@ -7,21 +7,21 @@ globals:
   score: 3 # 3 points to win
 
 layout:
-  map_size: [20, 20] # 20x20 grid
+  map_size: [32, 18] # 20x20 grid
   background_color: [0,0,0]
 
 entities:
   - name: "ball"
     type: "dynamic"
-    velocity: [2, 2] # X and Y start speed
+    velocity: [1, 1] # X and Y start speed
     grid_pos: [10, 10]
     size: [1, 1]
-    shape: "circle"
-    model: ""
+    shape: "rect"
+    model: "assets/models/ball.png"
 
   - name: "paddle"
     type: "kinematic"
-    grid_pos: [0, 8]
+    grid_pos: [0, 9]
     size: [1, 4]       # 1 grid horizontally and 4 grid vertically
     shape: "rect"
     model: ""
@@ -31,21 +31,21 @@ entities:
     group: "walls_x"   # Horizontal walls group
     type: "static"
     grid_pos: [0, 0]
-    size: [20, 1]      # 1 width full screen-width
+    size: [32, 1]      # 1 width full screen-width
     shape: "rect"
 
   - name: "wall_bottom"
     group: "walls_x"
     type: "static"
-    grid_pos: [0, 19]  # Down
-    size: [20, 1]
+    grid_pos: [0, 17]  # Down
+    size: [32, 1]
     shape: "rect"
 
   - name: "wall_right"
     group: "walls_y"   # Vertical walls group
     type: "static"
-    grid_pos: [19, 0]  # Right side
-    size: [1, 20]      # 1 width top to bottom
+    grid_pos: [31, 0]  # Right side
+    size: [1, 17]      # 1 width top to bottom
     shape: "rect"
 
 inputs:

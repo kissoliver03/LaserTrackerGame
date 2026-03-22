@@ -18,7 +18,7 @@ class Game:
 
         self.ratio = self.DISPLAY_H / self.TARGET_H
 
-        self.display = pygame.Surface((self.DISPLAY_W, self.DISPLAY_H))
+        self.display = pygame.Surface((self.TARGET_W, self.TARGET_H))
         self.window = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
 
         self.font_name = os.path.abspath("assets/font/8-BIT WONDER.TTF")
@@ -63,7 +63,7 @@ class Game:
                     self.sprite_groups = {}
 
                     layout_data = self.game_loader.get_layout()
-                    map_size = layout_data.get('map_size', [20, 20])
+                    map_size = layout_data.get('map_size', [32, 18])
 
                     self.background_color = layout_data.get('background_color', [0, 0, 0])
 
