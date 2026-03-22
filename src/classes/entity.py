@@ -30,7 +30,19 @@ class Entity(pygame.sprite.Sprite):
             try:
                 model = pygame.image.load(abs_model_path).convert_alpha()
 
-                self.image = pygame.transform.scale(model, (width, height))
+                is_tiled = data_dict.get("tile", False)
+
+                if is_tiled:
+                    self.image = pygame.Surface((width, height), pygame.SRCALPHA)
+                    single_tile = pygame.transform.scale(model, (int(cell_w), int(cell_h)))
+
+                    for tile_x in range(0, width, int(cell_w)):
+                        for tile_y in range(0, height, int(cell_h)):
+                            self.image.blit(single_tile, (tile_x, tile_y))
+
+                else:
+                    self.image = pygame.transform.scale(model, (width, height))
+
                 image_loaded = True
 
             except FileNotFoundError:

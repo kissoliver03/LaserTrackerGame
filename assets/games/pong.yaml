@@ -24,7 +24,7 @@ entities:
     grid_pos: [0, 9]
     size: [1, 4]       # 1 grid horizontally and 4 grid vertically
     shape: "rect"
-    model: ""
+    model: "assets/models/paddle.png"
     constraints: ["y"] # Only moves vertically
 
   - name: "wall_top"
@@ -33,6 +33,8 @@ entities:
     grid_pos: [0, 0]
     size: [32, 1]      # 1 width full screen-width
     shape: "rect"
+    tile: true
+    model: "assets/models/wall.png"
 
   - name: "wall_bottom"
     group: "walls_x"
@@ -40,6 +42,8 @@ entities:
     grid_pos: [0, 17]  # Down
     size: [32, 1]
     shape: "rect"
+    tile: true
+    model: "assets/models/wall.png"
 
   - name: "wall_right"
     group: "walls_y"   # Vertical walls group
@@ -47,6 +51,8 @@ entities:
     grid_pos: [31, 0]  # Right side
     size: [1, 17]      # 1 width top to bottom
     shape: "rect"
+    tile: true
+    model: "assets/models/wall.png"
 
 inputs:
   - name: "player_1"
