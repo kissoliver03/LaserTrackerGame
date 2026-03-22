@@ -22,7 +22,7 @@ class Entity(pygame.sprite.Sprite):
         y_pos = int(grid_pos[1] * cell_h)
 
         model_path = data_dict.get('model', None)
-        is_image_loaded = False
+        image_loaded = False
 
         if model_path:
             abs_model_path = os.path.abspath(model_path)
@@ -30,18 +30,18 @@ class Entity(pygame.sprite.Sprite):
             try:
                 model = pygame.image.load(abs_model_path).convert_alpha()
 
-                self.image = pygame.transform.smoothscale(model, (width, height))
-                is_image_loaded = True
+                self.image = pygame.transform.scale(model, (width, height))
+                image_loaded = True
 
             except FileNotFoundError:
-                is_image_loaded = False
+                image_loaded = False
                 self.game.error_popup("Model not found")
 
             except pygame.error as exc:
-                is_image_loaded = False
+                image_loaded = False
                 self.game.error_popup("Model error")
 
-        if not is_image_loaded:
+        if not image_loaded:
             self.image = pygame.Surface((width, height), pygame.SRCALPHA)
 
             if self.shape == 'rect':
