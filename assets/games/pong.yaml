@@ -13,10 +13,10 @@ layout:
 entities:
   - name: "ball"
     type: "dynamic"
-    velocity: [1, 1] # X and Y start speed
+    velocity: [2, 2] # X and Y start speed
     grid_pos: [10, 10]
     size: [1, 1]
-    shape: "rect"
+    shape: "circle"
     model: "assets/models/ball.png"
 
   - name: "paddle"
@@ -98,5 +98,4 @@ rules:
       - type: "damage"
         targets: ["player_1"]
       - type: "respawn"
-        target: "ball"
-        pos: [10, 10]
+        pos: [16, 9]
