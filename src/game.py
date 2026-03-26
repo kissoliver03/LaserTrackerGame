@@ -1,5 +1,5 @@
-from typing import Any
-
+import operator
+import random
 from src.classes.menu import *
 from src.classes.laserbuffer import LaserBuffer
 from src.classes.vision import VisionCore
@@ -49,11 +49,21 @@ class Game:
         self.entities_by_name = {}
         self.active_inputs = {}
         self.input_bindings = {}
+
+        self.operators = {
+            "<": operator.lt,
+            ">": operator.gt,
+            "<=": operator.le,
+            ">=": operator.ge,
+            "==": operator.eq,
+            "!=": operator.ne
+        }
+
         self.sprite_groups = {}
 
     def game_loop(self):
-        if self.is_game_selected:
-            if self.selected_game:  #selectec game path
+        if self.is_game_selected:           #TODO: move to another function and make game_loop only contains self.playing
+            if self.selected_game:  #selected game path
                 is_level_loaded = self.game_loader.load_game(self.selected_game)
 
                 if is_level_loaded:
@@ -240,6 +250,33 @@ class Game:
                         rule_triggered = True
                         triggered_entities.extend(collisions.keys())
 
+            elif condition_type == "position" and len(condition_target) == 1:
+                target_group = self.sprite_groups.get(condition_target[0])
+
+                if target_group:
+                    condition_axis = condition.get("axis", {})
+                    condition_operator = condition.get("operator", {})
+                    condition_value = condition.get("value", 0)
+
+                    operator_function = self.operators.get(condition_operator)
+
+                    if operator_function and condition_axis in ["x", "y"]:
+
+                        for sprite in target_group:
+
+                            if condition_axis == "x":
+                                limit = self.cell_w * condition_value
+                                current_pos = sprite.rect.centerx
+                            else:
+                                limit = self.cell_h * condition_value
+                                current_pos = sprite.rect.centery
+
+                            if operator_function(current_pos, limit):
+                                rule_triggered = True
+                                triggered_entities.append(sprite)
+
+
+
             if rule_triggered:
                 for action in actions:
                     action_type = action.get("type", {})
@@ -254,3 +291,27 @@ class Game:
                             elif axis == "y":
                                 entity.vel_y *= -1
                                 entity.rect.y += entity.vel_y
+
+                    elif action_type == "respawn":
+                        action_targets = action.get("targets", [])
+                        action_position = action.get("pos", [])
+
+                        entities_to_respawn = []
+
+                        if action_targets:
+                            for target in action_targets:
+                                entity = self.entities_by_name.get(target)
+                                if entity:
+                                    entities_to_respawn.append(entity)
+
+                        else:
+                            entities_to_respawn = triggered_entities
+
+                        pos_w = self.cell_w * action_position[0]
+                        pos_h = self.cell_h * action_position[1]
+
+                        for entity in entities_to_respawn:
+                            entity.rect.x = pos_w
+                            entity.rect.y = pos_h
+                            entity.vel_x = random.randint(1,3)
+                            entity.vel_y = random.randint(1,3)
