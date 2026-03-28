@@ -1,80 +1,70 @@
-import yaml, os
+from src.classes.gameparser import GameParser
+from src.classes.entity import Entity
+import pygame
+
 
 class GameLoader:
-    def __init__(self, game):
+    def __init__(self, game, game_parser):
         self.game = game
-        self.is_level_loaded = False
-        self.data = None
-
-    def load_game(self, filepath):
-        if not os.path.exists(filepath):
-            raise FileNotFoundError(filepath)
-
-        try:
-            with open(filepath, "r", encoding= 'utf-8') as file:
-                self.data = yaml.safe_load(file)
-
-            if self.data is None:
-                self.game.error_popup("The loaded game is empty")
-                self.is_level_loaded = False
-
-                return False
-
-            self.is_level_loaded = True
-
-            return True
-
-        except FileNotFoundError:
-            self.is_level_loaded = False
-            self.game.error_popup("Game not found.")
-
-            return False
-
-        except yaml.YAMLError as exc:
-            self.is_level_loaded = False
-            self.game.error_popup("Error while loading game.")
-
-            return False
-
-        except Exception as exc:
-            self.is_level_loaded = False
-            self.game.error_popup("Error while loading game.")
-
-            return False
+        self.game_parser = game_parser
 
 
-    def get_meta(self):
-        if self.is_level_loaded:
-            return self.data.get('meta', {})
-        else:
-            return {}
+    def load(self):
+        if self.game.is_game_selected:
+            if self.game.selected_game:  #selected game path
+                is_level_loaded = self.game_parser.parse_game(self.game.selected_game)
 
-    def get_globals(self):
-        if self.is_level_loaded:
-            return self.data.get('globals', {})
-        else:
-            return {}
+                if is_level_loaded:
+                    self.game.all_sprites = pygame.sprite.Group()
+                    self.game.entities_by_name = {}
+                    self.game.input_bindings = {}
+                    self.game.sprite_groups = {}
 
-    def get_layout(self):
-        if self.is_level_loaded:
-            return self.data.get('layout', {})
-        else:
-            return {}
+                    layout_data = self.game_parser.get_layout()
+                    map_size = layout_data.get('map_size', [32, 18])
 
-    def get_entities(self):
-        if self.is_level_loaded:
-            return self.data.get('entities', [])
-        else:
-            return []
+                    self.game.background_color = layout_data.get('background_color', [0, 0, 0])
 
-    def get_inputs(self):
-        if self.is_level_loaded:
-            return self.data.get('inputs', [])
-        else:
-            return []
+                    self.game.cell_w = self.game.TARGET_W / map_size[0]
+                    self.game.cell_h = self.game.TARGET_H / map_size[1]
 
-    def get_rules(self):
-        if self.is_level_loaded:
-            return self.data.get('rules', [])
-        else:
-            return []
+                    meta_data = self.game_parser.get_meta()
+
+
+                    #Get entities from parsed .YAML
+                    entities_data = self.game_parser.get_entities()
+                    for entity in entities_data:
+                        new_entity = Entity(self, entity, self.game.cell_w, self.game.cell_h)
+                        self.game.all_sprites.add(new_entity)
+
+                        self.game.entities_by_name[new_entity.name] = new_entity
+
+                        group_name = new_entity.group
+                        if group_name not in self.game.sprite_groups:
+                            self.game.sprite_groups[group_name] = pygame.sprite.Group()
+                        self.game.sprite_groups[group_name].add(new_entity)
+
+
+                    #Get inputs from parsed .YAML
+                    input_data = self.game.game_parser.get_inputs()
+                    for input in input_data:
+                        source = input.get('source')
+                        target = input.get('target')
+
+                        if target in self.game.entities_by_name:
+                            self.game.input_bindings[source] = self.game.entities_by_name[target]
+
+                    self.game.playing = True
+
+                else:
+                    self.game.playing = False
+                    self.game.is_game_selected = False
+                    self.game.curr_menu.run_display = True
+                    return
+
+            else:
+                self.game.playing = False
+                self.game.is_game_selected = False
+                self.game.curr_menu = self.game.game_selector
+
+                return

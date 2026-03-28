@@ -4,7 +4,7 @@ from src.classes.menu import *
 from src.classes.laserbuffer import LaserBuffer
 from src.classes.vision import VisionCore
 from src.classes.gameloader import GameLoader
-from src.classes.entity import Entity
+from src.classes.gameparser import GameParser
 
 class Game:
     def __init__(self):
@@ -36,7 +36,9 @@ class Game:
         self.vision_core = VisionCore(self.laser_buffer)
         self.vision_core.start()
 
-        self.game_loader = GameLoader(self)
+        self.game_parser = GameParser(self)
+
+        self.game_loader = GameLoader(self, self.game_parser)
 
         self.selected_game = None
         self.is_game_selected = False
@@ -61,63 +63,12 @@ class Game:
 
         self.sprite_groups = {}
 
+        self.lives = 3
+
+
+
     def game_loop(self):
-        if self.is_game_selected:           #TODO: move to another function and make game_loop only contains self.playing
-            if self.selected_game:  #selected game path
-                is_level_loaded = self.game_loader.load_game(self.selected_game)
-
-                if is_level_loaded:
-                    self.all_sprites = pygame.sprite.Group()
-                    self.entities_by_name = {}
-                    self.input_bindings = {}
-                    self.sprite_groups = {}
-
-                    layout_data = self.game_loader.get_layout()
-                    map_size = layout_data.get('map_size', [32, 18])
-
-                    self.background_color = layout_data.get('background_color', [0, 0, 0])
-
-                    self.cell_w = self.TARGET_W / map_size[0]
-                    self.cell_h = self.TARGET_H / map_size[1]
-
-
-                    #Get entities from parsed .YAML
-                    entities_data = self.game_loader.get_entities()
-                    for entity in entities_data:
-                        new_entity = Entity(self, entity, self.cell_w, self.cell_h)
-                        self.all_sprites.add(new_entity)
-
-                        self.entities_by_name[new_entity.name] = new_entity
-
-                        group_name = new_entity.group
-                        if group_name not in self.sprite_groups:
-                            self.sprite_groups[group_name] = pygame.sprite.Group()
-                        self.sprite_groups[group_name].add(new_entity)
-
-
-                    #Get inputs from parsed .YAML
-                    input_data = self.game_loader.get_inputs()
-                    for input in input_data:
-                        source = input.get('source')
-                        target = input.get('target')
-
-                        if target in self.entities_by_name:
-                            self.input_bindings[source] = self.entities_by_name[target]
-
-                    self.playing = True
-
-                else:
-                    self.playing = False
-                    self.is_game_selected = False
-                    self.curr_menu.run_display = True
-                    return
-
-            else:
-                self.playing = False
-                self.is_game_selected = False
-                self.curr_menu = self.game_selector
-
-                return
+        self.game_loader.load()
 
         while self.playing:
             self.check_events()
@@ -126,6 +77,13 @@ class Game:
                 self.playing = False
                 self.is_game_selected = False
                 self.curr_menu = self.game_selector
+
+            if self.lives <= 0:
+                self.msg_popup("Game Over", "Quit to the title screen")
+                self.playing = False
+                self.is_game_selected = False
+                self.curr_menu = self.game_selector
+
 
             self.display.fill(self.background_color)
 
@@ -191,7 +149,7 @@ class Game:
         text_rect.center = (x, y)
         self.display.blit(text_surface, text_rect)
 
-    def error_popup(self, text):
+    def msg_popup(self, title, text):
         popup_running = True
 
         self.reset_keys()
@@ -213,7 +171,7 @@ class Game:
             pygame.draw.rect(self.display, (30, 30, 30), (box_x, box_y, box_w, box_h))
             pygame.draw.rect(self.display, self.WHITE, (box_x, box_y, box_w, box_h), 4)
 
-            self.draw_text("ERROR", int(40 * self.ratio), self.DISPLAY_W / 2, box_y + (50 * self.ratio), (255, 50, 50))
+            self.draw_text(title, int(40 * self.ratio), self.DISPLAY_W / 2, box_y + (50 * self.ratio), (255, 50, 50))
             self.draw_text(text, int(20 * self.ratio), self.DISPLAY_W / 2, self.DISPLAY_H / 2, self.WHITE)
 
             ok_y = box_y + box_h - (50 * self.ratio)
@@ -227,7 +185,7 @@ class Game:
 
 
     def rule_processor(self):
-        rules_data = self.game_loader.get_rules()
+        rules_data = self.game_parser.get_rules()
 
         for rule in rules_data:
             condition = rule.get("condition", {})
