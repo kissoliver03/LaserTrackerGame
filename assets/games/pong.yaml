@@ -4,10 +4,10 @@ meta:
   version: "1.0.0"
 
 globals:
-  score: 3 # 3 points to win
+  lives: 3
 
 layout:
-  map_size: [32, 18] # 20x20 grid
+  map_size: [32, 18] # 32x18 grid
   background_color: [0,0,0]
 
 entities:
@@ -87,7 +87,7 @@ rules:
         targets: ["player_1"]
         amount: 1
 
-  # -1 HP when the ball goes out of bound and respawn to [10, 10]
+  # -1 HP when the ball goes out of bound and respawn to [19, 9]
   - condition:
       type: "position"
       targets: ["ball"]
