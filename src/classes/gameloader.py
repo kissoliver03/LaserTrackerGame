@@ -28,8 +28,8 @@ class GameLoader:
                     self.game.cell_w = self.game.TARGET_W / map_size[0]
                     self.game.cell_h = self.game.TARGET_H / map_size[1]
 
-                    meta_data = self.game_parser.get_meta()
-
+                    globals_data = self.game_parser.get_globals()
+                    self.game.lives = globals_data.get('lives', 3)
 
                     #Get entities from parsed .YAML
                     entities_data = self.game_parser.get_entities()
@@ -47,12 +47,15 @@ class GameLoader:
 
                     #Get inputs from parsed .YAML
                     input_data = self.game.game_parser.get_inputs()
-                    for input in input_data:
-                        source = input.get('source')
-                        target = input.get('target')
+                    for input_item in input_data:
+                        name = input_item.get('name')
+                        source = input_item.get('source')
+                        target = input_item.get('target')
 
                         if target in self.game.entities_by_name:
                             self.game.input_bindings[source] = self.game.entities_by_name[target]
+
+                        self.game.players[name] = self.game.lives
 
                     self.game.playing = True
 

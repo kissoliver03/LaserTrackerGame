@@ -63,8 +63,7 @@ class Game:
 
         self.sprite_groups = {}
 
-        self.lives = 3
-
+        self.players = {}
 
 
     def game_loop(self):
@@ -78,11 +77,13 @@ class Game:
                 self.is_game_selected = False
                 self.curr_menu = self.game_selector
 
-            if self.lives <= 0:
-                self.msg_popup("Game Over", "Quit to the title screen")
-                self.playing = False
-                self.is_game_selected = False
-                self.curr_menu = self.game_selector
+            for player_name, life in self.players.items():
+                if life <= 0:
+                    self.msg_popup("GAME OVER", f"{player_name} lost")
+                    self.playing = False
+                    self.is_game_selected = False
+                    self.curr_menu = self.game_selector
+                    break
 
 
             self.display.fill(self.background_color)
@@ -113,9 +114,6 @@ class Game:
             pygame.display.update()
 
             self.reset_keys()
-
-
-
 
 
     def check_events(self):
@@ -245,10 +243,10 @@ class Game:
                         for entity in triggered_entities:
                             if axis == "x":
                                 entity.vel_x *= -1
-                                entity.rect.x += entity.vel_x
+                                # entity.rect.x += entity.vel_x
                             elif axis == "y":
                                 entity.vel_y *= -1
-                                entity.rect.y += entity.vel_y
+                                    # entity.rect.y += entity.vel_y
 
                     elif action_type == "respawn":
                         action_targets = action.get("targets", [])
@@ -273,3 +271,12 @@ class Game:
                             entity.rect.y = pos_h
                             entity.vel_x = random.randint(1,3)
                             entity.vel_y = random.randint(1,3)
+
+                    elif action_type == "damage":
+                        action_targets = action.get("targets", [])
+                        action_value = action.get("value", 1)
+
+                        if action_targets:
+                            for target in action_targets:
+                                if target in self.players:
+                                    self.players[target] -= action_value
