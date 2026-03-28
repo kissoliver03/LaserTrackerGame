@@ -1,5 +1,4 @@
 meta:
-  id: "pong_1"
   title: "singleplayer_pong"
   version: "1.0.0"
 
@@ -55,7 +54,7 @@ entities:
     model: "assets/models/wall.png"
 
 inputs:
-  - name: "player_1"
+  - name: "player1"
     source: "laser_red"
     target: "paddle"
 
@@ -96,6 +95,7 @@ rules:
       value: 0
     action:
       - type: "damage"
-        targets: ["player_1"]
+        targets: ["player1"]
+        value: 1
       - type: "respawn"
         pos: [16, 9]
