@@ -53,6 +53,13 @@ entities:
     tile: true
     model: "assets/models/wall.png"
 
+  - name: "item_to_destroy"
+    type: "static"
+    grid_pos: [24, 8]
+    size: [1, 1]
+    shape: "circle"
+    model: "assets/models/coin.png"
+
 inputs:
   - name: "player1"
     source: "laser_red"
@@ -99,3 +106,13 @@ rules:
         value: 1
       - type: "respawn"
         pos: [16, 9]
+
+  - condition:
+      type: "collision"
+      targets: ["ball", "item_to_destroy"]
+    action:
+      - type: "destroy"
+        targets: ["item_to_destroy"]
+      - type: "respawn"
+        targets: ["item_to_destroy"]
+        random_position: true
