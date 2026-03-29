@@ -30,8 +30,8 @@ class GameLoader:
                     self.game.cell_h = self.game.TARGET_H / map_size[1]
 
                     globals_data = self.game_parser.get_globals()
-                    self.game.lives = globals_data.get('lives', 3)
-                    self.game.score = globals_data.get('score', 0)
+                    self.game.lives = globals_data.get('lives', None)
+                    self.game.score = globals_data.get('score', None)
 
                     #Get entities from parsed .YAML
                     entities_data = self.game_parser.get_entities()

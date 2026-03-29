@@ -68,7 +68,7 @@ class Game:
         self.sprite_groups = {}
 
         self.players = {}
-        self.score = 0
+        self.score = None
 
 
     def game_loop(self):
