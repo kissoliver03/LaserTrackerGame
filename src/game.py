@@ -68,6 +68,7 @@ class Game:
         self.sprite_groups = {}
 
         self.players = {}
+        self.score = 0
 
 
     def game_loop(self):
@@ -81,9 +82,16 @@ class Game:
                 self.is_game_selected = False
                 self.curr_menu = self.game_selector
 
-            for player_name, life in self.players.items():
-                if life <= 0:
+            for player_name, stats in self.players.items():
+                if stats["lives"] <= 0:
                     self.msg_popup("GAME OVER", f"{player_name} lost")
+                    self.playing = False
+                    self.is_game_selected = False
+                    self.curr_menu = self.game_selector
+                    break
+
+                elif stats["score"] >= self.score:
+                    self.msg_popup("YOU WIN", f"{player_name} won")
                     self.playing = False
                     self.is_game_selected = False
                     self.curr_menu = self.game_selector
@@ -303,7 +311,7 @@ class Game:
                         if action_targets:
                             for target in action_targets:
                                 if target in self.players:
-                                    self.players[target] -= action_value
+                                    self.players[target]["lives"] -= action_value
 
                     elif action_type == "destroy":
                         action_targets = action.get("targets", [])
@@ -314,9 +322,18 @@ class Game:
                                 if entity:
                                     pygame.sprite.Sprite.kill(entity)
 
+                    elif action_type == "add_score":
+                        action_targets = action.get("targets", [])
+                        action_value = action.get("value", 1)
+
+                        if action_targets:
+                            for target in self.players:
+                                self.players[target]["score"] += action_value
 
 
-    def get_safe_random_positions(self):  #TODO: fix overlapping if object size > [1, 1]
+
+
+    def get_safe_random_positions(self):  ##TODO: fix overlapping if object size > [1, 1]
         max_grid_w = self.map_size[0]
         max_grid_h = self.map_size[1]
 

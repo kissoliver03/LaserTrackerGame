@@ -31,6 +31,7 @@ class GameLoader:
 
                     globals_data = self.game_parser.get_globals()
                     self.game.lives = globals_data.get('lives', 3)
+                    self.game.score = globals_data.get('score', 0)
 
                     #Get entities from parsed .YAML
                     entities_data = self.game_parser.get_entities()
@@ -56,7 +57,10 @@ class GameLoader:
                         if target in self.game.entities_by_name:
                             self.game.input_bindings[source] = self.game.entities_by_name[target]
 
-                        self.game.players[name] = self.game.lives
+                        self.game.players[name] = {
+                            "lives": self.game.lives,
+                            "score": 0,
+                        }
 
                     self.game.playing = True
 
