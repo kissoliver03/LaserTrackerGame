@@ -22,6 +22,7 @@ class GameLoader:
 
                     layout_data = self.game_parser.get_layout()
                     map_size = layout_data.get('map_size', [32, 18])
+                    self.game.map_size = map_size
 
                     self.game.background_color = layout_data.get('background_color', [0, 0, 0])
 

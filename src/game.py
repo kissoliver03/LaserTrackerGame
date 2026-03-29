@@ -1,5 +1,8 @@
 import operator
 import random
+
+import pygame.sprite
+
 from src.classes.menu import *
 from src.classes.laserbuffer import LaserBuffer
 from src.classes.vision import VisionCore
@@ -47,6 +50,7 @@ class Game:
 
         self.cell_h = None
         self.cell_w = None
+        self.map_size = None
 
         self.entities_by_name = {}
         self.active_inputs = {}
@@ -243,14 +247,14 @@ class Game:
                         for entity in triggered_entities:
                             if axis == "x":
                                 entity.vel_x *= -1
-                                # entity.rect.x += entity.vel_x
+
                             elif axis == "y":
                                 entity.vel_y *= -1
-                                    # entity.rect.y += entity.vel_y
 
                     elif action_type == "respawn":
                         action_targets = action.get("targets", [])
-                        action_position = action.get("pos", [])
+                        action_position = action.get("pos", None)
+                        action_random_position = action.get("random_position", False)
 
                         entities_to_respawn = []
 
@@ -263,14 +267,34 @@ class Game:
                         else:
                             entities_to_respawn = triggered_entities
 
-                        pos_w = self.cell_w * action_position[0]
-                        pos_h = self.cell_h * action_position[1]
 
                         for entity in entities_to_respawn:
+                            if action_position is not None:
+                                pos_w = self.cell_w * action_position[0]
+                                pos_h = self.cell_h * action_position[1]
+
+                            elif action_random_position:
+                                safe_grid = self.get_safe_random_positions()
+
+                                pos_w = self.cell_w * safe_grid[0]
+                                pos_h = self.cell_h * safe_grid[1]
+
+                            else:
+                                pos_w = 0
+                                pos_h = 0
+
                             entity.rect.x = pos_w
                             entity.rect.y = pos_h
-                            entity.vel_x = random.randint(1,3)
-                            entity.vel_y = random.randint(1,3)
+                            entity.vel_x = random.randint(1, 3)
+                            entity.vel_y = random.randint(1, 3)
+
+                            if not entity.alive():
+                                self.all_sprites.add(entity)
+
+                                group_name = entity.group
+                                if group_name in self.sprite_groups:
+                                    self.sprite_groups[group_name].add(entity)
+
 
                     elif action_type == "damage":
                         action_targets = action.get("targets", [])
@@ -280,3 +304,50 @@ class Game:
                             for target in action_targets:
                                 if target in self.players:
                                     self.players[target] -= action_value
+
+                    elif action_type == "destroy":
+                        action_targets = action.get("targets", [])
+
+                        if action_targets:
+                            for target in action_targets:
+                                entity = self.entities_by_name.get(target)
+                                if entity:
+                                    pygame.sprite.Sprite.kill(entity)
+
+
+
+    def get_safe_random_positions(self):  #TODO: fix overlapping if object size > [1, 1]
+        max_grid_w = self.map_size[0]
+        max_grid_h = self.map_size[1]
+
+        free_grids = set()
+        for x in range(max_grid_w):
+            for y in range(max_grid_h):
+                free_grids.add((x, y))
+
+        for entity in self.all_sprites:
+            start_x = int(entity.rect.left // self.cell_w)
+            end_x = int((entity.rect.right - 1) // self.cell_w)
+            start_y = int(entity.rect.top // self.cell_h)
+            end_y = int((entity.rect.bottom - 1) // self.cell_h)
+
+            if entity.type == "kinematic":
+                if "x" in entity.constraints:
+                    for x in range(max_grid_w):
+                        for y in range(start_y, end_y + 1):
+                            free_grids.discard((x, y))
+
+                elif "y" in entity.constraints:
+                    for y in range(max_grid_h):
+                        for x in range(start_x, end_x + 1):
+                            free_grids.discard((x, y))
+
+            else:
+                for x in range(start_x, end_x + 1):
+                    for y in range(start_y, end_y + 1):
+                        free_grids.discard((x, y))
+
+        if free_grids:
+            return random.choice(list(free_grids))
+        else:
+            return int(max_grid_w / 2), int(max_grid_h / 2)
