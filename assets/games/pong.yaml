@@ -4,6 +4,7 @@ meta:
 
 globals:
   lives: 3
+  score: 3
 
 layout:
   map_size: [32, 18] # 32x18 grid
@@ -116,3 +117,6 @@ rules:
       - type: "respawn"
         targets: ["item_to_destroy"]
         random_position: true
+      - type: "add_score"
+        targets: ["player_1"]
+        value: 1
