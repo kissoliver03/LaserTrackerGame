@@ -92,14 +92,14 @@ class Game:
 
             for player_name, stats in self.players.items():
                 if stats["lives"] <= 0:
-                    self.msg_popup("GAME OVER", f"{player_name} lost")
+                    self.msg_popup("GAME OVER", [255, 0, 0], f"{player_name} lost")
                     self.playing = False
                     self.is_game_selected = False
                     self.curr_menu = self.game_selector
                     break
 
                 elif stats["score"] >= self.score:
-                    self.msg_popup("YOU WIN", f"{player_name} won")
+                    self.msg_popup("YOU WIN", [50, 255, 0], f"{player_name} won")
                     self.playing = False
                     self.is_game_selected = False
                     self.curr_menu = self.game_selector
@@ -167,7 +167,7 @@ class Game:
         text_rect.center = (x, y)
         self.display.blit(text_surface, text_rect)
 
-    def msg_popup(self, title, text):
+    def msg_popup(self, title, title_color, text):
         popup_running = True
 
         self.reset_keys()
@@ -189,7 +189,7 @@ class Game:
             pygame.draw.rect(self.display, (30, 30, 30), (box_x, box_y, box_w, box_h))
             pygame.draw.rect(self.display, self.WHITE, (box_x, box_y, box_w, box_h), 4)
 
-            self.draw_text(title, int(40 * self.ratio), self.DISPLAY_W / 2, box_y + (50 * self.ratio), (255, 50, 50))
+            self.draw_text(title, int(40 * self.ratio), self.DISPLAY_W / 2, box_y + (50 * self.ratio), title_color)
             self.draw_text(text, int(20 * self.ratio), self.DISPLAY_W / 2, self.DISPLAY_H / 2, self.WHITE)
 
             ok_y = box_y + box_h - (50 * self.ratio)
