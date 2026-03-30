@@ -34,3 +34,10 @@ class LaserBuffer:
                 return new_state
             except queue.Empty:
                 return self.pointer_state
+
+    def clear(self) -> PointerState:
+        with self.lock:
+            self.laser_buffer = queue.LifoQueue(maxsize=1)
+            self.pointer_state = PointerState(0.0, 0.0, False, 0.0)
+
+            return self.pointer_state

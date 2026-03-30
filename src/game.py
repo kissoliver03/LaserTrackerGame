@@ -36,6 +36,7 @@ class Game:
         self.curr_menu = self.main_menu
 
         self.laser_buffer = LaserBuffer()
+        self.pointer_state = None
         self.vision_core = VisionCore(self.laser_buffer)
         self.vision_core.start()
 
@@ -74,6 +75,13 @@ class Game:
     def game_loop(self):
         self.game_loader.load()
 
+        target_entity = self.input_bindings.get("laser_red")
+        if target_entity:
+            self.vision_core.last_x = target_entity.rect.centerx
+            self.vision_core.last_y = target_entity.rect.centery
+
+        self.pointer_state = self.laser_buffer.clear()
+
         while self.playing:
             self.check_events()
 
@@ -106,11 +114,11 @@ class Game:
 
             self.draw_text('Press ESC to exit', 20, self.DISPLAY_W / 2, self.DISPLAY_H/2, (100, 100, 100))
 
-            pointer_state = self.laser_buffer.get_latest()
-            if pointer_state:
-                x = pointer_state.x
-                y = pointer_state.y
-                pygame.draw.circle(self.display, (255, 0, 0), (x, y), 20)
+            self.pointer_state = self.laser_buffer.get_latest()
+            if self.pointer_state:
+                x = self.pointer_state.x
+                y = self.pointer_state.y
+                # pygame.draw.circle(self.display, (255, 0, 0), (x, y), 20)
 
                 target_entity = self.input_bindings.get("laser_red")
                 if target_entity:
