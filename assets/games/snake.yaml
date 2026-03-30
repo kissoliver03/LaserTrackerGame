@@ -11,10 +11,10 @@ layout:
   background_color: [0, 0, 0]
 
 entities:
-  - name: "snake"
+  - name: "ball"
     type: "kinematic"
     grid_pos: [0, 9]
-    size: [1, 1]
+    size: [0.75, 0.75]
     shape: "circle"
     model: "assets/models/ball.png"
     tile: true
@@ -95,8 +95,8 @@ entities:
   - name: "wall_right_path_up_1"
     group: "walls"
     type: "static"
-    grid_pos: [ 13, 3 ]
-    size: [ 1, 11 ]
+    grid_pos: [ 13, 5 ]
+    size: [ 1, 9 ]
     shape: "rect"
     model: "assets/models/wall.png"
     tile: true
@@ -115,7 +115,7 @@ entities:
     group: "walls"
     type: "static"
     grid_pos: [ 14, 5 ]
-    size: [ 6, 1 ]
+    size: [ 4, 1 ]
     shape: "rect"
     model: "assets/models/wall.png"
     tile: true
@@ -125,7 +125,7 @@ entities:
     group: "walls"
     type: "static"
     grid_pos: [ 17, 6 ]
-    size: [ 1, 8 ]
+    size: [ 1, 10 ]
     shape: "rect"
     model: "assets/models/wall.png"
     tile: true
@@ -134,7 +134,7 @@ entities:
     group: "walls"
     type: "static"
     grid_pos: [ 19, 4 ]
-    size: [ 1, 12 ]
+    size: [ 1, 10 ]
     shape: "rect"
     model: "assets/models/wall.png"
     tile: true
@@ -143,8 +143,8 @@ entities:
   - name: "wall_top_path_3"
     group: "walls"
     type: "static"
-    grid_pos: [ 18, 13 ]
-    size: [ 6, 1 ]
+    grid_pos: [ 20, 13 ]
+    size: [ 4, 1 ]
     shape: "rect"
     model: "assets/models/wall.png"
     tile: true
@@ -162,8 +162,8 @@ entities:
   - name: "wall_left_path_up_2"
     group: "walls"
     type: "static"
-    grid_pos: [ 23, 8 ]
-    size: [ 1, 6 ]
+    grid_pos: [ 23, 6 ]
+    size: [ 1, 7 ]
     shape: "rect"
     model: "assets/models/wall.png"
     tile: true
@@ -171,8 +171,8 @@ entities:
   - name: "wall_right_path_up_2"
     group: "walls"
     type: "static"
-    grid_pos: [ 25, 6 ]
-    size: [ 1, 10 ]
+    grid_pos: [ 25, 8 ]
+    size: [ 1, 8 ]
     shape: "rect"
     model: "assets/models/wall.png"
     tile: true
@@ -190,13 +190,37 @@ entities:
   - name: "wall_bottom_exit"
     group: "walls"
     type: "static"
-    grid_pos: [ 24, 8 ]
-    size: [ 8, 1 ]
+    grid_pos: [ 26, 8 ]
+    size: [ 6, 1 ]
     shape: "rect"
     model: "assets/models/wall.png"
     tile: true
 
+  - name: "coin"
+    type: "static"
+    grid_pos: [31, 7]
+    shape: "circle"
+    model: "assets/models/coin.png"
+
+
 inputs:
   - name: "player1"
     source: "laser_red"
-    target: "snake"
+    target: "ball"
+
+rules:
+  - condition:
+      type: "collision"
+      targets: [ "ball", "walls" ]
+    action:
+      - type: "damage"
+        targets: [ "player1" ]
+        value: 1
+
+  - condition:
+      type: "collision"
+      targets: ["ball", "coin"]
+    action:
+      - type: "add_score"
+        targets: ["player1"]
+        value: 1
