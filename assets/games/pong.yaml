@@ -21,7 +21,7 @@ entities:
 
   - name: "paddle"
     type: "kinematic"
-    grid_pos: [0, 9]
+    grid_pos: [0, 7]
     size: [1, 4]       # 1 grid horizontally and 4 grid vertically
     shape: "rect"
     model: "assets/models/paddle.png"
