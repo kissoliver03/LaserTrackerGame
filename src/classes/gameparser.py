@@ -15,7 +15,7 @@ class GameParser:
                 self.data = yaml.safe_load(file)
 
             if self.data is None:
-                self.game.msg_popup("ERROR", "The loaded game is empty")
+                self.game.msg_popup("ERROR", [255, 0, 0], "The loaded game is empty")
                 self.is_level_loaded = False
 
                 return False
@@ -26,19 +26,19 @@ class GameParser:
 
         except FileNotFoundError:
             self.is_level_loaded = False
-            self.game.msg_popup("ERROR", "Game not found")
+            self.game.msg_popup("ERROR", [255, 0, 0], "Game not found")
 
             return False
 
         except yaml.YAMLError as exc:
             self.is_level_loaded = False
-            self.game.msg_popup("ERROR", "Error while loading game")
+            self.game.msg_popup("ERROR", [255, 0, 0], "Error while loading game")
 
             return False
 
         except Exception as exc:
             self.is_level_loaded = False
-            self.game.msg_popup("ERROR", "Error while loading game")
+            self.game.msg_popup("ERROR", [255, 0, 0], "Error while loading game")
 
             return False
 

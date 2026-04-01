@@ -47,11 +47,11 @@ class Entity(pygame.sprite.Sprite):
 
             except FileNotFoundError:
                 image_loaded = False
-                self.game.error_popup("Model not found")
+                self.game.error_popup("Model not found",  [255, 0, 0], "Model not found")
 
             except pygame.error as exc:
                 image_loaded = False
-                self.game.error_popup("Model error")
+                self.game.error_popup("Model error", [255, 0, 0], "Model not found")
 
         if not image_loaded:
             self.image = pygame.Surface((width, height), pygame.SRCALPHA)
