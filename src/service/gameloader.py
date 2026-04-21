@@ -1,5 +1,4 @@
-from src.classes.gameparser import GameParser
-from src.classes.entity import Entity
+from src.model.entity import Entity
 import pygame
 
 

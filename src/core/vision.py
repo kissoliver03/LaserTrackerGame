@@ -1,5 +1,5 @@
 import threading, time, pygame
-from src.classes.laserbuffer import PointerState
+from src.core.laserbuffer import PointerState
 
 class VisionCore:
     def __init__(self, laser_buffer):

@@ -1,13 +1,12 @@
-import operator
 import random
+import operator
+import pygame
 
-import pygame.sprite
-
-from src.classes.menu import *
-from src.classes.laserbuffer import LaserBuffer
-from src.classes.vision import VisionCore
-from src.classes.gameloader import GameLoader
-from src.classes.gameparser import GameParser
+from src.game.menu import *
+from src.core.laserbuffer import LaserBuffer
+from src.core.vision import VisionCore
+from src.service.gameloader import GameLoader
+from src.service.gameparser import GameParser
 
 class Game:
     def __init__(self):
