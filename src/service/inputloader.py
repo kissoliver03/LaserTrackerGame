@@ -27,4 +27,7 @@ class InputLoader:
         return 0
 
     def get_camera_count(self):
-        return len(self.available_cams)
+        if self.available_cams == 0:
+            return 0
+        else:
+            return len(self.available_cams)

@@ -1,6 +1,9 @@
 import pygame
 import os
 
+from src.service.inputloader import InputLoader
+
+
 class Menu:
     def __init__(self, game):
         self.game = game
@@ -251,17 +254,42 @@ class ScreenCalibration(Menu):
 class Options(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
+        self.input_loader = InputLoader()
+        self.selected_camera_id = 0
+
+        self.state = "Camera"
 
     def display_menu(self):
+
+
         self.run_display = True
 
         while self.run_display:
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
+
+            current_cam_name = self.input_loader.get_camera_name(int(self.selected_camera_id))
+
+            if self.state == "Camera":
+                cam_text = f"{current_cam_name}"
+                color = self.game.WHITE
+            else:
+                cam_text = f"{current_cam_name}"
+                color = (150, 150, 150)
+
+            self.game.draw_text(cam_text, self.font_size, self.mid_w, self.mid_h, color)
+
             self.blit_screen()
 
     def check_input(self):
         if self.game.ESC_KEY:
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
+
+        if self.state == "Camera":
+            cam_count = self.input_loader.get_camera_count()
+            if self.game.LEFT_KEY:
+                self.selected_camera_id = (self.selected_camera_id - 1)
+            elif self.game.RIGHT_KEY:
+                self.selected_camera_id = (self.selected_camera_id + 1)
