@@ -23,7 +23,7 @@ class Game:
         self.display = pygame.Surface((self.TARGET_W, self.TARGET_H))
         self.window = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
 
-        self.font_name = os.path.abspath("assets/font/8-BIT WONDER.TTF")
+        self.font_name = os.path.abspath("assets/font/ByteBounce.ttf")
 
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
         self.background_color = self.BLACK
@@ -91,14 +91,14 @@ class Game:
 
             for player_name, stats in self.players.items():
                 if stats["lives"] <= 0:
-                    self.msg_popup("GAME OVER", [255, 0, 0], f"{player_name} lost")
+                    self.msg_popup("GAME OVER", [255, 0, 0], f"{player_name} LOST")
                     self.playing = False
                     self.is_game_selected = False
                     self.curr_menu = self.game_selector
                     break
 
                 elif stats["score"] >= self.score:
-                    self.msg_popup("YOU WIN", [50, 255, 0], f"{player_name} won")
+                    self.msg_popup("YOU WIN", [50, 255, 0], f"{player_name} WON")
                     self.playing = False
                     self.is_game_selected = False
                     self.curr_menu = self.game_selector
@@ -110,8 +110,6 @@ class Game:
             self.all_sprites.update()
             self.rule_processor()
             self.all_sprites.draw(self.display)
-
-            self.draw_text('Press ESC to exit', 20, self.DISPLAY_W / 2, self.DISPLAY_H/2, (100, 100, 100))
 
             self.pointer_state = self.laser_buffer.get_latest()
             if self.pointer_state:
@@ -188,12 +186,12 @@ class Game:
             pygame.draw.rect(self.display, (30, 30, 30), (box_x, box_y, box_w, box_h))
             pygame.draw.rect(self.display, self.WHITE, (box_x, box_y, box_w, box_h), 4)
 
-            self.draw_text(title, int(40 * self.ratio), self.DISPLAY_W / 2, box_y + (50 * self.ratio), title_color)
-            self.draw_text(text, int(20 * self.ratio), self.DISPLAY_W / 2, self.DISPLAY_H / 2, self.WHITE)
+            self.draw_text(title, int(80 * self.ratio), self.DISPLAY_W / 2, box_y + (50 * self.ratio), title_color)
+            self.draw_text(text, int(40 * self.ratio), self.DISPLAY_W / 2, self.DISPLAY_H / 2, self.WHITE)
 
             ok_y = box_y + box_h - (50 * self.ratio)
-            self.draw_text("OK", int(30 * self.ratio), self.DISPLAY_W / 2, ok_y, (0, 255, 0))
-            self.draw_text("*", int(35 * self.ratio), (self.DISPLAY_W / 2) - (50 * self.ratio), ok_y, self.WHITE)
+            self.draw_text("OK", int(60 * self.ratio), self.DISPLAY_W / 2, ok_y, (0, 255, 0))
+            self.draw_text("*", int(70 * self.ratio), (self.DISPLAY_W / 2) - (50 * self.ratio), ok_y, self.WHITE)
 
             self.window.blit(self.display, (0, 0))
             pygame.display.update()

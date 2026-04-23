@@ -10,10 +10,15 @@ class Menu:
         self.mid_w, self.mid_h = self.game.DISPLAY_W/2, self.game.DISPLAY_H/2
         self.run_display = True
 
-        base_font_size = 40
-        base_gap = 60
+        # base_font_size = 40
+        # base_gap = 60
+        # base_padding = 20
+        # base_cursor_size = 35
+
+        base_font_size = 80
+        base_gap = 70
         base_padding = 20
-        base_cursor_size = 35
+        base_cursor_size = 80
 
 
         self.font_size = int(base_font_size * self.game.ratio)
@@ -64,10 +69,10 @@ class MainMenu(Menu):
             title_size = int(self.font_size * 1.5)
             self.game.draw_text("Main Menu", title_size, self.mid_w, self.mid_h - (self.gap * 4), self.game.WHITE)
 
-            self.game.draw_text("Play", self.font_size, self.play_x, self.play_y, self.game.WHITE)
-            self.game.draw_text("Screen Calibration", self.font_size, self.screen_calibration_x, self.screen_calibration_y, self.game.WHITE)
-            self.game.draw_text("Options", self.font_size, self.options_x, self.options_y, self.game.WHITE)
-            self.game.draw_text("Quit", self.font_size, self.quit_x, self.quit_y, self.game.WHITE)
+            self.game.draw_text("PLAY", self.font_size, self.play_x, self.play_y, self.game.WHITE)
+            self.game.draw_text("SCREEN CALIBRATION", self.font_size, self.screen_calibration_x, self.screen_calibration_y, self.game.WHITE)
+            self.game.draw_text("OPTIONS", self.font_size, self.options_x, self.options_y, self.game.WHITE)
+            self.game.draw_text("QUIT", self.font_size, self.quit_x, self.quit_y, self.game.WHITE)
 
             self.draw_cursor()
             self.blit_screen()
@@ -163,7 +168,7 @@ class GameSelector(Menu):
             self.check_input()
             self.game.display.fill(self.game.BLACK)
 
-            self.game.draw_text("Select Game", int(self.font_size * 1.25), self.mid_w, self.mid_h - self.gap * 7, self.game.WHITE)
+            self.game.draw_text("Select Game", int(self.font_size * 1.25), self.mid_w, self.mid_h - self.gap * 6, self.game.WHITE)
 
 
             number_of_games = len(self.game_files)
@@ -272,10 +277,10 @@ class Options(Menu):
             current_cam_name = self.input_loader.get_camera_name(int(self.selected_camera_id))
 
             if self.state == "Camera":
-                cam_text = f"{current_cam_name}"
+                cam_text = f"Camera device: < {current_cam_name} >"
                 color = self.game.WHITE
             else:
-                cam_text = f"{current_cam_name}"
+                cam_text = f"Camera device: < {current_cam_name} >"
                 color = (150, 150, 150)
 
             self.game.draw_text(cam_text, self.font_size, self.mid_w, self.mid_h, color)
