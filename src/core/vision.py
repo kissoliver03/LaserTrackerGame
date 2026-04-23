@@ -2,8 +2,7 @@ import threading, time, pygame
 from src.core.laserbuffer import PointerState
 
 class VisionCore:
-    def __init__(self, game,  laser_buffer):
-        self.game = game
+    def __init__(self, laser_buffer):
         self.laser_buffer = laser_buffer
         self.pointer_state = PointerState
         self.running = False
@@ -25,18 +24,14 @@ class VisionCore:
     def process_frames(self):
         while self.running:
             if pygame.display.get_init():
-                if self.game.mouse_enabled:
 
-                    laser_visible = pygame.mouse.get_pressed()[0]
+                laser_visible = pygame.mouse.get_pressed()[0]
 
-                    if laser_visible:
-                        self.last_x, self.last_y = pygame.mouse.get_pos()
+                if laser_visible:
+                    self.last_x, self.last_y = pygame.mouse.get_pos()
 
-                    current_state = self.pointer_state(self.last_x, self.last_y, laser_visible, time.time())
+                current_state = self.pointer_state(self.last_x, self.last_y, laser_visible, time.time())
 
-                    self.laser_buffer.put_latest(current_state)
+                self.laser_buffer.put_latest(current_state)
 
-                    time.sleep(0.0416)
-
-                # else:
-                    ##TODO: laser pointer tracking
+                time.sleep(0.0416)
