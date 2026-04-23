@@ -36,7 +36,7 @@ class Game:
 
         self.laser_buffer = LaserBuffer()
         self.pointer_state = None
-        self.vision_core = VisionCore(self.laser_buffer)
+        self.vision_core = VisionCore(self, self.laser_buffer)
         self.vision_core.start()
 
         self.game_parser = GameParser(self)
@@ -69,6 +69,8 @@ class Game:
 
         self.players = {}
         self.score = None
+
+        self.mouse_enabled = True
 
 
     def game_loop(self):
@@ -115,7 +117,6 @@ class Game:
             if self.pointer_state:
                 x = self.pointer_state.x
                 y = self.pointer_state.y
-                # pygame.draw.circle(self.display, (255, 0, 0), (x, y), 20)
 
                 target_entity = self.input_bindings.get("laser_red")
                 if target_entity:

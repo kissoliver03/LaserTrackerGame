@@ -1,3 +1,5 @@
+from dataclasses import asdict
+
 import pygame
 import os
 
@@ -262,7 +264,11 @@ class Options(Menu):
         self.input_loader = InputLoader()
         self.selected_camera_id = 0
 
+        self.camera_x, self.camera_y = self.mid_w, self.mid_h
+        self.mouse_x, self.mouse_y = self.mid_w, self.mid_h + self.gap
+
         self.state = "Camera"
+        self.calculate_cursor_pos("Camera input: ", self.camera_y)
 
     def display_menu(self):
 
@@ -276,25 +282,41 @@ class Options(Menu):
 
             current_cam_name = self.input_loader.get_camera_name(int(self.selected_camera_id))
 
-            if self.state == "Camera":
-                cam_text = f"Camera device: < {current_cam_name} >"
-                color = self.game.WHITE
-            else:
-                cam_text = f"Camera device: < {current_cam_name} >"
-                color = (150, 150, 150)
+            self.game.draw_text("Camera input: ", self.font_size, self.camera_x, self.camera_y, self.game.WHITE)
+            self.game.draw_text("Mouse control: ", self.font_size, self.mouse_x, self.mouse_y, self.game.WHITE)
 
-            self.game.draw_text(cam_text, self.font_size, self.mid_w, self.mid_h, color)
-
+            self.draw_cursor()
             self.blit_screen()
 
+    def move_cursor(self):
+        if self.game.DOWN_KEY:
+            if self.state == "Camera":
+                self.calculate_cursor_pos("Mouse control: ", self.mouse_y)
+                self.state = "Mouse"
+            elif self.state == "Mouse":
+                self.calculate_cursor_pos("Camera input: ", self.camera_y)
+                self.state = "Camera"
+
+        elif self.game.UP_KEY:
+            if self.state == "Mouse":
+                self.calculate_cursor_pos("Camera input: ", self.camera_y)
+                self.state = "Camera"
+            elif self.state == "Camera":
+                self.calculate_cursor_pos("Mouse control: ", self.mouse_y)
+                self.state = "Mouse"
+
+
     def check_input(self):
+        self.move_cursor()
+
         if self.game.ESC_KEY:
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
+        ## TODO: cam_count = self.input_loader.get_camera_count()
 
-        if self.state == "Camera":
-            cam_count = self.input_loader.get_camera_count()
-            if self.game.LEFT_KEY:
-                self.selected_camera_id = (self.selected_camera_id - 1)
-            elif self.game.RIGHT_KEY:
-                self.selected_camera_id = (self.selected_camera_id + 1)
+        if self.state == "Mouse":
+            if self.game.RIGHT_KEY or self.game.LEFT_KEY:
+                if self.game.mouse_enabled:
+                    self.game.mouse_enabled = False
+                else:
+                    self.game.mouse_enabled = True
