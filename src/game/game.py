@@ -36,7 +36,7 @@ class Game:
 
         self.laser_buffer = LaserBuffer()
         self.pointer_state = None
-        self.vision_core = VisionCore(self, self.laser_buffer)
+        self.vision_core = VisionCore(self.laser_buffer)
         self.vision_core.start()
 
         self.game_parser = GameParser(self)
