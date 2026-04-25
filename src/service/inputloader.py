@@ -7,27 +7,28 @@ class InputLoader:
     def detect_cameras(self):
         try:
             graph = FilterGraph()
-            cameras = graph.get_input_device()
+            cameras = graph.get_input_devices()
 
             if not cameras:
-                return 0
+                return ["No camera was found"]
+
             return cameras
 
         except Exception as e:
-            return 0
-
+            print(e)
+            return ["No camera was found"]
 
     def get_camera_name(self, index):
-        if self.available_cams == 0:
-            return 0
+        if not self.available_cams or self.available_cams[0] == "No camera was found":
+            return "No camera was found"
 
         if 0 <= index < len(self.available_cams):
             return self.available_cams[index]
 
-        return 0
+        return "Unknown camera"
 
     def get_camera_count(self):
-        if self.available_cams == 0:
+        if not self.available_cams or self.available_cams[0] == "No camera was found":
             return 0
         else:
             return len(self.available_cams)

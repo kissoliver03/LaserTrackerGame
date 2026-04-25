@@ -1,5 +1,3 @@
-from dataclasses import asdict
-
 import pygame
 import os
 
@@ -11,11 +9,6 @@ class Menu:
         self.game = game
         self.mid_w, self.mid_h = self.game.DISPLAY_W/2, self.game.DISPLAY_H/2
         self.run_display = True
-
-        # base_font_size = 40
-        # base_gap = 60
-        # base_padding = 20
-        # base_cursor_size = 35
 
         base_font_size = 80
         base_gap = 70
@@ -38,13 +31,16 @@ class Menu:
         pygame.display.update()
         self.game.reset_keys()
 
-    def calculate_cursor_pos(self, text, y_position):
+    def calculate_cursor_pos(self, text, y_position, x_offset):
+        if x_offset is None:
+            x_offset = self.mid_w
+
         font = pygame.font.Font(self.game.font_name, self.font_size)
 
         text_surface = font.render(text, True, self.game.WHITE)
         text_width = text_surface.get_width()
 
-        x_position = self.mid_w - (text_width / 2) - self.padding
+        x_position = x_offset - (text_width / 2) - self.padding
 
         self.cursor_rect.midtop = (x_position, y_position)
 
@@ -58,7 +54,7 @@ class MainMenu(Menu):
         self.options_x, self.options_y = self.mid_w, self.mid_h + (self.gap * 2)
         self.quit_x, self.quit_y = self.mid_w, self.mid_h + (self.gap * 3)
 
-        self.calculate_cursor_pos("Play", self.play_y)
+        self.calculate_cursor_pos("Play", self.play_y, None)
 
     def display_menu(self):
         self.run_display = True
@@ -82,30 +78,30 @@ class MainMenu(Menu):
     def move_cursor(self):
         if self.game.DOWN_KEY:
             if self.state == "Play":
-                self.calculate_cursor_pos("Screen Calibration", self.screen_calibration_y)
+                self.calculate_cursor_pos("Screen Calibration", self.screen_calibration_y, None)
                 self.state = "Screen Calibration"
             elif self.state == "Screen Calibration":
-                self.calculate_cursor_pos("Options", self.options_y)
+                self.calculate_cursor_pos("Options", self.options_y, None)
                 self.state = "Options"
             elif self.state == "Options":
-                self.calculate_cursor_pos("Quit", self.quit_y)
+                self.calculate_cursor_pos("Quit", self.quit_y, None)
                 self.state = "Quit"
             elif self.state == "Quit":
-                self.calculate_cursor_pos("Start", self.play_y)
+                self.calculate_cursor_pos("Start", self.play_y, None)
                 self.state = "Play"
 
         elif self.game.UP_KEY:
             if self.state == "Play":
-                self.calculate_cursor_pos("Quit", self.quit_y)
+                self.calculate_cursor_pos("Quit", self.quit_y, None)
                 self.state = "Quit"
             elif self.state == "Screen Calibration":
-                self.calculate_cursor_pos("Start", self.play_y)
+                self.calculate_cursor_pos("Start", self.play_y, None)
                 self.state = "Play"
             elif self.state == "Options":
-                self.calculate_cursor_pos("Screen Calibration", self.screen_calibration_y)
+                self.calculate_cursor_pos("Screen Calibration", self.screen_calibration_y, None)
                 self.state = "Screen Calibration"
             elif self.state == "Quit":
-                self.calculate_cursor_pos("Options", self.options_y)
+                self.calculate_cursor_pos("Options", self.options_y, None)
                 self.state = "Options"
 
     def check_input(self):
@@ -262,13 +258,12 @@ class Options(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
         self.input_loader = InputLoader()
-        self.selected_camera_id = 0
 
         self.camera_x, self.camera_y = self.mid_w, self.mid_h
         self.mouse_x, self.mouse_y = self.mid_w, self.mid_h + self.gap
 
         self.state = "Camera"
-        self.calculate_cursor_pos("Camera input: ", self.camera_y)
+        self.calculate_cursor_pos("Camera input: ", self.camera_y, self.gap * 8)
 
     def display_menu(self):
 
@@ -280,10 +275,13 @@ class Options(Menu):
             self.check_input()
             self.game.display.fill(self.game.BLACK)
 
-            current_cam_name = self.input_loader.get_camera_name(int(self.selected_camera_id))
+            current_cam_name = self.input_loader.get_camera_name(self.game.selected_camera_id)
 
-            self.game.draw_text("Camera input: ", self.font_size, self.camera_x, self.camera_y, self.game.WHITE)
-            self.game.draw_text("Mouse control: ", self.font_size, self.mouse_x, self.mouse_y, self.game.WHITE)
+            self.game.draw_text("Mouse control: ", self.font_size, self.mouse_x - self.gap * 6, self.mouse_y, self.game.WHITE)
+            self.game.draw_text("< %r >" % self.game.mouse_enabled, self.font_size, self.mouse_x + self.gap * 6, self.mouse_y, self.game.WHITE)
+
+            self.game.draw_text("Camera input: ", self.font_size, self.camera_x - self.gap * 6, self.camera_y, self.game.WHITE)
+            self.game.draw_text(f"< {current_cam_name} >", self.font_size, self.camera_x + self.gap * 6, self.camera_y, self.game.WHITE)
 
             self.draw_cursor()
             self.blit_screen()
@@ -291,32 +289,64 @@ class Options(Menu):
     def move_cursor(self):
         if self.game.DOWN_KEY:
             if self.state == "Camera":
-                self.calculate_cursor_pos("Mouse control: ", self.mouse_y)
+                self.calculate_cursor_pos("Mouse control: ", self.mouse_y, self.gap * 8)
                 self.state = "Mouse"
             elif self.state == "Mouse":
-                self.calculate_cursor_pos("Camera input: ", self.camera_y)
+                self.calculate_cursor_pos("Camera input: ", self.camera_y, self.gap * 8)
                 self.state = "Camera"
 
         elif self.game.UP_KEY:
             if self.state == "Mouse":
-                self.calculate_cursor_pos("Camera input: ", self.camera_y)
+                self.calculate_cursor_pos("Camera input: ", self.camera_y, self.gap * 8)
                 self.state = "Camera"
             elif self.state == "Camera":
-                self.calculate_cursor_pos("Mouse control: ", self.mouse_y)
-                self.state = "Mouse"
+                self.calculate_cursor_pos("Mouse control: ", self.mouse_y, self.gap * 8)
 
 
     def check_input(self):
         self.move_cursor()
+        cam_count = self.input_loader.get_camera_count()
 
         if self.game.ESC_KEY:
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
-        ## TODO: cam_count = self.input_loader.get_camera_count()
 
-        if self.state == "Mouse":
-            if self.game.RIGHT_KEY or self.game.LEFT_KEY:
+        elif self.game.RIGHT_KEY:
+            if self.state == "Camera":
+                if cam_count > 0:
+                    self.game.selected_camera_id = (self.game.selected_camera_id + 1) % cam_count
+
+            elif self.state == "Mouse":
                 if self.game.mouse_enabled:
                     self.game.mouse_enabled = False
                 else:
                     self.game.mouse_enabled = True
+
+        elif self.game.LEFT_KEY:
+            if self.state == "Camera":
+                if cam_count > 0:
+                    self.game.selected_camera_id = (self.game.selected_camera_id - 1) % cam_count
+
+            elif self.state == "Mouse":
+                if self.game.mouse_enabled:
+                    self.game.mouse_enabled = False
+                else:
+                    self.game.mouse_enabled = True
+
+
+
+        # if self.state == "Camera":
+        #     cam_count = self.input_loader.get_camera_count()
+        #
+        #     if self.game.RIGHT_KEY:
+        #         self.game.selected_camera_idx = (self.game.selected_camera_idx + 1) % cam_count
+        #     elif self.game.LEFT_KEY:
+        #         self.game.selected_camera_idx = (self.game.selected_camera_idx - 1) % cam_count
+        #
+        #
+        # elif self.state == "Mouse":
+        #     if self.game.RIGHT_KEY or self.game.LEFT_KEY:
+        #         if self.game.mouse_enabled:
+        #             self.game.mouse_enabled = False
+        #         else:
+        #             self.game.mouse_enabled = True

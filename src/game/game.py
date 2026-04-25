@@ -72,6 +72,9 @@ class Game:
 
         self.mouse_enabled = True
 
+        self.selected_camera_id = 0
+
+
 
     def game_loop(self):
         self.game_loader.load()
