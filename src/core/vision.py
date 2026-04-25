@@ -2,8 +2,9 @@ import threading, time, pygame
 from src.core.laserbuffer import PointerState
 
 class VisionCore:
-    def __init__(self, laser_buffer):
+    def __init__(self, laser_buffer, selected_camera_id):
         self.laser_buffer = laser_buffer
+        self.selected_camera_id = selected_camera_id
         self.pointer_state = PointerState
         self.running = False
         self.thread = None
