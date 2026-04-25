@@ -22,16 +22,17 @@ class VisionCore:
             self.thread.join()
 
     def process_frames(self):
-        while self.running:
-            if pygame.display.get_init():
-
-                laser_visible = pygame.mouse.get_pressed()[0]
-
-                if laser_visible:
-                    self.last_x, self.last_y = pygame.mouse.get_pos()
-
-                current_state = self.pointer_state(self.last_x, self.last_y, laser_visible, time.time())
-
-                self.laser_buffer.put_latest(current_state)
-
-                time.sleep(0.0416)
+        # while self.running:
+        #     if pygame.display.get_init():
+        #
+        #         laser_visible = pygame.mouse.get_pressed()[0]
+        #
+        #         if laser_visible:
+        #             self.last_x, self.last_y = pygame.mouse.get_pos()
+        #
+        #         current_state = self.pointer_state(self.last_x, self.last_y, laser_visible, time.time())
+        #
+        #         self.laser_buffer.put_latest(current_state)
+        #
+        #         time.sleep(0.0416)
+        return

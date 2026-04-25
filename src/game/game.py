@@ -1,5 +1,6 @@
 import random
 import operator
+import time
 import pygame
 
 from src.game.menu import *
@@ -71,6 +72,8 @@ class Game:
         self.score = None
 
         self.mouse_enabled = True
+        self.mouse_last_x = 0
+        self.mouse_last_y = 0
 
         self.selected_camera_id = 0
 
@@ -83,6 +86,9 @@ class Game:
         if target_entity:
             self.vision_core.last_x = target_entity.rect.centerx
             self.vision_core.last_y = target_entity.rect.centery
+
+            self.mouse_last_x = target_entity.rect.centerx
+            self.mouse_last_y = target_entity.rect.centery
 
         self.pointer_state = self.laser_buffer.clear()
 
@@ -116,10 +122,14 @@ class Game:
             self.rule_processor()
             self.all_sprites.draw(self.display)
 
-            self.pointer_state = self.laser_buffer.get_latest()
-            if self.pointer_state:
-                x = self.pointer_state.x
-                y = self.pointer_state.y
+            if self.mouse_enabled:
+                laser_visible = pygame.mouse.get_pressed()[0]
+
+                if laser_visible:
+                    self.mouse_last_x, self.mouse_last_y = pygame.mouse.get_pos()
+
+                x = self.mouse_last_x
+                y = self.mouse_last_y
 
                 target_entity = self.input_bindings.get("laser_red")
                 if target_entity:
@@ -129,6 +139,22 @@ class Game:
                         target_entity.rect.centerx = x
                     else:
                         target_entity.rect.center = (x, y)
+
+
+            else:
+                self.pointer_state = self.laser_buffer.get_latest()
+                if self.pointer_state:
+                    x = self.pointer_state.x
+                    y = self.pointer_state.y
+
+                    target_entity = self.input_bindings.get("laser_red")
+                    if target_entity:
+                        if "y" in target_entity.constraints:
+                            target_entity.rect.centery = y
+                        elif "x" in target_entity.constraints:
+                            target_entity.rect.centerx = x
+                        else:
+                            target_entity.rect.center = (x, y)
 
 
             self.window.blit(self.display, (0, 0))

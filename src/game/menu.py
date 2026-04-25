@@ -198,7 +198,7 @@ class GameSelector(Menu):
             if self.on_start_button:
                 start_button_color = self.LIGHT_GREEN
 
-                self.calculate_cursor_pos("Start", self.start_y)
+                self.calculate_cursor_pos("Start", self.start_y, None)
                 self.draw_cursor()
             else:
                 start_button_color = self.GREY
@@ -262,11 +262,9 @@ class Options(Menu):
         self.camera_x, self.camera_y = self.mid_w, self.mid_h
         self.mouse_x, self.mouse_y = self.mid_w, self.mid_h + self.gap
 
+    def display_menu(self):
         self.state = "Camera"
         self.calculate_cursor_pos("Camera input: ", self.camera_y, self.gap * 8)
-
-    def display_menu(self):
-
 
         self.run_display = True
 
