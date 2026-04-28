@@ -1,4 +1,5 @@
 import pygame
+import cv2
 import os
 
 from src.service.inputloader import InputLoader
@@ -237,16 +238,67 @@ class GameSelector(Menu):
                 self.run_display = False
 
 class ScreenCalibration(Menu):
-    def __init__(self, game):
+    def __init__(self, game, vision_core):
         Menu.__init__(self, game)
+        self.vision_core = vision_core
+        self.mouse_was_pressed = False
+
+        self.instructions = [
+            "Press TOP LEFT of the screen",
+            "Press TOP RIGHT of the screen",
+            "Press BOTTOM LEFT of the screen",
+            "Press BOTTOM RIGHT of the screen",
+            "Screen calibration was successful! Press ESC to exit",
+        ]
+
+        self.camera_corners = []
 
     def display_menu(self):
         self.run_display = True
+        self.mouse_was_pressed = False
+
+        if self.game.vision_core:
+            self.vision_core.reset_calibration()
 
         while self.run_display:
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
+
+            frame = None
+            if self.game.vision_core:
+                with self.game.vision_core.frame_lock:
+                    if self.game.vision_core.latest_frame is not None:
+                        frame = self.game.vision_core.latest_frame.copy()
+
+            if frame is not None:
+                frame_surface = pygame.image.frombuffer(frame.flatten(), frame.shape[1::-1], 'RGB')
+
+                cam_x = int((self.game.TARGET_W - frame.shape[1]) / 2)
+                cam_y = int((self.game.TARGET_H - frame.shape[0]) / 2)
+                self.game.display.blit(frame_surface, (cam_x, cam_y))
+
+                mouse_is_pressed = pygame.mouse.get_pressed()[0]
+
+                if mouse_is_pressed and not self.mouse_was_pressed:
+                    mx, my = pygame.mouse.get_pos()
+
+                    if cam_x <= mx <= cam_x + frame.shape[1] and cam_y <= my <= cam_y + frame.shape[0]:
+                        rel_x = mx - cam_x
+                        rel_y = my - cam_y
+
+                        self.game.vision_core.add_calibration_point(rel_x, rel_y)
+
+                self.mouse_was_pressed = mouse_is_pressed
+
+                for pt in self.game.vision_core.calibration_points:
+                    px = cam_x + pt[0]
+                    py = cam_y + pt[1]
+                    pygame.draw.circle(self.game.display, (255, 0, 0), (int(px), int(py)), 5)
+
+            step = min(len(self.game.vision_core.calibration_points), 4)
+            self.game.draw_text(self.instructions[step], int(self.font_size * 0.5), self.mid_w, self.mid_h, self.game.WHITE)
+
             self.blit_screen()
 
     def check_input(self):
@@ -330,21 +382,3 @@ class Options(Menu):
                     self.game.mouse_enabled = False
                 else:
                     self.game.mouse_enabled = True
-
-
-
-        # if self.state == "Camera":
-        #     cam_count = self.input_loader.get_camera_count()
-        #
-        #     if self.game.RIGHT_KEY:
-        #         self.game.selected_camera_idx = (self.game.selected_camera_idx + 1) % cam_count
-        #     elif self.game.LEFT_KEY:
-        #         self.game.selected_camera_idx = (self.game.selected_camera_idx - 1) % cam_count
-        #
-        #
-        # elif self.state == "Mouse":
-        #     if self.game.RIGHT_KEY or self.game.LEFT_KEY:
-        #         if self.game.mouse_enabled:
-        #             self.game.mouse_enabled = False
-        #         else:
-        #             self.game.mouse_enabled = True

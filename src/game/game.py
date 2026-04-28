@@ -29,16 +29,19 @@ class Game:
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
         self.background_color = self.BLACK
 
+        self.laser_buffer = LaserBuffer()
+        self.pointer_state = None
+
+        self.selected_camera_id = 0
+
+        self.vision_core = VisionCore(self.laser_buffer, self.TARGET_W, self.TARGET_H)
+        self.vision_core.start(self.selected_camera_id)
+
         self.main_menu = MainMenu(self)
         self.game_selector = GameSelector(self)
         self.options = Options(self)
-        self.screen_calibrations = ScreenCalibration(self)
+        self.screen_calibrations = ScreenCalibration(self, self.vision_core)
         self.curr_menu = self.main_menu
-
-        self.laser_buffer = LaserBuffer()
-        self.pointer_state = None
-        self.vision_core = VisionCore(self.laser_buffer, self.selected_camera_id)
-        self.vision_core.start()
 
         self.game_parser = GameParser(self)
 
@@ -74,8 +77,6 @@ class Game:
         self.mouse_enabled = True
         self.mouse_last_x = 0
         self.mouse_last_y = 0
-
-        self.selected_camera_id = 0
 
 
 
