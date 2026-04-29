@@ -21,8 +21,8 @@ class VisionCore:
         self.transform_matrix = None
         self.latest_frame = None
 
-        self.camera_w = 1920
-        self.camera_h = 1080
+        self.camera_w = 800
+        self.camera_h = 600
 
         self.latest_frame = None
         self.frame_lock = threading.Lock()
