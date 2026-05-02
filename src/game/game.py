@@ -370,7 +370,7 @@ class Game:
 
                     elif action_type == "sound":
                         sound_effect_path = action.get("sound_effect", None)
-                        print(sound_effect_path)
+
                         if sound_effect_path:
                             sound_effect = pygame.mixer.Sound(sound_effect_path)
 
