@@ -78,6 +78,11 @@ class Game:
         self.mouse_last_x = 0
         self.mouse_last_y = 0
 
+        self.main_menu_music = pygame.mixer.Sound("assets/sound/mainmenu.mp3")
+        self.main_menu_music.play()
+        self.sound_effects = {}
+        self.music_enabled = True
+
 
 
     def game_loop(self):
@@ -365,6 +370,15 @@ class Game:
                         if action_targets:
                             for target in self.players:
                                 self.players[target]["score"] += action_value
+
+                    elif action_type == "sound":
+                        sound_effect_path = action.get("sound_effect", None)
+
+                        if sound_effect_path:
+                            sound_effect = pygame.mixer.Sound(sound_effect_path)
+
+                            sound_effect.play()
+
 
 
 

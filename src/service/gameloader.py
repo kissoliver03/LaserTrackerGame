@@ -1,3 +1,5 @@
+import os.path
+
 from src.model.entity import Entity
 import pygame
 
@@ -58,7 +60,7 @@ class GameLoader:
 
                         self.game.players[name] = {
                             "lives": self.game.lives,
-                            "score": 0,
+                            "score": 0
                         }
 
                     self.game.playing = True
