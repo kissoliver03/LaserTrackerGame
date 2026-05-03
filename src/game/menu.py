@@ -1,5 +1,4 @@
 import pygame
-import cv2
 import os
 
 from src.service.inputloader import InputLoader
@@ -313,6 +312,7 @@ class Options(Menu):
 
         self.camera_x, self.camera_y = self.mid_w, self.mid_h
         self.mouse_x, self.mouse_y = self.mid_w, self.mid_h + self.gap
+        self.music_x, self.music_y = self.mid_w, self.mid_h + 2 * self.gap
 
     def display_menu(self):
         self.state = "Camera"
@@ -333,6 +333,9 @@ class Options(Menu):
             self.game.draw_text("Camera input: ", self.font_size, self.camera_x - self.gap * 6, self.camera_y, self.game.WHITE)
             self.game.draw_text(f"< {current_cam_name} >", self.font_size, self.camera_x + self.gap * 6, self.camera_y, self.game.WHITE)
 
+            self.game.draw_text("Music: ", self.font_size, self.music_x - self.gap * 6, self.music_y, self.game.WHITE)
+            self.game.draw_text(f"< {self.game.music_enabled} >", self.font_size, self.music_x + self.gap * 6, self.music_y, self.game.WHITE)
+
             self.draw_cursor()
             self.blit_screen()
 
@@ -341,7 +344,12 @@ class Options(Menu):
             if self.state == "Camera":
                 self.calculate_cursor_pos("Mouse control: ", self.mouse_y, self.gap * 8)
                 self.state = "Mouse"
+
             elif self.state == "Mouse":
+                self.calculate_cursor_pos("Music: ", self.music_y, self.gap * 8)
+                self.state = "Music"
+
+            elif self.state == "Music":
                 self.calculate_cursor_pos("Camera input: ", self.camera_y, self.gap * 8)
                 self.state = "Camera"
 
@@ -349,8 +357,14 @@ class Options(Menu):
             if self.state == "Mouse":
                 self.calculate_cursor_pos("Camera input: ", self.camera_y, self.gap * 8)
                 self.state = "Camera"
+
             elif self.state == "Camera":
+                self.calculate_cursor_pos("Music: ", self.music_y, self.gap * 8)
+                self.state = "Music"
+
+            elif self.state == "Music":
                 self.calculate_cursor_pos("Mouse control: ", self.mouse_y, self.gap * 8)
+                self.state = "Mouse"
 
 
     def check_input(self):
@@ -372,6 +386,14 @@ class Options(Menu):
                 else:
                     self.game.mouse_enabled = True
 
+            elif self.state == "Music":
+                if self.game.music_enabled:
+                    self.game.music_enabled = False
+                    self.game.main_menu_music.stop()
+                else:
+                    self.game.music_enabled = True
+                    self.game.main_menu_music.play()
+
         elif self.game.LEFT_KEY:
             if self.state == "Camera":
                 if cam_count > 0:
@@ -382,3 +404,11 @@ class Options(Menu):
                     self.game.mouse_enabled = False
                 else:
                     self.game.mouse_enabled = True
+
+            elif self.state == "Music":
+                if self.game.music_enabled:
+                    self.game.music_enabled = False
+                    self.game.main_menu_music.stop()
+                else:
+                    self.game.music_enabled = True
+                    self.game.main_menu_music.play()

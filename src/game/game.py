@@ -78,7 +78,10 @@ class Game:
         self.mouse_last_x = 0
         self.mouse_last_y = 0
 
+        self.main_menu_music = pygame.mixer.Sound("assets/sound/mainmenu.mp3")
+        self.main_menu_music.play()
         self.sound_effects = {}
+        self.music_enabled = True
 
 
 
