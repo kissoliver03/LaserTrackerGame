@@ -75,7 +75,7 @@ rules:
       - type: "bounce"
         axis: "x"
       - type: "sound"
-        sound_effect: "assets/soundeffects/bounce.mp3"
+        sound_effect: "assets/sound/bounce.mp3"
 
   # X bounce from horizontal walls
   - condition:
@@ -85,7 +85,7 @@ rules:
       - type: "bounce"
         axis: "y"
       - type: "sound"
-        sound_effect: "assets/soundeffects/bounce.mp3"
+        sound_effect: "assets/sound/bounce.mp3"
 
   # Y bounce form vertical walls
   - condition:
@@ -98,7 +98,7 @@ rules:
         targets: ["player_1"]
         amount: 1
       - type: "sound"
-        sound_effect: "assets/soundeffects/bounce.mp3"
+        sound_effect: "assets/sound/bounce.mp3"
 
   # -1 HP when the ball goes out of bound and respawn to [19, 9]
   - condition:
@@ -127,4 +127,4 @@ rules:
         targets: ["player_1"]
         value: 1
       - type: "sound"
-        sound_effect: "assets/soundeffects/powerup.mp3"
+        sound_effect: "assets/sound/powerup.mp3"
