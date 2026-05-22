@@ -22,7 +22,7 @@ class Game:
         self.ratio = self.DISPLAY_H / self.TARGET_H
 
         self.display = pygame.Surface((self.TARGET_W, self.TARGET_H))
-        self.window = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
+        self.window = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H), pygame.FULLSCREEN)
 
         self.font_name = os.path.abspath("assets/font/ByteBounce.ttf")
 

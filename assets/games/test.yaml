@@ -18,6 +18,33 @@ entities:
     shape: "rect"
     model: "assets/models/ball.png"
 
+  - name: "wall_top"
+    group: "walls_x"   # Horizontal walls group
+    type: "static"
+    grid_pos: [ 0, 0 ]
+    size: [ 32, 1 ]      # 1 width full screen-width
+    shape: "rect"
+    tile: true
+    model: "assets/models/wall.png"
+
+  - name: "wall_bottom"
+    group: "walls_x"
+    type: "static"
+    grid_pos: [ 0, 17 ]  # Down
+    size: [ 32, 1 ]
+    shape: "rect"
+    tile: true
+    model: "assets/models/wall.png"
+
+  - name: "wall_right"
+    group: "walls_y"   # Vertical walls group
+    type: "static"
+    grid_pos: [ 31, 0 ]  # Right side
+    size: [ 1, 17 ]      # 1 width top to bottom
+    shape: "rect"
+    tile: true
+    model: "assets/models/wall.png"
+
 
 inputs:
   - name: "player1"

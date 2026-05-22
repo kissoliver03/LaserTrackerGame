@@ -75,7 +75,7 @@ class VisionCore:
                     c = max(contours, key=cv2.contourArea)
                     ((x, y), radius) = cv2.minEnclosingCircle(c)
 
-                    if radius > 0:
+                    if radius > 1:
                         laser_visible = True
 
                         if self.transform_matrix is not None:
@@ -95,7 +95,6 @@ class VisionCore:
                 self.laser_buffer.put_latest(current_state)
 
             time.sleep(0.03)
-
         cap.release()
 
     def reset_calibration(self):

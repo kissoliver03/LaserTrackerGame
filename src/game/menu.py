@@ -264,6 +264,7 @@ class ScreenCalibration(Menu):
             self.check_input()
             self.game.display.fill(self.game.BLACK)
 
+
             frame = None
             if self.game.vision_core:
                 with self.game.vision_core.frame_lock:
@@ -276,6 +277,25 @@ class ScreenCalibration(Menu):
                 cam_x = int((self.game.TARGET_W - frame.shape[1]) / 2)
                 cam_y = int((self.game.TARGET_H - frame.shape[0]) / 2)
                 self.game.display.blit(frame_surface, (cam_x, cam_y))
+
+
+
+                step = len(self.vision_core.calibration_points)
+
+                def draw_crosshair(x, y):
+                    pygame.draw.circle(self.game.display, (0, 255, 0), (x, y), 20, 2)
+
+                    pygame.draw.circle(self.game.display, (0, 255, 0), (x, y), 3)
+
+                if step == 0:
+                    draw_crosshair(0, 0)
+                elif step == 1:
+                    draw_crosshair(self.game.TARGET_W, 0)
+                elif step == 2:
+                    draw_crosshair(0, self.game.TARGET_H)
+                elif step == 3:
+                    draw_crosshair(self.game.TARGET_W, self.game.TARGET_H)
+
 
                 mouse_is_pressed = pygame.mouse.get_pressed()[0]
 
