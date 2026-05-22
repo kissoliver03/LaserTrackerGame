@@ -302,6 +302,9 @@ class ScreenCalibration(Menu):
 
     def check_input(self):
         if self.game.ESC_KEY:
+            if hasattr(self, 'vision_core') and self.vision_core is not None:
+                self.vision_core.finalize_calibration(self.game.DISPLAY_W, self.game.DISPLAY_H)
+
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
 

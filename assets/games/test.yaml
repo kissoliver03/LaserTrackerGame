@@ -1,0 +1,25 @@
+meta:
+  title: "input_test"
+  version: "1.0.0"
+
+globals:
+  lives: 100
+  score: 100
+
+layout:
+  map_size: [32, 18] # 32x18 grid
+  background_color: [0,0,0]
+
+entities:
+  - name: "ball"
+    type: "kinematic"
+    grid_pos: [10, 10]
+    size: [1, 1]
+    shape: "rect"
+    model: "assets/models/ball.png"
+
+
+inputs:
+  - name: "player1"
+    source: "laser_red"
+    target: "ball"

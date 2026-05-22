@@ -45,10 +45,10 @@ class VisionCore:
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.camera_w)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.camera_h)
 
-        lower_red1 = np.array([0, 100, 200])
+        lower_red1 = np.array([0, 150, 180])
         upper_red1 = np.array([20, 255, 255])
 
-        lower_red2 = np.array([160, 100, 200])
+        lower_red2 = np.array([160, 50, 180])
         upper_red2 = np.array([180, 255, 255])
 
         while self.running:
@@ -59,7 +59,9 @@ class VisionCore:
                 with self.frame_lock:
                     self.latest_frame = rgb_frame
 
-                hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+                blurred_frame = cv2.GaussianBlur(frame, (5, 5), 0)
+
+                hsv = cv2.cvtColor(blurred_frame, cv2.COLOR_BGR2HSV)
 
                 mask_1 = cv2.inRange(hsv, lower_red1, upper_red1)
                 mask_2 = cv2.inRange(hsv, lower_red2, upper_red2)
@@ -73,7 +75,7 @@ class VisionCore:
                     c = max(contours, key=cv2.contourArea)
                     ((x, y), radius) = cv2.minEnclosingCircle(c)
 
-                    if radius > 3:
+                    if radius > 0:
                         laser_visible = True
 
                         if self.transform_matrix is not None:
@@ -110,9 +112,11 @@ class VisionCore:
             pts_dst = np.array([
                 [0, 0],
                 [game_w, 0],
+                [0, game_h],
                 [game_w, game_h],
-                [0, game_h]
             ], dtype=np.float32)
 
             self.transform_matrix = cv2.getPerspectiveTransform(pts_src, pts_dst)
             print("VisionCore: Transform Matrix has generated")
+        else:
+            print('VisionCore: Calibration has been not successful')
