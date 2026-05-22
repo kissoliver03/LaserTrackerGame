@@ -44,6 +44,8 @@ class VisionCore:
         cap = cv2.VideoCapture(self.camera_id, cv2.CAP_DSHOW)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.camera_w)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.camera_h)
+        cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        cap.set(cv2.CAP_PROP_FPS, 30)
 
         lower_red1 = np.array([0, 150, 180])
         upper_red1 = np.array([20, 255, 255])
@@ -94,7 +96,6 @@ class VisionCore:
                 current_state = PointerState(self.last_x, self.last_y, laser_visible, time.time())
                 self.laser_buffer.put_latest(current_state)
 
-            time.sleep(0.03)
         cap.release()
 
     def reset_calibration(self):

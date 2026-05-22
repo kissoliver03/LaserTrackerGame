@@ -13,6 +13,8 @@ class Game:
     def __init__(self):
         pygame.init()
 
+        self.clock = pygame.time.Clock()
+
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.ESC_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False, False
 
@@ -165,6 +167,8 @@ class Game:
 
             self.window.blit(self.display, (0, 0))
             pygame.display.update()
+
+            self.clock.tick(60)
 
             self.reset_keys()
 
