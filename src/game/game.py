@@ -256,12 +256,15 @@ class Game:
                 group_1 = self.sprite_groups.get(condition_target[0])
                 group_2 = self.sprite_groups.get(condition_target[1])
 
+                collision_pairs = {}
+
                 if group_1 and group_2:
                     collisions = pygame.sprite.groupcollide(group_1, group_2, False, False)
 
                     if collisions:
                         rule_triggered = True
                         triggered_entities.extend(collisions.keys())
+                        collision_pairs = collisions
 
             elif condition_type == "position" and len(condition_target) == 1:
                 target_group = self.sprite_groups.get(condition_target[0])
@@ -298,11 +301,33 @@ class Game:
                         axis = action.get("axis", {})
 
                         for entity in triggered_entities:
+                            hit_sprite = None
+
+                            if entity in collision_pairs and len(collision_pairs[entity]) > 0:
+                                hit_sprite = collision_pairs[entity][0]
+
                             if axis == "x":
-                                entity.vel_x *= -1
+                                if hit_sprite:
+                                    if entity.vel_x > 0 and entity.rect.centerx < hit_sprite.rect.centerx:
+                                        entity.rect.right = hit_sprite.rect.left
+                                        entity.vel_x *= -1
+
+                                    elif entity.vel_x < 0 and entity.rect.centerx > hit_sprite.rect.centerx:
+                                        entity.rect.left = hit_sprite.rect.right
+                                        entity.vel_x *= -1
+                                else:
+                                    entity.vel_x *= -1
 
                             elif axis == "y":
-                                entity.vel_y *= -1
+                                if hit_sprite:
+                                    if entity.vel_y > 0 and entity.rect.centery < hit_sprite.rect.centery:
+                                        entity.rect.bottom = hit_sprite.rect.top
+                                        entity.vel_y *= -1
+                                    elif entity.vel_y < 0 and entity.rect.centery > hit_sprite.rect.centery:
+                                        entity.rect.top = hit_sprite.rect.bottom
+                                        entity.vel_y *= -1
+                                else:
+                                    entity.vel_y *= -1
 
                     elif action_type == "respawn":
                         action_targets = action.get("targets", [])
@@ -338,8 +363,8 @@ class Game:
 
                             entity.rect.x = pos_w
                             entity.rect.y = pos_h
-                            entity.vel_x = random.randint(1, 3)
-                            entity.vel_y = random.randint(1, 3)
+                            entity.vel_x = random.randint(10, 20)
+                            entity.vel_y = random.randint(10, 20)
 
                             if not entity.alive():
                                 self.all_sprites.add(entity)
