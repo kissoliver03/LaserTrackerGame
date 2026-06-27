@@ -20,6 +20,7 @@ class GameLoader:
                     self.game.entities_by_name = {}
                     self.game.input_bindings = {}
                     self.game.sprite_groups = {}
+                    self.game.players = {}
 
                     layout_data = self.game_parser.get_layout()
                     map_size = layout_data.get('map_size', [32, 18])
@@ -75,5 +76,4 @@ class GameLoader:
                 self.game.playing = False
                 self.game.is_game_selected = False
                 self.game.curr_menu = self.game.game_selector
-
                 return

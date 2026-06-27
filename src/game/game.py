@@ -36,7 +36,8 @@ class Game:
 
         self.selected_camera_id = 0
 
-        self.vision_core = VisionCore(self.laser_buffer, self.TARGET_W, self.TARGET_H)
+        self.active_sources = None
+        self.vision_core = VisionCore(self.active_sources, self.TARGET_W, self.TARGET_H)
         self.vision_core.start(self.selected_camera_id)
 
         self.main_menu = MainMenu(self)
@@ -59,7 +60,6 @@ class Game:
         self.map_size = None
 
         self.entities_by_name = {}
-        self.active_inputs = {}
         self.input_bindings = {}
 
         self.operators = {
@@ -90,15 +90,20 @@ class Game:
     def game_loop(self):
         self.game_loader.load()
 
-        target_entity = self.input_bindings.get("laser_red")
-        if target_entity:
-            self.vision_core.last_x = target_entity.rect.centerx
-            self.vision_core.last_y = target_entity.rect.centery
+        for source_name, target_entity in self.input_bindings.items():
+            if target_entity:
+                self.vision_core.last_positions[source_name] = (target_entity.rect.centerx, target_entity.rect.centery)
 
-            self.mouse_last_x = target_entity.rect.centerx
-            self.mouse_last_y = target_entity.rect.centery
+                self.mouse_last_x = target_entity.rect.centerx
+                self.mouse_last_y = target_entity.rect.centery
 
-        self.pointer_state = self.laser_buffer.clear()
+                if source_name == "laser_red":
+                    self.mouse_last_x = target_entity.rect.centerx
+                    self.mouse_last_y = target_entity.rect.centery
+
+            buffer = self.vision_core.get_buffer(source_name)
+            if buffer:
+                buffer.clear()
 
         while self.playing:
             self.check_events()
@@ -150,19 +155,22 @@ class Game:
 
 
             else:
-                self.pointer_state = self.laser_buffer.get_latest()
-                if self.pointer_state:
-                    x = self.pointer_state.x
-                    y = self.pointer_state.y
+                for source_name, target_entity in self.input_bindings.items():
+                    buffer = self.vision_core.get_buffer(source_name)
 
-                    target_entity = self.input_bindings.get("laser_red")
-                    if target_entity:
-                        if "y" in target_entity.constraints:
-                            target_entity.rect.centery = y
-                        elif "x" in target_entity.constraints:
-                            target_entity.rect.centerx = x
-                        else:
-                            target_entity.rect.center = (x, y)
+                    if buffer:
+                        pointer_state = buffer.get_latest()
+
+                        if pointer_state and pointer_state.laser_visible:
+                            x = pointer_state.x
+                            y = pointer_state.y
+
+                            if "x" in target_entity.constraints:
+                                target_entity.rect.centerx = x
+                            elif "y" in target_entity.constraints:
+                                target_entity.rect.centery = y
+                            else:
+                                target_entity.rect.center = (x, y)
 
 
             self.window.blit(self.display, (0, 0))

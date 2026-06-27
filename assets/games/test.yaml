@@ -50,3 +50,7 @@ inputs:
   - name: "player1"
     source: "laser_red"
     target: "ball"
+
+  - name: "player2"
+    source: "laser_green"
+    target: "ball_2"
