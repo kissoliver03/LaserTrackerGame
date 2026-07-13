@@ -18,6 +18,13 @@ entities:
     shape: "rect"
     model: "assets/models/ball.png"
 
+  - name: "coin"
+    type: "kinematic"
+    grid_pos: [15, 10]
+    size: [ 1, 1 ]
+    shape: "circle"
+    model: "assets/models/coin.png"
+
   - name: "wall_top"
     group: "walls_x"   # Horizontal walls group
     type: "static"
@@ -53,4 +60,4 @@ inputs:
 
   - name: "player2"
     source: "laser_green"
-    target: "ball"
+    target: "coin"

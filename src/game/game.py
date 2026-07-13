@@ -180,6 +180,9 @@ class Game:
 
             self.reset_keys()
 
+        if hasattr(self, 'vision_core') and self.vision_core:
+            self.vision_core.set_active_sources([])
+
 
     def check_events(self):
         for event in pygame.event.get():

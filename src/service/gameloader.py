@@ -51,10 +51,14 @@ class GameLoader:
 
                     #Get inputs from parsed .YAML
                     input_data = self.game.game_parser.get_inputs()
+                    active_sources = []
                     for input_item in input_data:
                         name = input_item.get('name')
                         source = input_item.get('source')
                         target = input_item.get('target')
+
+                        if source:
+                            active_sources.append(source)
 
                         if target in self.game.entities_by_name:
                             self.game.input_bindings[source] = self.game.entities_by_name[target]
@@ -63,6 +67,10 @@ class GameLoader:
                             "lives": self.game.lives,
                             "score": 0
                         }
+
+                    if hasattr(self.game, 'vision_core') and self.game.vision_core:
+                        self.game.vision_core.set_active_sources(active_sources)
+                        print(f"GAMELOADER: Active lasers has been set: {active_sources}")
 
                     self.game.playing = True
 

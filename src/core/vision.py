@@ -36,7 +36,7 @@ class VisionCore:
                 (np.array([160, 50, 180]), np.array([180, 255, 255]))
             ],
             "laser_green": [
-                (np.array([40, 150, 220]), np.array([85, 255, 255]))
+                (np.array([35, 50, 150]), np.array([90, 255, 255]))
             ]
         }
 
@@ -117,6 +117,14 @@ class VisionCore:
                     self.executor.submit(self.process_color_worker, hsv, sources)
 
         cap.release()
+
+    def set_active_sources(self, sources):
+        self.active_sources = sources
+
+        for source in self.active_sources:
+            if source not in self.buffers:
+                self.buffers[source] = LaserBuffer()
+                self.last_positions[source] = (0, 0)
 
     def get_buffer(self, source_name):
         return self.buffers.get(source_name)

@@ -1,0 +1,133 @@
+meta:
+  title: "coop_pong"
+  version: "1.0.0"
+
+globals:
+  lives: 3
+  score: 3
+
+layout:
+  map_size: [32, 18] # 32x18 grid
+  background_color: [0,0,0]
+
+entities:
+  - name: "ball"
+    type: "dynamic"
+    velocity: [20, 20] # X and Y start speed
+    grid_pos: [10, 10]
+    size: [1, 1]
+    shape: "circle"
+    model: "assets/models/ball.png"
+
+  - name: "paddle_1"
+    type: "kinematic"
+    grid_pos: [0, 7]
+    size: [1, 4]       # 1 grid horizontally and 4 grid vertically
+    shape: "rect"
+    model: "assets/models/paddle.png"
+    constraints: ["y"] # Only moves vertically
+
+  - name: "paddle_2"
+    type: "kinematic"
+    grid_pos: [ 31, 7 ]
+    size: [ 1, 4 ]       # 1 grid horizontally and 4 grid vertically
+    shape: "rect"
+    model: "assets/models/paddle.png"
+    constraints: [ "y" ] # Only moves vertically
+
+  - name: "wall_top"
+    group: "walls_x"   # Horizontal walls group
+    type: "static"
+    grid_pos: [0, 0]
+    size: [32, 1]      # 1 width full screen-width
+    shape: "rect"
+    tile: true
+    model: "assets/models/wall.png"
+
+  - name: "wall_bottom"
+    group: "walls_x"
+    type: "static"
+    grid_pos: [0, 17]  # Down
+    size: [32, 1]
+    shape: "rect"
+    tile: true
+    model: "assets/models/wall.png"
+
+inputs:
+  - name: "player1"
+    source: "laser_red"
+    target: "paddle_1"
+
+  - name: "player2"
+    source: "laser_green"
+    target: "paddle_2"
+
+rules:
+  # X bounce from paddle
+  - condition:
+      type: "collision"
+      targets: ["ball", "paddle_1"]
+    action:
+      - type: "bounce"
+        axis: "x"
+      - type: "sound"
+        sound_effect: "assets/sound/bounce.mp3"
+
+  - condition:
+      type: "collision"
+      targets: [ "ball", "paddle_2" ]
+    action:
+      - type: "bounce"
+        axis: "x"
+      - type: "sound"
+        sound_effect: "assets/sound/bounce.mp3"
+
+  # X bounce from horizontal walls
+  - condition:
+      type: "collision"
+      targets: ["ball", "walls_x"]
+    action:
+      - type: "bounce"
+        axis: "y"
+      - type: "sound"
+        sound_effect: "assets/sound/bounce.mp3"
+
+  # Y bounce form vertical walls
+  - condition:
+      type: "collision"
+      targets: ["ball", "walls_y"]
+    action:
+      - type: "bounce"
+        axis: "x"
+      - type: "score"
+        targets: ["player1"]
+        amount: 1
+      - type: "sound"
+        sound_effect: "assets/sound/bounce.mp3"
+
+  # -1 HP when the ball goes out of bound and respawn to [19, 9]
+  - condition:
+      type: "position"
+      targets: ["ball"]
+      axis: "x"
+      operator: "<"
+      value: 0
+    action:
+      - type: "damage"
+        targets: ["player1"]
+        value: 1
+      - type: "respawn"
+        pos: [16, 9]
+
+  - condition:
+      type: "position"
+      targets: [ "ball" ]
+      axis: "x"
+      operator: ">"
+      value: 32
+    action:
+      - type: "damage"
+        targets: [ "player2" ]
+        value: 1
+      - type: "respawn"
+        pos: [ 16, 9 ]
