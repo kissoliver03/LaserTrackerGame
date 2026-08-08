@@ -12,6 +12,7 @@ layout:
 
 entities:
   - name: "ball"
+    group: "balls"
     type: "dynamic"
     velocity: [20, 20] # X and Y start speed
     grid_pos: [10, 10]
@@ -20,20 +21,22 @@ entities:
     model: "assets/models/ball.png"
 
   - name: "paddle_1"
+    group: "paddles"
     type: "kinematic"
     grid_pos: [0, 7]
-    size: [1, 4]       # 1 grid horizontally and 4 grid vertically
+    size: [1, 4]      # 1 grid horizontally and 4 grid vertically
     shape: "rect"
     model: "assets/models/paddle.png"
     constraints: ["y"] # Only moves vertically
 
   - name: "paddle_2"
+    group: "paddles"
     type: "kinematic"
-    grid_pos: [ 31, 7 ]
-    size: [ 1, 4 ]       # 1 grid horizontally and 4 grid vertically
+    grid_pos: [31, 7]
+    size: [1, 4]       # 1 grid horizontally and 4 grid vertically
     shape: "rect"
     model: "assets/models/paddle.png"
-    constraints: [ "y" ] # Only moves vertically
+    constraints: ["y"] # Only moves vertically
 
   - name: "wall_top"
     group: "walls_x"   # Horizontal walls group
@@ -47,7 +50,7 @@ entities:
   - name: "wall_bottom"
     group: "walls_x"
     type: "static"
-    grid_pos: [0, 17]  # Down
+    grid_pos: [0, 17]
     size: [32, 1]
     shape: "rect"
     tile: true
@@ -63,52 +66,30 @@ inputs:
     target: "paddle_2"
 
 rules:
-  # X bounce from paddle
+  # X bounce from paddles (Mindkét ütő a "paddles" csoportban van)
   - condition:
       type: "collision"
-      targets: ["ball", "paddle_1"]
+      targets: ["balls", "paddles"]
     action:
       - type: "bounce"
         axis: "x"
       - type: "sound"
         sound_effect: "assets/sound/bounce.mp3"
 
+  # Y bounce from horizontal walls
   - condition:
       type: "collision"
-      targets: [ "ball", "paddle_2" ]
-    action:
-      - type: "bounce"
-        axis: "x"
-      - type: "sound"
-        sound_effect: "assets/sound/bounce.mp3"
-
-  # X bounce from horizontal walls
-  - condition:
-      type: "collision"
-      targets: ["ball", "walls_x"]
+      targets: ["balls", "walls_x"]
     action:
       - type: "bounce"
         axis: "y"
       - type: "sound"
         sound_effect: "assets/sound/bounce.mp3"
 
-  # Y bounce form vertical walls
-  - condition:
-      type: "collision"
-      targets: ["ball", "walls_y"]
-    action:
-      - type: "bounce"
-        axis: "x"
-      - type: "score"
-        targets: ["player1"]
-        amount: 1
-      - type: "sound"
-        sound_effect: "assets/sound/bounce.mp3"
-
-  # -1 HP when the ball goes out of bound and respawn to [19, 9]
+  # -1 HP for Player 1 when the ball goes out of bounds on the left (< 0)
   - condition:
       type: "position"
-      targets: ["ball"]
+      targets: ["balls"]
       axis: "x"
       operator: "<"
       value: 0
@@ -119,15 +100,16 @@ rules:
       - type: "respawn"
         pos: [16, 9]
 
+  # -1 HP for Player 2 when the ball goes out of bounds on the right (> 32)
   - condition:
       type: "position"
-      targets: [ "ball" ]
+      targets: ["balls"]
       axis: "x"
       operator: ">"
       value: 32
     action:
       - type: "damage"
-        targets: [ "player2" ]
+        targets: ["player2"]
         value: 1
       - type: "respawn"
-        pos: [ 16, 9 ]
+        pos: [16, 9]

@@ -4,7 +4,7 @@ meta:
 
 globals:
   lives: 100
-  score: 100
+  score: 3
 
 layout:
   map_size: [32, 18] # 32x18 grid
@@ -12,6 +12,7 @@ layout:
 
 entities:
   - name: "ball"
+    group: "ball"
     type: "kinematic"
     grid_pos: [10, 10]
     size: [1, 1]
@@ -52,6 +53,14 @@ entities:
     tile: true
     model: "assets/models/wall.png"
 
+templates:
+  - name: "coin"
+    type: "kinematic"
+    size: [1, 1]
+    shape: "rect"
+    model: "assets/models/coin.png"
+    group: "projectiles"
+
 
 inputs:
   - name: "player1"
@@ -61,3 +70,39 @@ inputs:
   - name: "player2"
     source: "laser_green"
     target: "coin"
+
+
+rules:
+  - condition:
+      type: "timer"
+      interval: 300
+      repeat: true
+    action:
+      - type: "spawn"
+        template: "coin"
+        pos: [[16, 1], [30, 15]]
+        velocity: [0, -2]
+
+  - condition:
+      type: "collision"
+      targets: ["ball", "projectiles"]
+    action:
+      - type: "destroy"
+        targets: ["hit_2"]
+      - type: "add_score"
+        targets: ["player1"]
+        value: 1
+
+  - condition:
+      type: "collision"
+      targets: ["walls_x", "projectiles"]
+    action:
+      - type: "destroy"
+        targets: ["hit_2"]
+
+  - condition:
+      type: "collision"
+      targets: ["walls_y", "projectiles"]
+    action:
+      - type: "destroy"
+        targets: ["hit_2"]

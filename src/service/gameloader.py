@@ -21,6 +21,8 @@ class GameLoader:
                     self.game.input_bindings = {}
                     self.game.sprite_groups = {}
                     self.game.players = {}
+                    self.game.templated = {}
+                    self.game.rule_timers = {}
 
                     layout_data = self.game_parser.get_layout()
                     map_size = layout_data.get('map_size', [32, 18])
@@ -48,6 +50,11 @@ class GameLoader:
                             self.game.sprite_groups[group_name] = pygame.sprite.Group()
                         self.game.sprite_groups[group_name].add(new_entity)
 
+                    #Get templates from parsed .YAML
+                    templates_data = self.game_parser.get_templates()
+                    if templates_data:
+                        for template in templates_data:
+                            self.game.templates[template.get('name')] = template
 
                     #Get inputs from parsed .YAML
                     input_data = self.game.game_parser.get_inputs()

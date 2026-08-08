@@ -12,6 +12,7 @@ layout:
 
 entities:
   - name: "ball"
+    group: "balls"
     type: "dynamic"
     velocity: [20, 20] # X and Y start speed
     grid_pos: [10, 10]
@@ -20,9 +21,10 @@ entities:
     model: "assets/models/ball.png"
 
   - name: "paddle"
+    group: "paddles"
     type: "kinematic"
     grid_pos: [0, 7]
-    size: [1, 4]       # 1 grid horizontally and 4 grid vertically
+    size: [1, 4]      # 1 grid horizontally and 4 grid vertically
     shape: "rect"
     model: "assets/models/paddle.png"
     constraints: ["y"] # Only moves vertically
@@ -55,6 +57,7 @@ entities:
     model: "assets/models/wall.png"
 
   - name: "item_to_destroy"
+    group: "items"
     type: "static"
     grid_pos: [24, 8]
     size: [1, 1]
@@ -70,7 +73,7 @@ rules:
   # X bounce from paddle
   - condition:
       type: "collision"
-      targets: ["ball", "paddle"]
+      targets: ["balls", "paddles"]
     action:
       - type: "bounce"
         axis: "x"
@@ -80,7 +83,7 @@ rules:
   # X bounce from horizontal walls
   - condition:
       type: "collision"
-      targets: ["ball", "walls_x"]
+      targets: ["balls", "walls_x"]
     action:
       - type: "bounce"
         axis: "y"
@@ -90,20 +93,20 @@ rules:
   # Y bounce form vertical walls
   - condition:
       type: "collision"
-      targets: ["ball", "walls_y"]
+      targets: ["balls", "walls_y"]
     action:
       - type: "bounce"
         axis: "x"
       - type: "score"
-        targets: ["player_1"]
+        targets: ["player1"] 
         amount: 1
       - type: "sound"
         sound_effect: "assets/sound/bounce.mp3"
 
-  # -1 HP when the ball goes out of bound and respawn to [19, 9]
+  # -1 HP when the ball goes out of bound and respawn to [16, 9]
   - condition:
       type: "position"
-      targets: ["ball"]
+      targets: ["balls"]
       axis: "x"
       operator: "<"
       value: 0
@@ -114,17 +117,16 @@ rules:
       - type: "respawn"
         pos: [16, 9]
 
+  # Item collision & destroy
   - condition:
       type: "collision"
-      targets: ["ball", "item_to_destroy"]
+      targets: ["balls", "items"]
     action:
-      - type: "destroy"
-        targets: ["item_to_destroy"]
       - type: "respawn"
         targets: ["item_to_destroy"]
         random_position: true
       - type: "add_score"
-        targets: ["player_1"]
+        targets: ["player1"]
         value: 1
       - type: "sound"
         sound_effect: "assets/sound/powerup.mp3"

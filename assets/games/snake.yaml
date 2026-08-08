@@ -12,6 +12,7 @@ layout:
 
 entities:
   - name: "ball"
+    group: "balls"
     type: "kinematic"
     grid_pos: [0, 9]
     size: [0.75, 0.75]
@@ -197,6 +198,7 @@ entities:
     tile: true
 
   - name: "coin"
+    group: "coins"
     type: "static"
     grid_pos: [31, 7]
     shape: "circle"
@@ -211,7 +213,7 @@ inputs:
 rules:
   - condition:
       type: "collision"
-      targets: [ "ball", "walls" ]
+      targets: [ "balls", "walls" ]
     action:
       - type: "damage"
         targets: [ "player1" ]
@@ -219,7 +221,7 @@ rules:
 
   - condition:
       type: "collision"
-      targets: ["ball", "coin"]
+      targets: ["balls", "coins"]
     action:
       - type: "add_score"
         targets: ["player1"]

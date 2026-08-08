@@ -2,12 +2,14 @@ import random
 import operator
 import time
 import pygame
+import copy
 
 from src.game.menu import *
 from src.core.laserbuffer import LaserBuffer
 from src.core.vision import VisionCore
 from src.service.gameloader import GameLoader
 from src.service.gameparser import GameParser
+from src.model.entity import Entity
 
 class Game:
     def __init__(self):
@@ -61,6 +63,8 @@ class Game:
 
         self.entities_by_name = {}
         self.input_bindings = {}
+        self.templates = {}
+        self.rule_timers = {}
 
         self.operators = {
             "<": operator.lt,
@@ -264,8 +268,11 @@ class Game:
             triggered_entities = []
 
             if condition_type == "collision":
-                group_1 = self.sprite_groups.get(condition_target[0])
-                group_2 = self.sprite_groups.get(condition_target[1])
+                target_1 = condition_target[0] if len(condition_target) > 0 else None
+                target_2 = condition_target[1] if len(condition_target) > 1 else None
+
+                group_1 = self.sprite_groups.get(target_1) if target_1 else None
+                group_2 = self.sprite_groups.get(target_2) if target_2 else None
 
                 collision_pairs = {}
 
@@ -301,6 +308,25 @@ class Game:
                             if operator_function(current_pos, limit):
                                 rule_triggered = True
                                 triggered_entities.append(sprite)
+
+            elif condition_type == "timer":
+                interval = condition.get("interval", 1000) / 1000.0
+                repeat = condition.get("repeat", False)
+                current_time = time.time()
+
+                if "last_time" not in condition:
+                    condition["last_time"] = current_time
+
+                last_time = condition["last_time"]
+
+                if last_time is not None:
+                    if current_time - last_time >= interval:
+                        rule_triggered = True
+                        
+                        if repeat:
+                            condition["last_time"] = current_time
+                        else:
+                            condition["last_time"] = None
 
 
 
@@ -339,7 +365,7 @@ class Game:
                                         entity.vel_y *= -1
                                 else:
                                     entity.vel_y *= -1
-
+                    
                     elif action_type == "respawn":
                         action_targets = action.get("targets", [])
                         action_position = action.get("pos", None)
@@ -399,17 +425,32 @@ class Game:
 
                         if action_targets:
                             for target in action_targets:
-                                entity = self.entities_by_name.get(target)
-                                if entity:
-                                    pygame.sprite.Sprite.kill(entity)
+                                if target == "hit_1":
+                                    for entity in triggered_entities:
+                                        pygame.sprite.Sprite.kill(entity)
+                                        self.entities_by_name.pop(entity.name, None)
+
+                                elif target == "hit_2":
+                                    for entity in triggered_entities:
+                                        hit_sprites = collision_pairs.get(entity, [])
+                                        for hit_sprite in hit_sprites:
+                                            pygame.sprite.Sprite.kill(hit_sprite)
+                                            self.entities_by_name.pop(hit_sprite.name, None)
+
+                                else:
+                                    entity = self.entities_by_name.get(target)
+                                    if entity:
+                                        pygame.sprite.Sprite.kill(entity)
+                                        self.entities_by_name.pop(entity.name, None)
 
                     elif action_type == "add_score":
                         action_targets = action.get("targets", [])
                         action_value = action.get("value", 1)
 
                         if action_targets:
-                            for target in self.players:
-                                self.players[target]["score"] += action_value
+                            for target in action_targets:
+                                for target in self.players:
+                                    self.players[target]["score"] += action_value
 
                     elif action_type == "sound":
                         sound_effect_path = action.get("sound_effect", None)
@@ -419,7 +460,44 @@ class Game:
 
                             sound_effect.play()
 
+                    elif action_type == "spawn":
+                        template_name = action.get("template")
+                        pos = action.get("pos", [0, 0])
+                        velocity = action.get("velocity", [0, 0])
 
+                        template_data = self.templates.get(template_name)
+
+                        if template_data:
+                            spawned_data = copy.deepcopy(template_data)
+                            unique_id = str(time.time()) + str(random.randint(0, 1000))
+                            spawned_data['name'] = f"{template_name}_{unique_id}"
+
+                            new_entity = Entity(self.game_loader, spawned_data, self.cell_w, self.cell_h)
+
+                            if isinstance(pos[0], (list, tuple)):
+                                min_x, max_x = min(pos[0][0], pos[1][0]), max(pos[0][0], pos[1][0])
+                                min_y, max_y = min(pos[0][1], pos[1][1]), max(pos[0][1], pos[1][1])
+                                
+                                spawn_x = random.randint(min_x, max_x) if min_x != max_x else min_x
+                                spawn_y = random.randint(min_y, max_y) if min_y != max_y else min_y
+                            else:
+                                spawn_x = pos[0]
+                                spawn_y = pos[1]
+
+                            new_entity.rect.x = spawn_x * self.cell_w
+                            new_entity.rect.y = spawn_y * self.cell_h
+
+                            new_entity.vel_x = velocity[0]
+                            new_entity.vel_y = velocity[1]
+
+                            self.all_sprites.add(new_entity)
+                            self.entities_by_name[new_entity.name] = new_entity
+
+                            group_name = new_entity.group
+                            if group_name:
+                                if group_name not in self.sprite_groups:
+                                    self.sprite_groups[group_name] = pygame.sprite.Group()
+                                self.sprite_groups[group_name].add(new_entity)
 
 
 

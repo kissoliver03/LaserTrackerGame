@@ -78,3 +78,9 @@ class GameParser:
             return self.data.get('rules', [])
         else:
             return []
+
+    def get_templates(self):
+        if self.is_level_loaded:
+            return self.data.get('templates', [])
+        else:
+            return []

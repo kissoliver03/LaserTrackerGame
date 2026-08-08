@@ -8,7 +8,7 @@ class Entity(pygame.sprite.Sprite):
         self.game = game
 
         self.name = data_dict.get('name', 'unknown')
-        self.group = data_dict.get('group', self.name)
+        self.group = data_dict.get('group', None)
         self.type = data_dict.get('type', 'static')
         self.shape = data_dict.get('shape', 'rect')
         self.constraints = data_dict.get('constraints', [])
