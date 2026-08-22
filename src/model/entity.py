@@ -70,9 +70,38 @@ class Entity(pygame.sprite.Sprite):
         self.vel_x = velocity[0]
         self.vel_y = velocity[1]
 
+        self.behavior = data_dict.get('behavior', None)
+        self.path = data_dict.get('path', None)
+
+        if self.path:
+            if self.behavior == 'horizontal':
+                self.min_limit = int(self.path[0] * cell_w)
+                self.max_limit = int(self.path[1] * cell_w)
+
+            elif self.behavior == 'vertical':
+                self.min_limit = int(self.path[0] * cell_h)
+                self.max_limit = int(self.path[1] * cell_h)
+
+
     def update(self):
         if self.type in ['dynamic', 'kinematic']:
             self.rect.x += self.vel_x
             self.rect.y += self.vel_y
 
+            if self.behavior == 'horizontal' and self.path:
+                if self.rect.left <= self.min_limit:
+                    self.rect.left = self.min_limit
+                    self.vel_x *= -1
 
+                elif self.rect.right >= self.max_limit:
+                    self.rect.right = self.max_limit
+                    self.vel_x *= -1
+
+            elif self.behavior == 'vertical' and self.path:
+                if self.rect.top <= self.min_limit:
+                    self.rect.top = self.min_limit
+                    self.vel_y *= -1
+                
+                elif self.rect.bottom >= self.max_limit:
+                    self.rect.bottom = self.max_limit
+                    self.vel_y *= -1

@@ -19,6 +19,17 @@ entities:
     shape: "rect"
     model: "assets/models/ball.png"
 
+  - name: "enemy"
+    group: "enemies"
+    type: "dynamic"
+    grid_pos: [15, 5]
+    size: [1, 1]
+    shape: "rect"
+    behavior: "vertical"
+    path: [10, 15]
+    velocity: [0, 15]
+    model: "assets/models/coin.png"
+
   - name: "coin"
     type: "kinematic"
     grid_pos: [15, 10]
