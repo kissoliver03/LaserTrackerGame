@@ -20,7 +20,8 @@ class Game:
         self.running, self.playing = True, False
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY, self.ESC_KEY, self.LEFT_KEY, self.RIGHT_KEY = False, False, False, False, False, False, False
 
-        self.DISPLAY_W, self.DISPLAY_H = 1920, 1080     ##TODO: resolutions change in options
+        screen_info = pygame.display.Info()
+        self.DISPLAY_W, self.DISPLAY_H = screen_info.current_w, screen_info.current_h
         self.TARGET_W, self.TARGET_H = 1920, 1080
 
         self.ratio = self.DISPLAY_H / self.TARGET_H
