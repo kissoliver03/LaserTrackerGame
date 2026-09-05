@@ -1,0 +1,83 @@
+meta:
+  title: "1v1_spacewar"
+  version: "1.0.0"
+
+globals:
+  lives: 1
+  score: 1
+
+layout:
+  map_size: [16, 9]
+  background_color: [0, 0, 0]
+
+inputs:
+  - name: "player1"
+    source: "laser_red"
+    target: "ship_2"
+
+  - name: "player2"
+  - source: "laser_green"
+  - target: "ship_1"
+
+templates:
+  - name: "bullet"
+    group: "bullets"
+    size: [1, 1]
+    shape: "rect"
+    type: "dynamic"
+    model: "assets/models/energy_ammo.png"
+
+entities:
+  - name: "ship_1"
+    group: "ship_1"
+    type: "kinematic"
+    grid_pos: [8, 0]
+    size: [1, 1]
+    constraints : ["x"]
+    shape: "rect"
+    model: "assets/models/space_ship.png"
+
+  - name: "ship_2"
+    group: "ship_2"
+    type: "kinematic"
+    grid_pos: [ 8, 8 ]
+    size: [ 1, 1 ]
+    constraints : ["x"]
+    shape: "rect"
+    model: "assets/models/space_ship.png"
+
+rules:
+  - condition:
+      type: "timer"
+      interval: 1000
+      repeat: true
+    action:
+      - type: "spawn"
+        template: "bullet"
+        origin: "ship_1"
+        direction: "down"
+        velocity: [0, 10]
+      - type: "sound"
+        sound_effect: "assets/sound/space_ship_shoot.mp3"
+
+      - type: "spawn"
+        template: "bullet"
+        origin: "ship_2"
+        direction: "up"
+        velocity: [ 0, -10 ]
+      - type: "sound"
+        sound_effect: "assets/sound/space_ship_shoot.mp3"
+
+  - condition:
+      type: "collision"
+      targets: [ "ship_1", "bullets" ]
+    action:
+      - type: "damage"
+        targets: ["player1"]
+
+  - condition:
+      type: "collision"
+      targets: [ "ship_2", "bullets" ]
+    action:
+      - type: "damage"
+        targets: [ "player2" ]
