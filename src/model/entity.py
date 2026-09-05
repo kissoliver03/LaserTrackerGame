@@ -22,6 +22,7 @@ class Entity(pygame.sprite.Sprite):
         y_pos = int(grid_pos[1] * cell_h)
 
         model_path = data_dict.get('model', None)
+        self.rotation = data_dict.get('rotation', 0)
         image_loaded = False
 
         if model_path:
@@ -42,6 +43,9 @@ class Entity(pygame.sprite.Sprite):
 
                 else:
                     self.image = pygame.transform.scale(model, (width, height))
+
+                if self.rotation != 0:
+                    self.image = pygame.transform.rotate(self.image, self.rotation)
 
                 image_loaded = True
 
