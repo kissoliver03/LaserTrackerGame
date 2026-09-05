@@ -1,0 +1,89 @@
+meta:
+  title: "spacewar"
+  version: "1.0.0"
+
+globals:
+  lives: 1
+  score: 3
+
+layout:
+  map_size: [16, 9]
+  background_color: [0, 0, 0]
+
+inputs:
+  - name: "player1"
+    source: "laser_red"
+    target: "ship"
+
+templates:
+  - name: "enemy"
+    group: "enemies"
+    size: [1, 1]
+    shape: "rect"
+    type: "dynamic"
+    model: "assets/models/space_enemy.png"
+
+  - name: "bullet"
+    group: "bullets"
+    size: [1, 1]
+    shape: "rect"
+    type: "dynamic"
+    model: "assets/models/energy_ammo.png"
+
+entities:
+  - name: "ship"
+    group: "ship"
+    type: "kinematic"
+    grid_pos: [8, 8]
+    size: [1, 1]
+    constraints: ["x"]
+    shape: "rect"
+    model: "assets/models/space_ship.png"
+
+rules:
+  - condition:
+      type: "timer"
+      interval: 1000
+      repeat: true
+    action:
+      - type: "spawn"
+        template: "enemy"
+        pos: [[0, 0], [15, 0]]
+        velocity: [ 0, 4 ]
+  - condition:
+      type: "timer"
+      interval: 1500
+      repeat: true
+    action:
+      - type: "spawn"
+        template: "bullet"
+        origin: "ship"
+        direction: "up"
+        velocity: [0, -10]
+
+  - condition:
+      type: "collision"
+      targets: [ "bullets", "enemies" ]
+    action:
+      - type: "destroy"
+        targets: [ "hit_1", "hit_2" ]
+
+  - condition:
+      type: "collision"
+      targets: [ "ship", "enemies" ]
+    action:
+      - type: "destroy"
+        targets: [ "hit_2" ]
+      - type: "damage"
+        targets: ["player1"]
+
+  - condition:
+      type: "position"
+      targets: ["enemies"]
+      axis: "y"
+      operator: ">"
+      value: 9
+    action:
+      - type: "damage"
+        targets: ["player1"]
+        value: 1
