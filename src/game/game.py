@@ -466,6 +466,9 @@ class Game:
                         pos = action.get("pos", [0, 0])
                         velocity = action.get("velocity", [0, 0])
 
+                        origin_name = action.get("origin", None)
+                        direction = action.get("direction", None)
+
                         template_data = self.templates.get(template_name)
 
                         if template_data:
@@ -475,18 +478,41 @@ class Game:
 
                             new_entity = Entity(self.game_loader, spawned_data, self.cell_w, self.cell_h)
 
-                            if isinstance(pos[0], (list, tuple)):
-                                min_x, max_x = min(pos[0][0], pos[1][0]), max(pos[0][0], pos[1][0])
-                                min_y, max_y = min(pos[0][1], pos[1][1]), max(pos[0][1], pos[1][1])
-                                
-                                spawn_x = random.randint(min_x, max_x) if min_x != max_x else min_x
-                                spawn_y = random.randint(min_y, max_y) if min_y != max_y else min_y
-                            else:
-                                spawn_x = pos[0]
-                                spawn_y = pos[1]
+                            if origin_name:
+                                origin_entity = self.entities_by_name.get(origin_name)
 
-                            new_entity.rect.x = spawn_x * self.cell_w
-                            new_entity.rect.y = spawn_y * self.cell_h
+                                if origin_entity:
+                                    if direction == "up":
+                                        new_entity.rect.bottom = origin_entity.rect.top
+                                        new_entity.rect.centerx = origin_entity.rect.centerx
+                                    elif direction == "down":
+                                        new_entity.rect.top = origin_entity.rect.bottom
+                                        new_entity.rect.centerx = origin_entity.rect.centerx
+                                    elif direction == "left":
+                                        new_entity.rect.right = origin_entity.rect.left
+                                        new_entity.rect.centery = origin_entity.rect.centery
+                                    elif direction == "right":
+                                        new_entity.rect.left = origin_entity.rect.right
+                                        new_entity.rect.centery = origin_entity.rect.centery
+                                else:
+                                    print(f"HIBA: Nem található '{origin_name}' nevű entitás a spawn-hoz!")
+
+                            else:
+                                if isinstance(pos[0], (list, tuple)):
+                                    min_x, max_x = min(pos[0][0], pos[1][0]), max(pos[0][0], pos[1][0])
+                                    min_y, max_y = min(pos[0][1], pos[1][1]), max(pos[0][1], pos[1][1])
+
+                                    spawn_x = random.randint(min_x, max_x) if min_x != max_x else min_x
+                                    spawn_y = random.randint(min_y, max_y) if min_y != max_y else min_y
+                                else:
+                                    spawn_x = pos[0]
+                                    spawn_y = pos[1]
+
+                                new_entity.rect.x = spawn_x * self.cell_w
+                                new_entity.rect.y = spawn_y * self.cell_h
+
+                            new_entity.vel_x = velocity[0]
+                            new_entity.vel_y = velocity[1]
 
                             new_entity.vel_x = velocity[0]
                             new_entity.vel_y = velocity[1]
