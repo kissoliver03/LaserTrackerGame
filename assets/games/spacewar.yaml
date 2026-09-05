@@ -36,7 +36,6 @@ entities:
     type: "kinematic"
     grid_pos: [8, 8]
     size: [1, 1]
-    constraints: ["x"]
     shape: "rect"
     model: "assets/models/space_ship.png"
 
@@ -52,7 +51,7 @@ rules:
         velocity: [ 0, 4 ]
   - condition:
       type: "timer"
-      interval: 1500
+      interval: 1000
       repeat: true
     action:
       - type: "spawn"
@@ -60,6 +59,8 @@ rules:
         origin: "ship"
         direction: "up"
         velocity: [0, -10]
+      - type: "sound"
+        sound_effect: "assets/sound/space_ship_shoot.mp3"
 
   - condition:
       type: "collision"
@@ -67,6 +68,8 @@ rules:
     action:
       - type: "destroy"
         targets: [ "hit_1", "hit_2" ]
+      - type: "sound"
+        sound_effect: "assets/sound/explosion.mp3"
 
   - condition:
       type: "collision"
