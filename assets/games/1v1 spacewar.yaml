@@ -20,9 +20,17 @@ inputs:
   - target: "ship_1"
 
 templates:
-  - name: "bullet"
+  - name: "bullet1"
     group: "bullets"
     size: [1, 1]
+    shape: "rect"
+    type: "dynamic"
+    model: "assets/models/energy_ammo.png"
+    rotation: 180
+
+  - name: "bullet2"
+    group: "bullets"
+    size: [ 1, 1 ]
     shape: "rect"
     type: "dynamic"
     model: "assets/models/energy_ammo.png"
@@ -36,6 +44,7 @@ entities:
     constraints : ["x"]
     shape: "rect"
     model: "assets/models/space_ship.png"
+    rotation: 180
 
   - name: "ship_2"
     group: "ship_2"
@@ -53,7 +62,7 @@ rules:
       repeat: true
     action:
       - type: "spawn"
-        template: "bullet"
+        template: "bullet1"
         origin: "ship_1"
         direction: "down"
         velocity: [0, 10]
@@ -61,7 +70,7 @@ rules:
         sound_effect: "assets/sound/space_ship_shoot.mp3"
 
       - type: "spawn"
-        template: "bullet"
+        template: "bullet2"
         origin: "ship_2"
         direction: "up"
         velocity: [ 0, -10 ]
