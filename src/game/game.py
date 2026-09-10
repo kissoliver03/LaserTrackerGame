@@ -110,6 +110,69 @@ class Game:
             if buffer:
                 buffer.clear()
 
+
+        countdown_start = time.time()
+        countdown_duration = 5
+
+        while self.playing:
+            elapsed = time.time() - countdown_start
+            remaining = int(countdown_duration - elapsed) + 1
+
+            if remaining <= 0:
+                break
+
+            self.check_events()
+            if self.ESC_KEY:
+                self.playing = False
+                self.is_game_selected = False
+                self.curr_menu = self.game_selector
+                break
+
+            self.display.fill(self.background_color)
+
+            self.all_sprites.draw(self.display)
+
+            if self.mouse_enabled:
+                laser_visible = pygame.mouse.get_pressed()[0]
+                if laser_visible:
+                    self.mouse_last_x, self.mouse_last_y = pygame.mouse.get_pos()
+
+                x = self.mouse_last_x
+                y = self.mouse_last_y
+
+                target_entity = self.input_bindings.get("laser_red")
+                if target_entity:
+                    if "y" in target_entity.constraints:
+                        target_entity.rect.centery = y
+                    elif "x" in target_entity.constraints:
+                        target_entity.rect.centerx = x
+                    else:
+                        target_entity.rect.center = (x, y)
+            else:
+                for source_name, target_entity in self.input_bindings.items():
+                    buffer = self.vision_core.get_buffer(source_name)
+                    if buffer:
+                        pointer_state = buffer.get_latest()
+                        if pointer_state and pointer_state.laser_visible:
+                            x = pointer_state.x
+                            y = pointer_state.y
+
+                            if "x" in target_entity.constraints:
+                                target_entity.rect.centerx = x
+                            elif "y" in target_entity.constraints:
+                                target_entity.rect.centery = y
+                            else:
+                                target_entity.rect.center = (x, y)
+
+            self.draw_text(str(remaining), int(200 * self.ratio), self.TARGET_W / 2, self.TARGET_H / 2,
+                           (255, 255, 0))
+
+            self.window.blit(self.display, (0, 0))
+            pygame.display.update()
+
+            self.clock.tick(60)
+            self.reset_keys()
+
         while self.playing:
             self.check_events()
 
