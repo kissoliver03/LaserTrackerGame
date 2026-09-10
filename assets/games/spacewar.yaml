@@ -3,8 +3,8 @@ meta:
   version: "1.0.0"
 
 globals:
-  lives: 1
-  score: 3
+  lives: 100
+  score: 100
 
 layout:
   map_size: [16, 9]

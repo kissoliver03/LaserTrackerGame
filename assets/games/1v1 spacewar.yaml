@@ -16,8 +16,8 @@ inputs:
     target: "ship_2"
 
   - name: "player2"
-  - source: "laser_green"
-  - target: "ship_1"
+    source: "laser_green"
+    target: "ship_1"
 
 templates:
   - name: "bullet1"
