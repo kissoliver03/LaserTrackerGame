@@ -1,3 +1,232 @@
+#meta:
+#  title: "snake_like"
+#  version: "1.0.0"
+#
+#globals:
+#  lives: 1
+#  score: 1
+#
+#layout:
+#  map_size: [32, 18]
+#  background_color: [0, 0, 0]
+#
+#entities:
+#  - name: "ball"
+#    group: "balls"
+#    type: "kinematic"
+#    grid_pos: [0, 9]
+#    size: [1, 1]
+#    shape: "circle"
+#    model: "assets/models/ball.png"
+#    tile: true
+#
+#  - name: "wall"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [2, 0]
+#    size: [1, 8]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "wall"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [2, 8]
+#    size: [5, 1]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "wall"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [7, 8]
+#    size: [1, 4]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "wall"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [0, 10]
+#    size: [6, 1]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "wall_outer_corner_1"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 5, 11 ]
+#    size: [ 1, 3 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "wall_bottom_path_1"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 5, 13 ]
+#    size: [ 9, 1 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "wall_top_path_1"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 8, 11 ]
+#    size: [ 4, 1 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  # --- 2. Kanyar felfelé ---
+#  - name: "wall_left_path_up_1"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 11, 4 ]
+#    size: [ 1, 8 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "wall_right_path_up_1"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 13, 5 ]
+#    size: [ 1, 9 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  # --- 3. Kanyar jobbra ---
+#  - name: "wall_top_path_2"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 11, 3 ]
+#    size: [ 9, 1 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "wall_bottom_path_2"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 14, 5 ]
+#    size: [ 4, 1 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  # --- 4. Kanyar lefelé ---
+#  - name: "wall_left_path_down_2"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 17, 6 ]
+#    size: [ 1, 10 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "wall_right_path_down_2"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 19, 4 ]
+#    size: [ 1, 10 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  # --- 5. Kanyar jobbra ---
+#  - name: "wall_top_path_3"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 20, 13 ]
+#    size: [ 4, 1 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "wall_bottom_path_3"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 18, 15 ]
+#    size: [ 8, 1 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  # --- 6. Kanyar felfelé ---
+#  - name: "wall_left_path_up_2"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 23, 6 ]
+#    size: [ 1, 7 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "wall_right_path_up_2"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 25, 8 ]
+#    size: [ 1, 8 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  # --- 7. Utolsó kanyar jobbra (Kijárat) ---
+#  - name: "wall_top_exit"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 24, 6 ]
+#    size: [ 8, 1 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "wall_bottom_exit"
+#    group: "walls"
+#    type: "static"
+#    grid_pos: [ 26, 8 ]
+#    size: [ 6, 1 ]
+#    shape: "rect"
+#    model: "assets/models/wall.png"
+#    tile: true
+#
+#  - name: "coin"
+#    group: "coins"
+#    type: "static"
+#    grid_pos: [31, 7]
+#    shape: "circle"
+#    model: "assets/models/coin.png"
+#
+#
+#inputs:
+#  - name: "player1"
+#    source: "laser_red"
+#    target: "ball"
+#
+#rules:
+#  - condition:
+#      type: "collision"
+#      targets: [ "balls", "walls" ]
+#    action:
+#      - type: "damage"
+#        targets: [ "player1" ]
+#        value: 1
+#
+#  - condition:
+#      type: "collision"
+#      targets: ["balls", "coins"]
+#    action:
+#      - type: "add_score"
+#        targets: ["player1"]
+#        value: 1
+
 meta:
   title: "snake_like"
   version: "1.0.0"
@@ -15,7 +244,7 @@ entities:
     group: "balls"
     type: "kinematic"
     grid_pos: [0, 9]
-    size: [0.75, 0.75]
+    size: [1, 1]
     shape: "circle"
     model: "assets/models/ball.png"
     tile: true
@@ -47,33 +276,6 @@ entities:
     model: "assets/models/wall.png"
     tile: true
 
-  - name: "wall"
-    group: "walls"
-    type: "static"
-    grid_pos: [0, 10]
-    size: [6, 1]
-    shape: "rect"
-    model: "assets/models/wall.png"
-    tile: true
-
-  - name: "wall_outer_corner_1"
-    group: "walls"
-    type: "static"
-    grid_pos: [ 5, 11 ]
-    size: [ 1, 3 ]
-    shape: "rect"
-    model: "assets/models/wall.png"
-    tile: true
-
-  - name: "wall_bottom_path_1"
-    group: "walls"
-    type: "static"
-    grid_pos: [ 5, 13 ]
-    size: [ 9, 1 ]
-    shape: "rect"
-    model: "assets/models/wall.png"
-    tile: true
-
   - name: "wall_top_path_1"
     group: "walls"
     type: "static"
@@ -83,31 +285,11 @@ entities:
     model: "assets/models/wall.png"
     tile: true
 
-  # --- 2. Kanyar felfelé ---
   - name: "wall_left_path_up_1"
     group: "walls"
     type: "static"
-    grid_pos: [ 11, 4 ]
-    size: [ 1, 8 ]
-    shape: "rect"
-    model: "assets/models/wall.png"
-    tile: true
-
-  - name: "wall_right_path_up_1"
-    group: "walls"
-    type: "static"
-    grid_pos: [ 13, 5 ]
-    size: [ 1, 9 ]
-    shape: "rect"
-    model: "assets/models/wall.png"
-    tile: true
-
-  # --- 3. Kanyar jobbra ---
-  - name: "wall_top_path_2"
-    group: "walls"
-    type: "static"
-    grid_pos: [ 11, 3 ]
-    size: [ 9, 1 ]
+    grid_pos: [ 11, 2 ]
+    size: [ 1, 10 ]
     shape: "rect"
     model: "assets/models/wall.png"
     tile: true
@@ -121,7 +303,6 @@ entities:
     model: "assets/models/wall.png"
     tile: true
 
-  # --- 4. Kanyar lefelé ---
   - name: "wall_left_path_down_2"
     group: "walls"
     type: "static"
@@ -131,16 +312,6 @@ entities:
     model: "assets/models/wall.png"
     tile: true
 
-  - name: "wall_right_path_down_2"
-    group: "walls"
-    type: "static"
-    grid_pos: [ 19, 4 ]
-    size: [ 1, 10 ]
-    shape: "rect"
-    model: "assets/models/wall.png"
-    tile: true
-
-  # --- 5. Kanyar jobbra ---
   - name: "wall_top_path_3"
     group: "walls"
     type: "static"
@@ -150,16 +321,6 @@ entities:
     model: "assets/models/wall.png"
     tile: true
 
-  - name: "wall_bottom_path_3"
-    group: "walls"
-    type: "static"
-    grid_pos: [ 18, 15 ]
-    size: [ 8, 1 ]
-    shape: "rect"
-    model: "assets/models/wall.png"
-    tile: true
-
-  # --- 6. Kanyar felfelé ---
   - name: "wall_left_path_up_2"
     group: "walls"
     type: "static"
@@ -169,30 +330,94 @@ entities:
     model: "assets/models/wall.png"
     tile: true
 
-  - name: "wall_right_path_up_2"
-    group: "walls"
-    type: "static"
-    grid_pos: [ 25, 8 ]
-    size: [ 1, 8 ]
-    shape: "rect"
-    model: "assets/models/wall.png"
-    tile: true
-
-  # --- 7. Utolsó kanyar jobbra (Kijárat) ---
-  - name: "wall_top_exit"
-    group: "walls"
-    type: "static"
-    grid_pos: [ 24, 6 ]
-    size: [ 8, 1 ]
-    shape: "rect"
-    model: "assets/models/wall.png"
-    tile: true
-
   - name: "wall_bottom_exit"
     group: "walls"
     type: "static"
     grid_pos: [ 26, 8 ]
     size: [ 6, 1 ]
+    shape: "rect"
+    model: "assets/models/wall.png"
+    tile: true
+
+
+  # --- KÜLSŐ FALAK (Ezeket 1 griddel kijjebb toltam, hogy 2 grid legyen a rés) ---
+  - name: "wall"
+    group: "walls"
+    type: "static"
+    grid_pos: [0, 11]
+    size: [5, 1]
+    shape: "rect"
+    model: "assets/models/wall.png"
+    tile: true
+
+  - name: "wall_outer_corner_1"
+    group: "walls"
+    type: "static"
+    grid_pos: [ 4, 11 ]
+    size: [ 1, 4 ]
+    shape: "rect"
+    model: "assets/models/wall.png"
+    tile: true
+
+  - name: "wall_bottom_path_1"
+    group: "walls"
+    type: "static"
+    grid_pos: [ 4, 14 ]
+    size: [ 11, 1 ]
+    shape: "rect"
+    model: "assets/models/wall.png"
+    tile: true
+
+  - name: "wall_right_path_up_1"
+    group: "walls"
+    type: "static"
+    grid_pos: [ 14, 5 ]
+    size: [ 1, 10 ]
+    shape: "rect"
+    model: "assets/models/wall.png"
+    tile: true
+
+  - name: "wall_top_path_2"
+    group: "walls"
+    type: "static"
+    grid_pos: [ 12, 2 ]
+    size: [ 8, 1 ]
+    shape: "rect"
+    model: "assets/models/wall.png"
+    tile: true
+
+  - name: "wall_right_path_down_2"
+    group: "walls"
+    type: "static"
+    grid_pos: [ 20, 2 ]
+    size: [ 1, 12 ]
+    shape: "rect"
+    model: "assets/models/wall.png"
+    tile: true
+
+  - name: "wall_bottom_path_3"
+    group: "walls"
+    type: "static"
+    grid_pos: [ 17, 16 ]
+    size: [ 10, 1 ]
+    shape: "rect"
+    model: "assets/models/wall.png"
+    tile: true
+
+  - name: "wall_right_path_up_2"
+    group: "walls"
+    type: "static"
+    grid_pos: [ 26, 8 ]
+    size: [ 1, 9 ]
+    shape: "rect"
+    model: "assets/models/wall.png"
+    tile: true
+
+  - name: "wall_top_exit"
+    group: "walls"
+    type: "static"
+    grid_pos: [ 23, 5 ]
+    size: [ 9, 1 ]
     shape: "rect"
     model: "assets/models/wall.png"
     tile: true
