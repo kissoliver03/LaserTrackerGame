@@ -81,7 +81,7 @@ class Game:
         self.players = {}
         self.score = None
 
-        self.mouse_enabled = True
+        self.mouse_enabled = False
         self.mouse_last_x = 0
         self.mouse_last_y = 0
 
