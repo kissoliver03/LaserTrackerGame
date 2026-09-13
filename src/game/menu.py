@@ -141,6 +141,13 @@ class GameSelector(Menu):
         self.box_h = int(150 * self.game.ratio)
         self.box_padding = int(50 * self.game.ratio)
 
+        margin_x = int(100 * self.game.ratio)
+        available_width = self.game.DISPLAY_W - (margin_x * 2)
+
+        calculated_items = (available_width + self.box_padding) // (self.box_w + self.box_padding)
+
+        self.items_per_row = max(1, int(calculated_items))
+
 
     def load_game_files(self):
         if os.path.exists(self.games_dir):
@@ -174,14 +181,23 @@ class GameSelector(Menu):
             if number_of_games == 0:
                 self.game.draw_text("No games were found", self.font_size, self.mid_w, self.mid_h, self.game.WHITE)
             else:
-                total_width = (number_of_games * self.box_w) + (number_of_games - 1) * self.box_padding
+                cols = min(number_of_games, self.items_per_row)
+                rows = (number_of_games + self.items_per_row - 1) // self.items_per_row
+
+                total_width = (cols * self.box_w) + (cols - 1) * self.box_padding
+                total_height = (rows * self.box_h) + (rows - 1) * self.box_padding
 
                 box_start_x = self.mid_w - (total_width / 2)
-                box_start_y = self.mid_h - (self.box_h / 2)
+                box_start_y = self.mid_h - (total_height / 2) - self.gap
 
                 for i, file_name in enumerate(self.game_files):
-                    x_pos = box_start_x + (i * (self.box_w + self.box_padding))
-                    rect = pygame.Rect(x_pos, box_start_y, self.box_w, self.box_h)
+                    col = i % self.items_per_row
+                    row = i // self.items_per_row
+
+                    x_pos = box_start_x + (col * (self.box_w + self.box_padding))
+                    y_pos = box_start_y + (row * (self.box_h + self.box_padding))
+
+                    rect = pygame.Rect(x_pos, y_pos, self.box_w, self.box_h)
 
                     if file_name == self.selected_game:
                         color = self.DARK_GREEN
@@ -193,7 +209,8 @@ class GameSelector(Menu):
                     pygame.draw.rect(self.game.display, color, rect)
 
                     display_name = file_name.replace(".yaml", "")
-                    self.game.draw_text(display_name, int(self.font_size * 0.6), x_pos + self.box_w/2, box_start_y + self.box_h/2, self.game.WHITE)
+                    self.game.draw_text(display_name, int(self.font_size * 0.6), x_pos + self.box_w / 2,
+                                        y_pos + self.box_h / 2, self.game.WHITE)
 
             if self.on_start_button:
                 start_button_color = self.LIGHT_GREEN
@@ -224,6 +241,18 @@ class GameSelector(Menu):
         elif self.game.RIGHT_KEY:
             if not self.on_start_button and len(self.game_files) > 0:
                 self.current_index = (self.current_index + 1) % len(self.game_files)
+
+        elif self.game.UP_KEY:
+            if not self.on_start_button and len(self.game_files) > 0:
+                if self.current_index >= self.items_per_row:
+                    self.current_index -= self.items_per_row
+
+        elif self.game.DOWN_KEY:
+            if not self.on_start_button and len(self.game_files) > 0:
+                if self.current_index + self.items_per_row < len(self.game_files):
+                    self.current_index += self.items_per_row
+                else:
+                    self.current_index = len(self.game_files) - 1
 
         elif self.game.START_KEY:
             if not self.on_start_button:
