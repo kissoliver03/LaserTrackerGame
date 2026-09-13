@@ -393,6 +393,19 @@ class Game:
                             else:
                                 condition["last_time"] = None
 
+                elif condition_type == "count":
+                    target_group = self.sprite_groups.get(condition_target[0])
+
+                    current_count = len(target_group) if target_group else 0
+
+                    condition_operator = condition.get("operator", "==")
+                    condition_value = condition.get("value", 0)
+
+                    operator_function = self.operators.get(condition_operator)
+
+                    if operator_function and operator_function(current_count, condition_value):
+                        rule_triggered = True
+
 
 
                 if rule_triggered:

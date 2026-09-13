@@ -3,7 +3,7 @@ meta:
   version: "1.0.0"
 
 globals:
-  lives: 90000
+  lives: 1
   score: 150
 
 layout:
@@ -293,7 +293,7 @@ rules:
       - type: "destroy"
         targets: ["hit_1"]
 
-  # 6. Labda leesése a pályáról (sebződés)
+  # Labda leesése a pályáról (sebződés)
   - condition:
       type: "position"
       targets: ["balls"]
@@ -303,14 +303,17 @@ rules:
     action:
       - type: "destroy"
         targets: ["hit_1"]
+
+  # Nincs labda a pályán -> sebzés
+  - condition:
+      type: "count"
+      targets: ["balls"]
+    action:
       - type: "damage"
         targets: ["player1"]
         value: 1
-      - type: "respawn"
-        targets: ["ball_main"]
-        pos: [15, 14]
 
-  # 7. Érme random lerakása 10 másodpercenként fentről
+  # Érme random lerakása 10 másodpercenként fentről
   - condition:
       type: "timer"
       interval: 5000
@@ -321,7 +324,7 @@ rules:
         pos: [[2, 2], [28, 2]]
         velocity: [0, 4]
 
-  # 8. Ütő felveszi az érmét -> Új labda!
+  # Ütő felveszi az érmét -> Új labda!
   - condition:
       type: "collision"
       targets: ["coins", "paddles"]
