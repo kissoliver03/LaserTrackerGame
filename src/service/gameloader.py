@@ -16,70 +16,79 @@ class GameLoader:
                 is_level_loaded = self.game_parser.parse_game(self.game.selected_game)
 
                 if is_level_loaded:
-                    self.game.all_sprites = pygame.sprite.Group()
-                    self.game.entities_by_name = {}
-                    self.game.input_bindings = {}
-                    self.game.sprite_groups = {}
-                    self.game.players = {}
-                    self.game.templated = {}
-                    self.game.rule_timers = {}
+                    try:
+                        self.game.all_sprites = pygame.sprite.Group()
+                        self.game.entities_by_name = {}
+                        self.game.input_bindings = {}
+                        self.game.sprite_groups = {}
+                        self.game.players = {}
+                        self.game.templated = {}
+                        self.game.rule_timers = {}
 
-                    layout_data = self.game_parser.get_layout()
-                    map_size = layout_data.get('map_size', [32, 18])
-                    self.game.map_size = map_size
+                        layout_data = self.game_parser.get_layout()
+                        map_size = layout_data.get('map_size', [32, 18])
+                        self.game.map_size = map_size
 
-                    self.game.background_color = layout_data.get('background_color', [0, 0, 0])
+                        self.game.background_color = layout_data.get('background_color', [0, 0, 0])
 
-                    self.game.cell_w = self.game.TARGET_W / map_size[0]
-                    self.game.cell_h = self.game.TARGET_H / map_size[1]
+                        self.game.cell_w = self.game.TARGET_W / map_size[0]
+                        self.game.cell_h = self.game.TARGET_H / map_size[1]
 
-                    globals_data = self.game_parser.get_globals()
-                    self.game.lives = globals_data.get('lives', None)
-                    self.game.score = globals_data.get('score', None)
+                        globals_data = self.game_parser.get_globals()
+                        self.game.lives = globals_data.get('lives', None)
+                        self.game.score = globals_data.get('score', None)
 
-                    #Get entities from parsed .YAML
-                    entities_data = self.game_parser.get_entities()
-                    for entity in entities_data:
-                        new_entity = Entity(self, entity, self.game.cell_w, self.game.cell_h)
-                        self.game.all_sprites.add(new_entity)
+                        #Get entities from parsed .YAML
+                        entities_data = self.game_parser.get_entities()
+                        for entity in entities_data:
+                            new_entity = Entity(self, entity, self.game.cell_w, self.game.cell_h)
+                            self.game.all_sprites.add(new_entity)
 
-                        self.game.entities_by_name[new_entity.name] = new_entity
+                            self.game.entities_by_name[new_entity.name] = new_entity
 
-                        group_name = new_entity.group
-                        if group_name not in self.game.sprite_groups:
-                            self.game.sprite_groups[group_name] = pygame.sprite.Group()
-                        self.game.sprite_groups[group_name].add(new_entity)
+                            group_name = new_entity.group
+                            if group_name not in self.game.sprite_groups:
+                                self.game.sprite_groups[group_name] = pygame.sprite.Group()
+                            self.game.sprite_groups[group_name].add(new_entity)
 
-                    #Get templates from parsed .YAML
-                    templates_data = self.game_parser.get_templates()
-                    if templates_data:
-                        for template in templates_data:
-                            self.game.templates[template.get('name')] = template
+                        #Get templates from parsed .YAML
+                        templates_data = self.game_parser.get_templates()
+                        if templates_data:
+                            for template in templates_data:
+                                self.game.templates[template.get('name')] = template
 
-                    #Get inputs from parsed .YAML
-                    input_data = self.game.game_parser.get_inputs()
-                    active_sources = []
-                    for input_item in input_data:
-                        name = input_item.get('name')
-                        source = input_item.get('source')
-                        target = input_item.get('target')
+                        #Get inputs from parsed .YAML
+                        input_data = self.game.game_parser.get_inputs()
+                        active_sources = []
+                        for input_item in input_data:
+                            name = input_item.get('name')
+                            source = input_item.get('source')
+                            target = input_item.get('target')
 
-                        if source:
-                            active_sources.append(source)
+                            if source:
+                                active_sources.append(source)
 
-                        if target in self.game.entities_by_name:
-                            self.game.input_bindings[source] = self.game.entities_by_name[target]
+                            if target in self.game.entities_by_name:
+                                self.game.input_bindings[source] = self.game.entities_by_name[target]
 
-                        self.game.players[name] = {
-                            "lives": self.game.lives,
-                            "score": 0
-                        }
+                            self.game.players[name] = {
+                                "lives": self.game.lives,
+                                "score": 0
+                            }
 
-                    if hasattr(self.game, 'vision_core') and self.game.vision_core:
-                        self.game.vision_core.set_active_sources(active_sources)
-                        print(f"GAMELOADER: Active lasers has been set: {active_sources}")
+                        if hasattr(self.game, 'vision_core') and self.game.vision_core:
+                            self.game.vision_core.set_active_sources(active_sources)
+                            print(f"GAMELOADER: Active lasers has been set: {active_sources}")
 
-                    self.game.playing = True
+                        self.game.playing = True
+
+                    except Exception as exc:
+                        print(f"GAMELOADER ERROR: Hibás YAML struktúra! Részletek: {exc}")
+                        self.game.msg_popup("LOAD ERROR", [255, 0, 0], "Invalid YAML structure!")
+                        self.game.playing = False
+                        self.game.is_game_selected = False
+                        self.game.curr_menu = self.game.game_selector
+                        return
 
                 else:
                     self.game.playing = False

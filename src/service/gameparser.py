@@ -44,43 +44,29 @@ class GameParser:
 
 
     def get_meta(self):
-        if self.is_level_loaded:
-            return self.data.get('meta', {})
-        else:
-            return {}
+        data = self.data.get('meta', {}) if self.is_level_loaded else {}
+        return data if isinstance(data, dict) else {}
 
     def get_globals(self):
-        if self.is_level_loaded:
-            return self.data.get('globals', {})
-        else:
-            return {}
+        data = self.data.get('globals', {}) if self.is_level_loaded else {}
+        return data if isinstance(data, dict) else {}
 
     def get_layout(self):
-        if self.is_level_loaded:
-            return self.data.get('layout', {})
-        else:
-            return {}
+        data = self.data.get('layout', {}) if self.is_level_loaded else {}
+        return data if isinstance(data, dict) else {}
 
     def get_entities(self):
-        if self.is_level_loaded:
-            return self.data.get('entities', [])
-        else:
-            return []
+        data = self.data.get('entities', []) if self.is_level_loaded else []
+        return data if isinstance(data, list) else []
 
     def get_inputs(self):
-        if self.is_level_loaded:
-            return self.data.get('inputs', [])
-        else:
-            return []
+        data = self.data.get('inputs', []) if self.is_level_loaded else []
+        return data if isinstance(data, list) else []
 
     def get_rules(self):
-        if self.is_level_loaded:
-            return self.data.get('rules', [])
-        else:
-            return []
+        data = self.data.get('rules', []) if self.is_level_loaded else []
+        return data if isinstance(data, list) else []
 
     def get_templates(self):
-        if self.is_level_loaded:
-            return self.data.get('templates', [])
-        else:
-            return []
+        data = self.data.get('templates', []) if self.is_level_loaded else []
+        return data if isinstance(data, list) else []

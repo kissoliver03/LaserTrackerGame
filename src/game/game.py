@@ -319,275 +319,283 @@ class Game:
 
 
     def rule_processor(self):
-        rules_data = self.game_parser.get_rules()
+        try:
+            rules_data = self.game_parser.get_rules()
 
-        for rule in rules_data:
-            condition = rule.get("condition", {})
-            actions = rule.get("action", [])
+            for rule in rules_data:
+                condition = rule.get("condition", {})
+                actions = rule.get("action", [])
 
-            condition_type = condition.get("type", {})
-            condition_target = condition.get("targets", [])
+                condition_type = condition.get("type", {})
+                condition_target = condition.get("targets", [])
 
-            rule_triggered = False
-            triggered_entities = []
+                rule_triggered = False
+                triggered_entities = []
 
-            if condition_type == "collision":
-                target_1 = condition_target[0] if len(condition_target) > 0 else None
-                target_2 = condition_target[1] if len(condition_target) > 1 else None
+                if condition_type == "collision":
+                    target_1 = condition_target[0] if len(condition_target) > 0 else None
+                    target_2 = condition_target[1] if len(condition_target) > 1 else None
 
-                group_1 = self.sprite_groups.get(target_1) if target_1 else None
-                group_2 = self.sprite_groups.get(target_2) if target_2 else None
+                    group_1 = self.sprite_groups.get(target_1) if target_1 else None
+                    group_2 = self.sprite_groups.get(target_2) if target_2 else None
 
-                collision_pairs = {}
+                    collision_pairs = {}
 
-                if group_1 and group_2:
-                    collisions = pygame.sprite.groupcollide(group_1, group_2, False, False)
+                    if group_1 and group_2:
+                        collisions = pygame.sprite.groupcollide(group_1, group_2, False, False)
 
-                    if collisions:
-                        rule_triggered = True
-                        triggered_entities.extend(collisions.keys())
-                        collision_pairs = collisions
+                        if collisions:
+                            rule_triggered = True
+                            triggered_entities.extend(collisions.keys())
+                            collision_pairs = collisions
 
-            elif condition_type == "position" and len(condition_target) == 1:
-                target_group = self.sprite_groups.get(condition_target[0])
+                elif condition_type == "position" and len(condition_target) == 1:
+                    target_group = self.sprite_groups.get(condition_target[0])
 
-                if target_group:
-                    condition_axis = condition.get("axis", {})
-                    condition_operator = condition.get("operator", {})
-                    condition_value = condition.get("value", 0)
+                    if target_group:
+                        condition_axis = condition.get("axis", {})
+                        condition_operator = condition.get("operator", {})
+                        condition_value = condition.get("value", 0)
 
-                    operator_function = self.operators.get(condition_operator)
+                        operator_function = self.operators.get(condition_operator)
 
-                    if operator_function and condition_axis in ["x", "y"]:
+                        if operator_function and condition_axis in ["x", "y"]:
 
-                        for sprite in target_group:
+                            for sprite in target_group:
 
-                            if condition_axis == "x":
-                                limit = self.cell_w * condition_value
-                                current_pos = sprite.rect.centerx
+                                if condition_axis == "x":
+                                    limit = self.cell_w * condition_value
+                                    current_pos = sprite.rect.centerx
+                                else:
+                                    limit = self.cell_h * condition_value
+                                    current_pos = sprite.rect.centery
+
+                                if operator_function(current_pos, limit):
+                                    rule_triggered = True
+                                    triggered_entities.append(sprite)
+
+                elif condition_type == "timer":
+                    interval = condition.get("interval", 1000) / 1000.0
+                    repeat = condition.get("repeat", False)
+                    current_time = time.time()
+
+                    if "last_time" not in condition:
+                        condition["last_time"] = current_time
+
+                    last_time = condition["last_time"]
+
+                    if last_time is not None:
+                        if current_time - last_time >= interval:
+                            rule_triggered = True
+
+                            if repeat:
+                                condition["last_time"] = current_time
                             else:
-                                limit = self.cell_h * condition_value
-                                current_pos = sprite.rect.centery
-
-                            if operator_function(current_pos, limit):
-                                rule_triggered = True
-                                triggered_entities.append(sprite)
-
-            elif condition_type == "timer":
-                interval = condition.get("interval", 1000) / 1000.0
-                repeat = condition.get("repeat", False)
-                current_time = time.time()
-
-                if "last_time" not in condition:
-                    condition["last_time"] = current_time
-
-                last_time = condition["last_time"]
-
-                if last_time is not None:
-                    if current_time - last_time >= interval:
-                        rule_triggered = True
-                        
-                        if repeat:
-                            condition["last_time"] = current_time
-                        else:
-                            condition["last_time"] = None
+                                condition["last_time"] = None
 
 
 
-            if rule_triggered:
-                for action in actions:
-                    action_type = action.get("type", {})
+                if rule_triggered:
+                    for action in actions:
+                        action_type = action.get("type", {})
 
-                    if action_type == "bounce":
-                        axis = action.get("axis", {})
+                        if action_type == "bounce":
+                            axis = action.get("axis", {})
 
-                        for entity in triggered_entities:
-                            hit_sprite = None
+                            for entity in triggered_entities:
+                                hit_sprite = None
 
-                            if entity in collision_pairs and len(collision_pairs[entity]) > 0:
-                                hit_sprite = collision_pairs[entity][0]
+                                if entity in collision_pairs and len(collision_pairs[entity]) > 0:
+                                    hit_sprite = collision_pairs[entity][0]
 
-                            if axis == "x":
-                                if hit_sprite:
-                                    if entity.vel_x > 0 and entity.rect.centerx < hit_sprite.rect.centerx:
-                                        entity.rect.right = hit_sprite.rect.left
+                                if axis == "x":
+                                    if hit_sprite:
+                                        if entity.vel_x > 0 and entity.rect.centerx < hit_sprite.rect.centerx:
+                                            entity.rect.right = hit_sprite.rect.left
+                                            entity.vel_x *= -1
+
+                                        elif entity.vel_x < 0 and entity.rect.centerx > hit_sprite.rect.centerx:
+                                            entity.rect.left = hit_sprite.rect.right
+                                            entity.vel_x *= -1
+                                    else:
                                         entity.vel_x *= -1
 
-                                    elif entity.vel_x < 0 and entity.rect.centerx > hit_sprite.rect.centerx:
-                                        entity.rect.left = hit_sprite.rect.right
-                                        entity.vel_x *= -1
-                                else:
-                                    entity.vel_x *= -1
-
-                            elif axis == "y":
-                                if hit_sprite:
-                                    if entity.vel_y > 0 and entity.rect.centery < hit_sprite.rect.centery:
-                                        entity.rect.bottom = hit_sprite.rect.top
+                                elif axis == "y":
+                                    if hit_sprite:
+                                        if entity.vel_y > 0 and entity.rect.centery < hit_sprite.rect.centery:
+                                            entity.rect.bottom = hit_sprite.rect.top
+                                            entity.vel_y *= -1
+                                        elif entity.vel_y < 0 and entity.rect.centery > hit_sprite.rect.centery:
+                                            entity.rect.top = hit_sprite.rect.bottom
+                                            entity.vel_y *= -1
+                                    else:
                                         entity.vel_y *= -1
-                                    elif entity.vel_y < 0 and entity.rect.centery > hit_sprite.rect.centery:
-                                        entity.rect.top = hit_sprite.rect.bottom
-                                        entity.vel_y *= -1
-                                else:
-                                    entity.vel_y *= -1
-                    
-                    elif action_type == "respawn":
-                        action_targets = action.get("targets", [])
-                        action_position = action.get("pos", None)
-                        action_random_position = action.get("random_position", False)
 
-                        entities_to_respawn = []
+                        elif action_type == "respawn":
+                            action_targets = action.get("targets", [])
+                            action_position = action.get("pos", None)
+                            action_random_position = action.get("random_position", False)
 
-                        if action_targets:
-                            for target in action_targets:
-                                entity = self.entities_by_name.get(target)
-                                if entity:
-                                    entities_to_respawn.append(entity)
+                            entities_to_respawn = []
 
-                        else:
-                            entities_to_respawn = triggered_entities
-
-
-                        for entity in entities_to_respawn:
-                            if action_position is not None:
-                                pos_w = self.cell_w * action_position[0]
-                                pos_h = self.cell_h * action_position[1]
-
-                            elif action_random_position:
-                                safe_grid = self.get_safe_random_positions()
-
-                                pos_w = self.cell_w * safe_grid[0]
-                                pos_h = self.cell_h * safe_grid[1]
-
-                            else:
-                                pos_w = 0
-                                pos_h = 0
-
-                            entity.rect.x = pos_w
-                            entity.rect.y = pos_h
-                            entity.vel_x = random.randint(10, 20)
-                            entity.vel_y = random.randint(10, 20)
-
-                            if not entity.alive():
-                                self.all_sprites.add(entity)
-
-                                group_name = entity.group
-                                if group_name in self.sprite_groups:
-                                    self.sprite_groups[group_name].add(entity)
-
-
-                    elif action_type == "damage":
-                        action_targets = action.get("targets", [])
-                        action_value = action.get("value", 1)
-
-                        if action_targets:
-                            for target in action_targets:
-                                if target in self.players:
-                                    self.players[target]["lives"] -= action_value
-
-                    elif action_type == "destroy":
-                        action_targets = action.get("targets", [])
-
-                        if action_targets:
-                            for target in action_targets:
-                                if target == "hit_1":
-                                    for entity in triggered_entities:
-                                        pygame.sprite.Sprite.kill(entity)
-                                        self.entities_by_name.pop(entity.name, None)
-
-                                elif target == "hit_2":
-                                    for entity in triggered_entities:
-                                        hit_sprites = collision_pairs.get(entity, [])
-                                        for hit_sprite in hit_sprites:
-                                            pygame.sprite.Sprite.kill(hit_sprite)
-                                            self.entities_by_name.pop(hit_sprite.name, None)
-
-                                else:
+                            if action_targets:
+                                for target in action_targets:
                                     entity = self.entities_by_name.get(target)
                                     if entity:
-                                        pygame.sprite.Sprite.kill(entity)
-                                        self.entities_by_name.pop(entity.name, None)
-
-                    elif action_type == "add_score":
-                        action_targets = action.get("targets", [])
-                        action_value = action.get("value", 1)
-
-                        if action_targets:
-                            for target in action_targets:
-                                for target in self.players:
-                                    self.players[target]["score"] += action_value
-
-                    elif action_type == "sound":
-                        sound_effect_path = action.get("sound_effect", None)
-
-                        if sound_effect_path:
-                            sound_effect = pygame.mixer.Sound(sound_effect_path)
-
-                            sound_effect.play()
-
-                    elif action_type == "spawn":
-                        template_name = action.get("template")
-                        pos = action.get("pos", [0, 0])
-                        velocity = action.get("velocity", [0, 0])
-
-                        origin_name = action.get("origin", None)
-                        direction = action.get("direction", None)
-
-                        template_data = self.templates.get(template_name)
-
-                        if template_data:
-                            spawned_data = copy.deepcopy(template_data)
-                            unique_id = str(time.time()) + str(random.randint(0, 1000))
-                            spawned_data['name'] = f"{template_name}_{unique_id}"
-
-                            new_entity = Entity(self.game_loader, spawned_data, self.cell_w, self.cell_h)
-
-                            if origin_name:
-                                origin_entity = self.entities_by_name.get(origin_name)
-
-                                if origin_entity:
-                                    if direction == "up":
-                                        new_entity.rect.bottom = origin_entity.rect.top
-                                        new_entity.rect.centerx = origin_entity.rect.centerx
-                                    elif direction == "down":
-                                        new_entity.rect.top = origin_entity.rect.bottom
-                                        new_entity.rect.centerx = origin_entity.rect.centerx
-                                    elif direction == "left":
-                                        new_entity.rect.right = origin_entity.rect.left
-                                        new_entity.rect.centery = origin_entity.rect.centery
-                                    elif direction == "right":
-                                        new_entity.rect.left = origin_entity.rect.right
-                                        new_entity.rect.centery = origin_entity.rect.centery
-                                else:
-                                    print(f"HIBA: Nem található '{origin_name}' nevű entitás a spawn-hoz!")
+                                        entities_to_respawn.append(entity)
 
                             else:
-                                if isinstance(pos[0], (list, tuple)):
-                                    min_x, max_x = min(pos[0][0], pos[1][0]), max(pos[0][0], pos[1][0])
-                                    min_y, max_y = min(pos[0][1], pos[1][1]), max(pos[0][1], pos[1][1])
+                                entities_to_respawn = triggered_entities
 
-                                    spawn_x = random.randint(min_x, max_x) if min_x != max_x else min_x
-                                    spawn_y = random.randint(min_y, max_y) if min_y != max_y else min_y
+
+                            for entity in entities_to_respawn:
+                                if action_position is not None:
+                                    pos_w = self.cell_w * action_position[0]
+                                    pos_h = self.cell_h * action_position[1]
+
+                                elif action_random_position:
+                                    safe_grid = self.get_safe_random_positions()
+
+                                    pos_w = self.cell_w * safe_grid[0]
+                                    pos_h = self.cell_h * safe_grid[1]
+
                                 else:
-                                    spawn_x = pos[0]
-                                    spawn_y = pos[1]
+                                    pos_w = 0
+                                    pos_h = 0
 
-                                new_entity.rect.x = spawn_x * self.cell_w
-                                new_entity.rect.y = spawn_y * self.cell_h
+                                entity.rect.x = pos_w
+                                entity.rect.y = pos_h
+                                entity.vel_x = random.randint(10, 20)
+                                entity.vel_y = random.randint(10, 20)
 
-                            new_entity.vel_x = velocity[0]
-                            new_entity.vel_y = velocity[1]
+                                if not entity.alive():
+                                    self.all_sprites.add(entity)
 
-                            new_entity.vel_x = velocity[0]
-                            new_entity.vel_y = velocity[1]
+                                    group_name = entity.group
+                                    if group_name in self.sprite_groups:
+                                        self.sprite_groups[group_name].add(entity)
 
-                            self.all_sprites.add(new_entity)
-                            self.entities_by_name[new_entity.name] = new_entity
 
-                            group_name = new_entity.group
-                            if group_name:
-                                if group_name not in self.sprite_groups:
-                                    self.sprite_groups[group_name] = pygame.sprite.Group()
-                                self.sprite_groups[group_name].add(new_entity)
+                        elif action_type == "damage":
+                            action_targets = action.get("targets", [])
+                            action_value = action.get("value", 1)
+
+                            if action_targets:
+                                for target in action_targets:
+                                    if target in self.players:
+                                        self.players[target]["lives"] -= action_value
+
+                        elif action_type == "destroy":
+                            action_targets = action.get("targets", [])
+
+                            if action_targets:
+                                for target in action_targets:
+                                    if target == "hit_1":
+                                        for entity in triggered_entities:
+                                            pygame.sprite.Sprite.kill(entity)
+                                            self.entities_by_name.pop(entity.name, None)
+
+                                    elif target == "hit_2":
+                                        for entity in triggered_entities:
+                                            hit_sprites = collision_pairs.get(entity, [])
+                                            for hit_sprite in hit_sprites:
+                                                pygame.sprite.Sprite.kill(hit_sprite)
+                                                self.entities_by_name.pop(hit_sprite.name, None)
+
+                                    else:
+                                        entity = self.entities_by_name.get(target)
+                                        if entity:
+                                            pygame.sprite.Sprite.kill(entity)
+                                            self.entities_by_name.pop(entity.name, None)
+
+                        elif action_type == "add_score":
+                            action_targets = action.get("targets", [])
+                            action_value = action.get("value", 1)
+
+                            if action_targets:
+                                for target in action_targets:
+                                    for target in self.players:
+                                        self.players[target]["score"] += action_value
+
+                        elif action_type == "sound":
+                            sound_effect_path = action.get("sound_effect", None)
+
+                            if sound_effect_path:
+                                sound_effect = pygame.mixer.Sound(sound_effect_path)
+
+                                sound_effect.play()
+
+                        elif action_type == "spawn":
+                            template_name = action.get("template")
+                            pos = action.get("pos", [0, 0])
+                            velocity = action.get("velocity", [0, 0])
+
+                            origin_name = action.get("origin", None)
+                            direction = action.get("direction", None)
+
+                            template_data = self.templates.get(template_name)
+
+                            if template_data:
+                                spawned_data = copy.deepcopy(template_data)
+                                unique_id = str(time.time()) + str(random.randint(0, 1000))
+                                spawned_data['name'] = f"{template_name}_{unique_id}"
+
+                                new_entity = Entity(self.game_loader, spawned_data, self.cell_w, self.cell_h)
+
+                                if origin_name:
+                                    origin_entity = self.entities_by_name.get(origin_name)
+
+                                    if origin_entity:
+                                        if direction == "up":
+                                            new_entity.rect.bottom = origin_entity.rect.top
+                                            new_entity.rect.centerx = origin_entity.rect.centerx
+                                        elif direction == "down":
+                                            new_entity.rect.top = origin_entity.rect.bottom
+                                            new_entity.rect.centerx = origin_entity.rect.centerx
+                                        elif direction == "left":
+                                            new_entity.rect.right = origin_entity.rect.left
+                                            new_entity.rect.centery = origin_entity.rect.centery
+                                        elif direction == "right":
+                                            new_entity.rect.left = origin_entity.rect.right
+                                            new_entity.rect.centery = origin_entity.rect.centery
+                                    else:
+                                        print(f"HIBA: Nem található '{origin_name}' nevű entitás a spawn-hoz!")
+
+                                else:
+                                    if isinstance(pos[0], (list, tuple)):
+                                        min_x, max_x = min(pos[0][0], pos[1][0]), max(pos[0][0], pos[1][0])
+                                        min_y, max_y = min(pos[0][1], pos[1][1]), max(pos[0][1], pos[1][1])
+
+                                        spawn_x = random.randint(min_x, max_x) if min_x != max_x else min_x
+                                        spawn_y = random.randint(min_y, max_y) if min_y != max_y else min_y
+                                    else:
+                                        spawn_x = pos[0]
+                                        spawn_y = pos[1]
+
+                                    new_entity.rect.x = spawn_x * self.cell_w
+                                    new_entity.rect.y = spawn_y * self.cell_h
+
+                                new_entity.vel_x = velocity[0]
+                                new_entity.vel_y = velocity[1]
+
+                                new_entity.vel_x = velocity[0]
+                                new_entity.vel_y = velocity[1]
+
+                                self.all_sprites.add(new_entity)
+                                self.entities_by_name[new_entity.name] = new_entity
+
+                                group_name = new_entity.group
+                                if group_name:
+                                    if group_name not in self.sprite_groups:
+                                        self.sprite_groups[group_name] = pygame.sprite.Group()
+                                    self.sprite_groups[group_name].add(new_entity)
+
+        except Exception as exc:
+            print(f"RULE PROCESSOR ERROR: Hibás szabály a YAML-ben! Részletek: {exc}")
+            self.msg_popup("RULE ERROR", [255, 0, 0], "Error in game rules!")
+            self.playing = False
+            self.is_game_selected = False
+            self.curr_menu = self.game_selector
 
 
 
