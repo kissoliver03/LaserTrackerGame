@@ -1,0 +1,335 @@
+meta:
+  title: "breakout"
+  version: "1.0.0"
+
+globals:
+  lives: 90000
+  score: 150
+
+layout:
+  map_size: [32, 18]
+  background_color: [0, 0, 0] # Sötétkék űr-háttér
+
+inputs:
+  - name: "player1"
+    source: "laser_red"
+    target: "paddle"
+
+templates:
+  - name: "coin"
+    group: "coins"
+    type: "dynamic"
+    size: [1, 1]
+    shape: "circle"
+    model: "assets/models/coin.png"
+
+  - name: "extra_ball"
+    group: "balls"
+    type: "dynamic"
+    size: [1, 1]
+    shape: "circle"
+    model: "assets/models/ball.png"
+
+entities:
+  # --- JÁTÉKOS ÉS KEZDŐ LABDA ---
+  - name: "paddle"
+    group: "paddles"
+    type: "kinematic"
+    grid_pos: [14, 16]
+    size: [1, 4]
+    shape: "rect"
+    model: "assets/models/paddle.png"
+    constraints: ["x"]
+    rotation: 270
+
+  - name: "ball_main"
+    group: "balls"
+    type: "dynamic"
+    grid_pos: [15, 14]
+    size: [1, 1]
+    shape: "circle"
+    model: "assets/models/ball.png"
+    velocity: [10, -10]
+
+  # --- PÁLYA SZÉLEI (FALAK) ---
+  - name: "wall_top"
+    group: "walls_x"
+    type: "static"
+    grid_pos: [0, 0]
+    size: [32, 1]
+    shape: "rect"
+    model: "assets/models/wall.png"
+    tile: true
+
+  - name: "wall_left"
+    group: "walls_y"
+    type: "static"
+    grid_pos: [0, 1]
+    size: [1, 17]
+    shape: "rect"
+    model: "assets/models/wall.png"
+    tile: true
+
+  - name: "wall_right"
+    group: "walls_y"
+    type: "static"
+    grid_pos: [31, 1]
+    size: [1, 17]
+    shape: "rect"
+    model: "assets/models/wall.png"
+    tile: true
+      
+      # --- 0. SOR (Y: 1) ---
+  - { name: "b_0_1", group: "bricks", type: "static", grid_pos: [ 1, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_2", group: "bricks", type: "static", grid_pos: [ 3, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_3", group: "bricks", type: "static", grid_pos: [ 5, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_4", group: "bricks", type: "static", grid_pos: [ 7, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_5", group: "bricks", type: "static", grid_pos: [ 9, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_6", group: "bricks", type: "static", grid_pos: [ 11, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_7", group: "bricks", type: "static", grid_pos: [ 13, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_8", group: "bricks", type: "static", grid_pos: [ 15, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_9", group: "bricks", type: "static", grid_pos: [ 17, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_10", group: "bricks", type: "static", grid_pos: [ 19, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_11", group: "bricks", type: "static", grid_pos: [ 21, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_12", group: "bricks", type: "static", grid_pos: [ 23, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_13", group: "bricks", type: "static", grid_pos: [ 25, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_14", group: "bricks", type: "static", grid_pos: [ 27, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_0_15", group: "bricks", type: "static", grid_pos: [ 29, 1 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+
+# --- 1. SOR (Y: 2) ---
+  - { name: "b_1_1", group: "bricks", type: "static", grid_pos: [ 1, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_2", group: "bricks", type: "static", grid_pos: [ 3, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_3", group: "bricks", type: "static", grid_pos: [ 5, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_4", group: "bricks", type: "static", grid_pos: [ 7, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_5", group: "bricks", type: "static", grid_pos: [ 9, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_6", group: "bricks", type: "static", grid_pos: [ 11, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_7", group: "bricks", type: "static", grid_pos: [ 13, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_8", group: "bricks", type: "static", grid_pos: [ 15, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_9", group: "bricks", type: "static", grid_pos: [ 17, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_10", group: "bricks", type: "static", grid_pos: [ 19, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_11", group: "bricks", type: "static", grid_pos: [ 21, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_12", group: "bricks", type: "static", grid_pos: [ 23, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_13", group: "bricks", type: "static", grid_pos: [ 25, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_14", group: "bricks", type: "static", grid_pos: [ 27, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_1_15", group: "bricks", type: "static", grid_pos: [ 29, 2 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+
+# --- 2. SOR (Y: 3) ---
+  - { name: "b_2_1", group: "bricks", type: "static", grid_pos: [ 1, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_2", group: "bricks", type: "static", grid_pos: [ 3, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_3", group: "bricks", type: "static", grid_pos: [ 5, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_4", group: "bricks", type: "static", grid_pos: [ 7, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_5", group: "bricks", type: "static", grid_pos: [ 9, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_6", group: "bricks", type: "static", grid_pos: [ 11, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_7", group: "bricks", type: "static", grid_pos: [ 13, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_8", group: "bricks", type: "static", grid_pos: [ 15, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_9", group: "bricks", type: "static", grid_pos: [ 17, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_10", group: "bricks", type: "static", grid_pos: [ 19, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_11", group: "bricks", type: "static", grid_pos: [ 21, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_12", group: "bricks", type: "static", grid_pos: [ 23, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_13", group: "bricks", type: "static", grid_pos: [ 25, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_14", group: "bricks", type: "static", grid_pos: [ 27, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_2_15", group: "bricks", type: "static", grid_pos: [ 29, 3 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+
+# --- 3. SOR (Y: 4) ---
+  - { name: "b_3_1", group: "bricks", type: "static", grid_pos: [ 1, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_2", group: "bricks", type: "static", grid_pos: [ 3, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_3", group: "bricks", type: "static", grid_pos: [ 5, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_4", group: "bricks", type: "static", grid_pos: [ 7, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_5", group: "bricks", type: "static", grid_pos: [ 9, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_6", group: "bricks", type: "static", grid_pos: [ 11, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_7", group: "bricks", type: "static", grid_pos: [ 13, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_8", group: "bricks", type: "static", grid_pos: [ 15, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_9", group: "bricks", type: "static", grid_pos: [ 17, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_10", group: "bricks", type: "static", grid_pos: [ 19, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_11", group: "bricks", type: "static", grid_pos: [ 21, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_12", group: "bricks", type: "static", grid_pos: [ 23, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_13", group: "bricks", type: "static", grid_pos: [ 25, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_14", group: "bricks", type: "static", grid_pos: [ 27, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_3_15", group: "bricks", type: "static", grid_pos: [ 29, 4 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+
+# --- 4. SOR (Y: 5) ---
+  - { name: "b_4_1", group: "bricks", type: "static", grid_pos: [ 1, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_2", group: "bricks", type: "static", grid_pos: [ 3, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_3", group: "bricks", type: "static", grid_pos: [ 5, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_4", group: "bricks", type: "static", grid_pos: [ 7, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_5", group: "bricks", type: "static", grid_pos: [ 9, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_6", group: "bricks", type: "static", grid_pos: [ 11, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_7", group: "bricks", type: "static", grid_pos: [ 13, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_8", group: "bricks", type: "static", grid_pos: [ 15, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_9", group: "bricks", type: "static", grid_pos: [ 17, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_10", group: "bricks", type: "static", grid_pos: [ 19, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_11", group: "bricks", type: "static", grid_pos: [ 21, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_12", group: "bricks", type: "static", grid_pos: [ 23, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_13", group: "bricks", type: "static", grid_pos: [ 25, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_14", group: "bricks", type: "static", grid_pos: [ 27, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_4_15", group: "bricks", type: "static", grid_pos: [ 29, 5 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+
+# --- 5. SOR (Y: 6) ---
+  - { name: "b_5_1", group: "bricks", type: "static", grid_pos: [ 1, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_2", group: "bricks", type: "static", grid_pos: [ 3, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_3", group: "bricks", type: "static", grid_pos: [ 5, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_4", group: "bricks", type: "static", grid_pos: [ 7, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_5", group: "bricks", type: "static", grid_pos: [ 9, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_6", group: "bricks", type: "static", grid_pos: [ 11, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_7", group: "bricks", type: "static", grid_pos: [ 13, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_8", group: "bricks", type: "static", grid_pos: [ 15, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_9", group: "bricks", type: "static", grid_pos: [ 17, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_10", group: "bricks", type: "static", grid_pos: [ 19, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_11", group: "bricks", type: "static", grid_pos: [ 21, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_12", group: "bricks", type: "static", grid_pos: [ 23, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_13", group: "bricks", type: "static", grid_pos: [ 25, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_14", group: "bricks", type: "static", grid_pos: [ 27, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_5_15", group: "bricks", type: "static", grid_pos: [ 29, 6 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+
+# --- 6. SOR (Y: 7) ---
+  - { name: "b_6_1", group: "bricks", type: "static", grid_pos: [ 1, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_2", group: "bricks", type: "static", grid_pos: [ 3, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_3", group: "bricks", type: "static", grid_pos: [ 5, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_4", group: "bricks", type: "static", grid_pos: [ 7, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_5", group: "bricks", type: "static", grid_pos: [ 9, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_6", group: "bricks", type: "static", grid_pos: [ 11, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_7", group: "bricks", type: "static", grid_pos: [ 13, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_8", group: "bricks", type: "static", grid_pos: [ 15, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_9", group: "bricks", type: "static", grid_pos: [ 17, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_10", group: "bricks", type: "static", grid_pos: [ 19, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_11", group: "bricks", type: "static", grid_pos: [ 21, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_12", group: "bricks", type: "static", grid_pos: [ 23, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_13", group: "bricks", type: "static", grid_pos: [ 25, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_14", group: "bricks", type: "static", grid_pos: [ 27, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_6_15", group: "bricks", type: "static", grid_pos: [ 29, 7 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+
+# --- 7. SOR (Y: 8) ---
+  - { name: "b_7_1", group: "bricks", type: "static", grid_pos: [ 1, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_2", group: "bricks", type: "static", grid_pos: [ 3, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_3", group: "bricks", type: "static", grid_pos: [ 5, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_4", group: "bricks", type: "static", grid_pos: [ 7, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_5", group: "bricks", type: "static", grid_pos: [ 9, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_6", group: "bricks", type: "static", grid_pos: [ 11, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_7", group: "bricks", type: "static", grid_pos: [ 13, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_8", group: "bricks", type: "static", grid_pos: [ 15, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_9", group: "bricks", type: "static", grid_pos: [ 17, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_10", group: "bricks", type: "static", grid_pos: [ 19, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_11", group: "bricks", type: "static", grid_pos: [ 21, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_12", group: "bricks", type: "static", grid_pos: [ 23, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_13", group: "bricks", type: "static", grid_pos: [ 25, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_14", group: "bricks", type: "static", grid_pos: [ 27, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_7_15", group: "bricks", type: "static", grid_pos: [ 29, 8 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+
+# --- 8. SOR (Y: 9) ---
+  - { name: "b_8_1", group: "bricks", type: "static", grid_pos: [ 1, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_2", group: "bricks", type: "static", grid_pos: [ 3, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_3", group: "bricks", type: "static", grid_pos: [ 5, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_4", group: "bricks", type: "static", grid_pos: [ 7, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_5", group: "bricks", type: "static", grid_pos: [ 9, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_6", group: "bricks", type: "static", grid_pos: [ 11, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_7", group: "bricks", type: "static", grid_pos: [ 13, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_8", group: "bricks", type: "static", grid_pos: [ 15, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_9", group: "bricks", type: "static", grid_pos: [ 17, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_10", group: "bricks", type: "static", grid_pos: [ 19, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_11", group: "bricks", type: "static", grid_pos: [ 21, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_12", group: "bricks", type: "static", grid_pos: [ 23, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_13", group: "bricks", type: "static", grid_pos: [ 25, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_14", group: "bricks", type: "static", grid_pos: [ 27, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_8_15", group: "bricks", type: "static", grid_pos: [ 29, 9 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+
+# --- 9. SOR (Y: 10) ---
+  - { name: "b_9_1", group: "bricks", type: "static", grid_pos: [ 1, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_2", group: "bricks", type: "static", grid_pos: [ 3, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_3", group: "bricks", type: "static", grid_pos: [ 5, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_4", group: "bricks", type: "static", grid_pos: [ 7, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_5", group: "bricks", type: "static", grid_pos: [ 9, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_6", group: "bricks", type: "static", grid_pos: [ 11, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_7", group: "bricks", type: "static", grid_pos: [ 13, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_8", group: "bricks", type: "static", grid_pos: [ 15, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_9", group: "bricks", type: "static", grid_pos: [ 17, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_10", group: "bricks", type: "static", grid_pos: [ 19, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_11", group: "bricks", type: "static", grid_pos: [ 21, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_12", group: "bricks", type: "static", grid_pos: [ 23, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_13", group: "bricks", type: "static", grid_pos: [ 25, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_14", group: "bricks", type: "static", grid_pos: [ 27, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+  - { name: "b_9_15", group: "bricks", type: "static", grid_pos: [ 29, 10 ], size: [ 2, 1 ], model: "assets/models/breakout_tile.png" }
+
+rules:
+  - condition:
+      type: "collision"
+      targets: ["balls", "paddles"]
+    action:
+      - type: "bounce"
+        axis: "y"
+
+  - condition:
+      type: "collision"
+      targets: ["balls", "walls_x"]
+    action:
+      - type: "bounce"
+        axis: "y"
+
+  - condition:
+      type: "collision"
+      targets: ["balls", "walls_y"]
+    action:
+      - type: "bounce"
+        axis: "x"
+
+  - condition:
+      type: "collision"
+      targets: ["balls", "bricks"]
+    action:
+      - type: "bounce"
+        axis: "y"
+      - type: "destroy"
+        targets: ["hit_2"]
+      - type: "add_score"
+        targets: ["player1"]
+        value: 1
+
+  - condition:
+      type: "position"
+      targets: ["coins"]
+      axis: "y"
+      operator: ">"
+      value: 18
+    action:
+      - type: "destroy"
+        targets: ["hit_1"]
+
+  # 6. Labda leesése a pályáról (sebződés)
+  - condition:
+      type: "position"
+      targets: ["balls"]
+      axis: "y"
+      operator: ">"
+      value: 18
+    action:
+      - type: "destroy"
+        targets: ["hit_1"]
+      - type: "damage"
+        targets: ["player1"]
+        value: 1
+      - type: "respawn"
+        targets: ["ball_main"]
+        pos: [15, 14]
+
+  # 7. Érme random lerakása 10 másodpercenként fentről
+  - condition:
+      type: "timer"
+      interval: 5000
+      repeat: true
+    action:
+      - type: "spawn"
+        template: "coin"
+        pos: [[2, 2], [28, 2]]
+        velocity: [0, 4]
+
+  # 8. Ütő felveszi az érmét -> Új labda!
+  - condition:
+      type: "collision"
+      targets: ["coins", "paddles"]
+    action:
+      - type: "destroy"
+        targets: ["hit_1"]
+      - type: "spawn"
+        template: "extra_ball"
+        origin: "paddle"
+        direction: "up"
+        velocity: [8, -8]
