@@ -247,6 +247,7 @@ class Game:
                             else:
                                 target_entity.rect.center = (x, y)
 
+            self.draw_hud()
 
             self.window.blit(self.display, (0, 0))
             pygame.display.update()
@@ -289,6 +290,26 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.center = (x, y)
         self.display.blit(text_surface, text_rect)
+
+    def draw_hud(self):
+        font_size = int(50 * self.ratio)
+        font = pygame.font.Font(self.font_name, font_size)
+
+        current_lives = 0
+        current_score = 0
+
+        if self.players:
+            first_player = list(self.players.keys())[0]
+            current_lives = self.players[first_player].get("lives", 0)
+            current_score = self.players[first_player].get("score", 0)
+
+        lives_surface = font.render(f"LIVES: {current_lives}", True, self.WHITE)
+        lives_rect = lives_surface.get_rect(topleft=(int(20 * self.ratio), int(20 * self.ratio)))
+        self.display.blit(lives_surface, lives_rect)
+
+        score_surface = font.render(f"SCORE: {current_score}", True, self.WHITE)
+        score_rect = score_surface.get_rect(topright=(self.TARGET_W - int(20 * self.ratio), int(20 * self.ratio)))
+        self.display.blit(score_surface, score_rect)
 
     def msg_popup(self, title, title_color, text):
         popup_running = True
