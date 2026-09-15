@@ -8,6 +8,7 @@ globals:
 layout:
   map_size: [ , ]
   background_color: [ , , ]
+  background_image: ""
 
 entities:
   - name: " "
