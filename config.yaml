@@ -1,0 +1,68 @@
+meta:
+  title: " "
+  version: " "
+
+globals:
+  lives:
+
+layout:
+  map_size: [ , ]
+  background_color: [ , , ]
+
+entities:
+  - name: " "
+    group: " "
+    type: "dynamic / kinematic / static"
+    velocity: [ , ]
+    grid_pos: [ , ]
+    size: [ , ]
+    shape: "rect / circle"
+    model: " "
+    rotation:
+    flip: "x / y / both"
+    constraints: ["x / y"]
+    tile: true / false
+    behavior: "vertical / horizontal"
+    path: [ , ]
+    
+
+templates:
+  - name: " "
+    group: " "
+    type: "dynamic / kinematic / static"
+    velocity: [ , ]
+    grid_pos: [ , ]
+    size: [ , ]
+    shape: "rect / circle"
+    model: " "
+    rotation:
+    flip: "x / y / both"
+    constraints: ["x / y"]
+    tile: true / false
+
+inputs:
+  - name: " "
+    source: " "
+    target: " "
+
+rules:
+  - condition:
+      type: "collision / position / timer / count"
+      interval: x
+      repeat: true / false
+      targets: ["group","group"]
+      axis: "x / y"
+      operator: "< / > / <= / >="
+      value: 
+  - action:
+    - type: "damage / respawn / bounce_x / bounce_y / destroy / add_score / sound / spawn / flip"
+      axis: "x / y" (flip: + "both")
+      target: ["hit_1 / hit_2"]
+      amount: 
+      pos: [ , ]
+      random_position: true / false
+      sound_effect: " "
+      template: " "
+      velocity: [ , ]
+      origin: " "
+      direction: "up / down / right / left"
