@@ -31,6 +31,22 @@ class GameLoader:
 
                         self.game.background_color = layout_data.get('background_color', [0, 0, 0])
 
+                        bg_image_path = layout_data.get('background_image', None)
+                        self.game.background_image = None
+
+                        if bg_image_path:
+                            abs_bg_path = os.path.abspath(bg_image_path)
+                            if os.path.exists(abs_bg_path):
+                                try:
+                                    loaded_bg = pygame.image.load(abs_bg_path).convert_alpha()
+                                    self.game.background_image = pygame.transform.scale(
+                                        loaded_bg, (self.game.TARGET_W, self.game.TARGET_H)
+                                    )
+                                except Exception as e:
+                                    print(f"GAMELOADER: Hiba a háttérkép betöltésekor: {e}")
+                            else:
+                                print(f"GAMELOADER: Nem található a háttérkép: {abs_bg_path}")
+
                         self.game.cell_w = self.game.TARGET_W / map_size[0]
                         self.game.cell_h = self.game.TARGET_H / map_size[1]
 

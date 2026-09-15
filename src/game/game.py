@@ -90,6 +90,8 @@ class Game:
         self.sound_effects = {}
         self.music_enabled = True
 
+        self.background_image = None
+
 
 
     def game_loop(self):
@@ -128,7 +130,10 @@ class Game:
                 self.curr_menu = self.game_selector
                 break
 
-            self.display.fill(self.background_color)
+            if self.background_image:
+                self.display.blit(self.background_image, (0, 0))
+            else:
+                self.display.fill(self.background_color)
 
             self.all_sprites.draw(self.display)
 
@@ -196,8 +201,10 @@ class Game:
                     self.curr_menu = self.game_selector
                     break
 
-
-            self.display.fill(self.background_color)
+            if self.background_image:
+                self.display.blit(self.background_image, (0, 0))
+            else:
+                self.display.fill(self.background_color)
 
             self.all_sprites.update()
             self.rule_processor()
