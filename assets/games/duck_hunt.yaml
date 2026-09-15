@@ -4,11 +4,11 @@ meta:
 
 globals:
   lives: 5
-  score: 15
+  score: 20
 
 layout:
   map_size: [16, 9]
-  background_color: "assets/models/duckhunt_bg.png"
+  background_image: "assets/models/duckhunt_bg.png"
 
 inputs:
   - name: "player1"
@@ -23,6 +23,14 @@ templates:
     type: "dynamic"
     model: "assets/models/duck.png"
 
+  - name: "duck_rotated"
+    group: "ducks"
+    size: [ 1, 1 ]
+    shape: "rect"
+    type: "dynamic"
+    model: "assets/models/duck.png"
+    flip: "x"
+
 entities:
   - name: "rifle"
     group: "rifle"
@@ -35,7 +43,7 @@ entities:
 rules:
   - condition:
       type: "timer"
-      interval: 1000
+      interval: 750
       repeat: true
     action:
       - type: "spawn"
@@ -44,11 +52,26 @@ rules:
         velocity: [ -5, -4 ]
 
   - condition:
+      type: "timer"
+      interval: 1300
+      repeat: true
+    action:
+      - type: "spawn"
+        template: "duck_rotated"
+        pos: [ [ 0, 5 ], [ 16, 9 ] ]
+        velocity: [ 5, -4 ]
+
+  - condition:
       type: "collision"
       targets: [ "rifle", "ducks" ]
     action:
       - type: "destroy"
         targets: ["hit_2"]
+      - type: "sound"
+        sound_effect: "assets/sound/duckhunt_rifle.mp3"
+      - type: "add_score"
+        targets: ["player1"]
+        value: 1
 
   - condition:
       type: "position"
@@ -71,3 +94,16 @@ rules:
     action:
       - type: "bounce"
         axis: "x"
+      - type: "flip"
+        axis: "x"
+
+  - condition:
+      type: "position"
+      targets: [ "ducks" ]
+      axis: "y"
+      operator: "<"
+      value: 0
+    action:
+      - type: "damage"
+        targets: ["player1"]
+        value: 1
