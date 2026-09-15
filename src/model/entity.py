@@ -68,6 +68,10 @@ class Entity(pygame.sprite.Sprite):
                 radius = int(min(width, height) / 2)
                 pygame.draw.circle(self.image, [255, 255, 255], [center_x, center_y], radius)
 
+        self.original_image = self.image.copy()
+        self.is_flipped_x = False
+        self.is_flipped_y = False
+
         self.rect = self.image.get_rect(topleft=(x_pos, y_pos))
 
         velocity = data_dict.get('velocity', [0, 0])
@@ -85,6 +89,17 @@ class Entity(pygame.sprite.Sprite):
             elif self.behavior == 'vertical':
                 self.min_limit = int(self.path[0] * cell_h)
                 self.max_limit = int(self.path[1] * cell_h)
+
+    def flip_entity(self, flip_x=True, flip_y=False):
+        if flip_x:
+            self.is_flipped_x = not self.is_flipped_x
+        if flip_y:
+            self.is_flipped_y = not self.is_flipped_y
+
+        old_center = self.rect.center
+
+        self.image = pygame.transform.flip(self.original_image, self.is_flipped_x, self.is_flipped_y)
+        self.rect = self.image.get_rect(center=old_center)
 
 
     def update(self):

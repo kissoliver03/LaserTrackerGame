@@ -603,6 +603,28 @@ class Game:
                                         self.sprite_groups[group_name] = pygame.sprite.Group()
                                     self.sprite_groups[group_name].add(new_entity)
 
+                        elif action_type == "flip":
+                            action_targets = action.get("targets", [])
+                            flip_axis = action.get("axis", "x")
+
+                            entities_to_flip = []
+
+                            if action_targets:
+                                for target in action_targets:
+                                    if target in self.entities_by_name:
+                                        entities_to_flip.append(self.entities_by_name[target])
+                                    elif target in self.sprite_groups:
+                                        entities_to_flip.extend(self.sprite_groups[target].sprites())
+
+                            else:
+                                entities_to_flip = triggered_entities
+
+                            for entity in entities_to_flip:
+                                if hasattr(entity, 'flip_entity'):
+                                    do_x = flip_axis in ["x", "both"]
+                                    do_y = flip_axis in ["y", "both"]
+                                    entity.flip_entity(do_x, do_y)
+
         except Exception as exc:
             print(f"RULE PROCESSOR ERROR: Hibás szabály a YAML-ben! Részletek: {exc}")
             self.msg_popup("RULE ERROR", [255, 0, 0], "Error in game rules!")

@@ -1,0 +1,73 @@
+meta:
+  title: "duck_hunt"
+  version: "1.0.0"
+
+globals:
+  lives: 5
+  score: 15
+
+layout:
+  map_size: [16, 9]
+  background_color: "assets/models/duckhunt_bg.png"
+
+inputs:
+  - name: "player1"
+    source: "laser_red"
+    target: "rifle"
+
+templates:
+  - name: "duck"
+    group: "ducks"
+    size: [1, 1]
+    shape: "rect"
+    type: "dynamic"
+    model: "assets/models/duck.png"
+
+entities:
+  - name: "rifle"
+    group: "rifle"
+    size: [1, 1]
+    grid_pos: [9, 5]
+    shape: "circle"
+    type: "kinematic"
+    model: "assets/models/crosshair.png"
+
+rules:
+  - condition:
+      type: "timer"
+      interval: 1000
+      repeat: true
+    action:
+      - type: "spawn"
+        template: "duck"
+        pos: [[0, 5], [16, 9]]
+        velocity: [ -5, -4 ]
+
+  - condition:
+      type: "collision"
+      targets: [ "rifle", "ducks" ]
+    action:
+      - type: "destroy"
+        targets: ["hit_2"]
+
+  - condition:
+      type: "position"
+      targets: ["ducks"]
+      axis: "x"
+      operator: "<"
+      value: 0
+    action:
+      - type: "bounce"
+        axis: "x"
+      - type: "flip"
+        axis: "x"
+
+  - condition:
+      type: "position"
+      targets: [ "ducks" ]
+      axis: "x"
+      operator: ">"
+      value: 16
+    action:
+      - type: "bounce"
+        axis: "x"
