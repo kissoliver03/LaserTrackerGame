@@ -74,6 +74,12 @@ class Entity(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(topleft=(x_pos, y_pos))
 
+        template_flip = data_dict.get('flip', None)
+        if template_flip:
+            do_x = template_flip in ["x", "both"]
+            do_y = template_flip in ["y", "both"]
+            self.flip_entity(do_x, do_y)
+
         velocity = data_dict.get('velocity', [0, 0])
         self.vel_x = velocity[0]
         self.vel_y = velocity[1]
