@@ -107,3 +107,5 @@ rules:
       - type: "damage"
         targets: ["player1"]
         value: 1
+      - type: "destroy"
+        targets: ["hit_1"]
