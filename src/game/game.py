@@ -295,21 +295,29 @@ class Game:
         font_size = int(50 * self.ratio)
         font = pygame.font.Font(self.font_name, font_size)
 
-        current_lives = 0
-        current_score = 0
+        start_y = int(20 * self.ratio)
+        line_spacing = int(60 * self.ratio)
 
-        if self.players:
-            first_player = list(self.players.keys())[0]
-            current_lives = self.players[first_player].get("lives", 0)
-            current_score = self.players[first_player].get("score", 0)
+        for index, (player_name, stats) in enumerate(self.players.items()):
+            current_lives = stats.get("lives", 0)
+            current_score = stats.get("score", 0)
 
-        lives_surface = font.render(f"LIVES: {current_lives}", True, self.WHITE)
-        lives_rect = lives_surface.get_rect(topleft=(int(20 * self.ratio), int(20 * self.ratio)))
-        self.display.blit(lives_surface, lives_rect)
+            current_y = start_y + (index * line_spacing)
 
-        score_surface = font.render(f"SCORE: {current_score}", True, self.WHITE)
-        score_rect = score_surface.get_rect(topright=(self.TARGET_W - int(20 * self.ratio), int(20 * self.ratio)))
-        self.display.blit(score_surface, score_rect)
+            if len(self.players) > 1:
+                display_name = player_name.upper() + " "
+            else:
+                display_name = ""
+
+            lives_text = f"{display_name}LIVES: {current_lives}"
+            lives_surface = font.render(lives_text, True, self.WHITE)
+            lives_rect = lives_surface.get_rect(topleft=(int(20 * self.ratio), current_y))
+            self.display.blit(lives_surface, lives_rect)
+
+            score_text = f"{display_name}SCORE: {current_score}"
+            score_surface = font.render(score_text, True, self.WHITE)
+            score_rect = score_surface.get_rect(topright=(self.TARGET_W - int(20 * self.ratio), current_y))
+            self.display.blit(score_surface, score_rect)
 
     def msg_popup(self, title, title_color, text):
         popup_running = True
