@@ -76,6 +76,7 @@ rules:
       targets: ["balls", "paddles"]
     action:
       - type: "bounce"
+        mode: "paddle"
         axis: "x"
       - type: "sound"
         sound_effect: "assets/sound/bounce.mp3"

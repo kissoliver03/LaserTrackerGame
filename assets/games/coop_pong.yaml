@@ -73,6 +73,7 @@ rules:
     action:
       - type: "bounce"
         axis: "x"
+        mode: "paddle"
       - type: "sound"
         sound_effect: "assets/sound/bounce.mp3"
 

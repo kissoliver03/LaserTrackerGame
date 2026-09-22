@@ -256,6 +256,9 @@ rules:
     action:
       - type: "bounce"
         axis: "y"
+        mode: "paddle"
+      - type: "sound"
+        sound_effect: "assets/sound/bounce.mp3"
 
   - condition:
       type: "collision"
@@ -282,6 +285,8 @@ rules:
       - type: "add_score"
         targets: ["player1"]
         value: 1
+      - type: "sound"
+        sound_effect: "assets/sound/brick_break.mp3"
 
   - condition:
       type: "position"
@@ -293,7 +298,7 @@ rules:
       - type: "destroy"
         targets: ["hit_1"]
 
-  # Labda leesése a pályáról (sebződés)
+  # Labda leesése a pályáról
   - condition:
       type: "position"
       targets: ["balls"]
@@ -336,3 +341,5 @@ rules:
         origin: "paddle"
         direction: "up"
         velocity: [8, -8]
+      - type: "sound"
+        sound_effect: "assets/sound/powerup.mp3"
