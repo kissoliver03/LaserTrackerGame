@@ -4,7 +4,7 @@ meta:
 
 globals:
   lives: 5
-  score: 20
+  score: 30
 
 layout:
   map_size: [16, 9]
