@@ -449,7 +449,10 @@ class Game:
                         action_type = action.get("type", {})
 
                         if action_type == "bounce":
-                            axis = action.get("axis", {})
+                            axis = action.get("axis", "x")
+                            mode = action.get("mode", "normal")
+
+                            max_deviation = 15
 
                             for entity in triggered_entities:
                                 hit_sprite = None
@@ -463,9 +466,19 @@ class Game:
                                             entity.rect.right = hit_sprite.rect.left
                                             entity.vel_x *= -1
 
+                                            if mode == "paddle":
+                                                offset = entity.rect.centery - hit_sprite.rect.centery
+                                                normalized = offset / (hit_sprite.rect.height / 2)
+                                                entity.vel_y = normalized * max_deviation
+
                                         elif entity.vel_x < 0 and entity.rect.centerx > hit_sprite.rect.centerx:
                                             entity.rect.left = hit_sprite.rect.right
                                             entity.vel_x *= -1
+
+                                            if mode == "paddle":
+                                                offset = entity.rect.centery - hit_sprite.rect.centery
+                                                normalized = offset / (hit_sprite.rect.height / 2)
+                                                entity.vel_y = normalized * max_deviation
                                     else:
                                         entity.vel_x *= -1
 
@@ -474,9 +487,20 @@ class Game:
                                         if entity.vel_y > 0 and entity.rect.centery < hit_sprite.rect.centery:
                                             entity.rect.bottom = hit_sprite.rect.top
                                             entity.vel_y *= -1
+
+                                            if mode == "paddle":
+                                                offset = entity.rect.centerx - hit_sprite.rect.centerx
+                                                normalized = offset / (hit_sprite.rect.width / 2)
+                                                entity.vel_x = normalized * max_deviation
+
                                         elif entity.vel_y < 0 and entity.rect.centery > hit_sprite.rect.centery:
                                             entity.rect.top = hit_sprite.rect.bottom
                                             entity.vel_y *= -1
+
+                                            if mode == "paddle":
+                                                offset = entity.rect.centerx - hit_sprite.rect.centerx
+                                                normalized = offset / (hit_sprite.rect.width / 2)
+                                                entity.vel_x = normalized * max_deviation
                                     else:
                                         entity.vel_y *= -1
 
