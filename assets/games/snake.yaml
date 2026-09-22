@@ -255,7 +255,7 @@ entities:
     grid_pos: [2, 0]
     size: [1, 8]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall"
@@ -264,7 +264,7 @@ entities:
     grid_pos: [2, 8]
     size: [5, 1]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall"
@@ -273,7 +273,7 @@ entities:
     grid_pos: [7, 8]
     size: [1, 4]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_top_path_1"
@@ -282,7 +282,7 @@ entities:
     grid_pos: [ 8, 11 ]
     size: [ 4, 1 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_left_path_up_1"
@@ -291,7 +291,7 @@ entities:
     grid_pos: [ 11, 2 ]
     size: [ 1, 10 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_bottom_path_2"
@@ -300,7 +300,7 @@ entities:
     grid_pos: [ 14, 5 ]
     size: [ 4, 1 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_left_path_down_2"
@@ -309,7 +309,7 @@ entities:
     grid_pos: [ 17, 6 ]
     size: [ 1, 10 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_top_path_3"
@@ -318,7 +318,7 @@ entities:
     grid_pos: [ 20, 13 ]
     size: [ 4, 1 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_left_path_up_2"
@@ -327,7 +327,7 @@ entities:
     grid_pos: [ 23, 6 ]
     size: [ 1, 7 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_bottom_exit"
@@ -336,7 +336,7 @@ entities:
     grid_pos: [ 26, 8 ]
     size: [ 6, 1 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
 
@@ -347,7 +347,7 @@ entities:
     grid_pos: [0, 11]
     size: [5, 1]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_outer_corner_1"
@@ -356,7 +356,7 @@ entities:
     grid_pos: [ 4, 11 ]
     size: [ 1, 4 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_bottom_path_1"
@@ -365,7 +365,7 @@ entities:
     grid_pos: [ 4, 14 ]
     size: [ 11, 1 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_right_path_up_1"
@@ -374,7 +374,7 @@ entities:
     grid_pos: [ 14, 5 ]
     size: [ 1, 10 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_top_path_2"
@@ -383,7 +383,7 @@ entities:
     grid_pos: [ 12, 2 ]
     size: [ 8, 1 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_right_path_down_2"
@@ -392,7 +392,7 @@ entities:
     grid_pos: [ 20, 2 ]
     size: [ 1, 12 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_bottom_path_3"
@@ -401,7 +401,7 @@ entities:
     grid_pos: [ 17, 16 ]
     size: [ 10, 1 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_right_path_up_2"
@@ -410,7 +410,7 @@ entities:
     grid_pos: [ 26, 8 ]
     size: [ 1, 9 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "wall_top_exit"
@@ -419,7 +419,7 @@ entities:
     grid_pos: [ 23, 5 ]
     size: [ 9, 1 ]
     shape: "rect"
-    model: "assets/models/wall.png"
+    model: "assets/models/fire.png"
     tile: true
 
   - name: "coin"

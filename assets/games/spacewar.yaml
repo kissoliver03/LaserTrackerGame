@@ -8,7 +8,7 @@ globals:
 
 layout:
   map_size: [16, 9]
-  background_color: [0, 0, 0]
+  background_image: "assets/models/space.jpg"
 
 inputs:
   - name: "player1"
@@ -70,6 +70,9 @@ rules:
         targets: [ "hit_1", "hit_2" ]
       - type: "sound"
         sound_effect: "assets/sound/explosion.mp3"
+      - type: "add_score"
+        targets: [ "player1" ]
+        value: 1
 
   - condition:
       type: "collision"
@@ -90,3 +93,5 @@ rules:
       - type: "damage"
         targets: ["player1"]
         value: 1
+      - type: "destroy"
+        targets: ["hit_1"]

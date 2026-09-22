@@ -8,7 +8,7 @@ globals:
 
 layout:
   map_size: [16, 9]
-  background_color: [0, 0, 0]
+  background_image: "assets/models/space.jpg"
 
 inputs:
   - name: "player1"
