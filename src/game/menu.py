@@ -209,6 +209,9 @@ class GameSelector(Menu):
                     pygame.draw.rect(self.game.display, color, rect)
 
                     display_name = file_name.replace(".yaml", "")
+                    if len(display_name) > 9:
+                        display_name = display_name[:7] + ".."
+
                     self.game.draw_text(display_name, int(self.font_size * 0.6), x_pos + self.box_w / 2,
                                         y_pos + self.box_h / 2, self.game.WHITE)
 
