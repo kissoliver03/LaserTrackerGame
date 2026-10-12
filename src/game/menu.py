@@ -371,7 +371,7 @@ class Options(Menu):
 
     def display_menu(self):
         self.state = "Camera"
-        self.calculate_cursor_pos("Camera input: ", self.camera_y, self.gap * 8)
+        self.calculate_cursor_pos("Camera input: ", self.camera_y, self.camera_x - self.gap * 6)
 
         self.run_display = True
 
@@ -397,28 +397,28 @@ class Options(Menu):
     def move_cursor(self):
         if self.game.DOWN_KEY:
             if self.state == "Camera":
-                self.calculate_cursor_pos("Mouse control: ", self.mouse_y, self.gap * 8)
+                self.calculate_cursor_pos("Mouse control: ", self.mouse_y, self.mouse_x - self.gap * 6)
                 self.state = "Mouse"
 
             elif self.state == "Mouse":
-                self.calculate_cursor_pos("Music: ", self.music_y, self.gap * 8)
+                self.calculate_cursor_pos("Music: ", self.music_y, self.music_x - self.gap * 6)
                 self.state = "Music"
 
             elif self.state == "Music":
-                self.calculate_cursor_pos("Camera input: ", self.camera_y, self.gap * 8)
+                self.calculate_cursor_pos("Camera input: ", self.camera_y, self.camera_x - self.gap * 6)
                 self.state = "Camera"
 
         elif self.game.UP_KEY:
             if self.state == "Mouse":
-                self.calculate_cursor_pos("Camera input: ", self.camera_y, self.gap * 8)
+                self.calculate_cursor_pos("Camera input: ", self.camera_y, self.camera_x - self.gap * 6)
                 self.state = "Camera"
 
             elif self.state == "Camera":
-                self.calculate_cursor_pos("Music: ", self.music_y, self.gap * 8)
+                self.calculate_cursor_pos("Music: ", self.music_y, self.music_x - self.gap * 6)
                 self.state = "Music"
 
             elif self.state == "Music":
-                self.calculate_cursor_pos("Mouse control: ", self.mouse_y, self.gap * 8)
+                self.calculate_cursor_pos("Mouse control: ", self.mouse_y, self.mouse_x - self.gap * 6)
                 self.state = "Mouse"
 
 
@@ -427,6 +427,13 @@ class Options(Menu):
         cam_count = self.input_loader.get_camera_count()
 
         if self.game.ESC_KEY:
+            if hasattr(self.game, 'vision_core') and self.game.vision_core is not None:
+                current_running_id = getattr(self.game.vision_core, 'camera_id', None)
+
+                if current_running_id != self.game.selected_camera_id:
+                    self.game.vision_core.stop()
+                    self.game.vision_core.start(self.game.selected_camera_id)
+
             self.game.curr_menu = self.game.main_menu
             self.run_display = False
 
