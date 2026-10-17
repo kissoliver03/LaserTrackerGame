@@ -1,5 +1,6 @@
 import pygame
 import os
+import time
 
 from src.service.inputloader import InputLoader
 
@@ -25,10 +26,14 @@ class Menu:
 
         self.back_rect = None
 
+        self.hover_start_time = 0
+        self.hovered_target = None
+        self.hover_duration = 2.0
+
     def draw_back_button(self):
         large_font_size = int(90 * self.game.ratio)
         large_font = pygame.font.Font(self.game.font_name, large_font_size)
-        back_surface = large_font.render("X", True, (255, 50, 50))
+        back_surface = large_font.render("<", True, (255, 255, 0))
 
         self.back_rect = back_surface.get_rect(topleft=(int(20 * self.game.ratio), int(10 * self.game.ratio)))
         self.game.display.blit(back_surface, self.back_rect)
@@ -53,6 +58,58 @@ class Menu:
         x_position = x_offset - (text_width / 2) - self.padding
 
         self.cursor_rect.midtop = (x_position, y_position)
+
+    def handle_laser_interaction(self, laser_x, laser_y, hitboxes):
+        current_target = None
+        is_clicked = False
+
+        for name, rect in hitboxes.items():
+            if rect and rect.collidepoint(laser_x, laser_y):
+                current_target = name
+                break
+
+        if current_target:
+            if self.hovered_target != current_target:
+                self.hovered_target = current_target
+                self.hover_start_time = time.time()
+            else:
+                elapsed = time.time() - self.hover_start_time
+                progress = min(1.0, elapsed / self.hover_duration)
+
+                rect = hitboxes[current_target]
+                fill_width = int(rect.width * progress)
+
+                if fill_width > 0:
+                    fill_rect = pygame.Rect(rect.x, rect.y, fill_width, rect.height)
+                    pygame.draw.rect(self.game.display, (0, 150, 0), fill_rect)
+
+                pygame.draw.rect(self.game.display, (255, 255, 255), rect, 2)
+
+                if elapsed >= self.hover_duration:
+                    is_clicked = True
+                    self.hovered_target = None
+                    self.hover_start_time = 0
+        else:
+            self.hovered_target = None
+            self.hover_start_time = 0
+
+        return current_target, is_clicked
+
+    def get_laser_pos(self):
+        if self.game.mouse_enabled:
+            if pygame.mouse.get_pressed()[0]:
+                return pygame.mouse.get_pos()
+        else:
+            if hasattr(self.game, 'vision_core') and self.game.vision_core:
+                self.game.vision_core.set_active_sources(["laser_red", "laser_green"])
+
+                for laser_name in ["laser_red", "laser_green"]:
+                    buffer = self.game.vision_core.get_buffer(laser_name)
+                    if buffer:
+                        pointer_state = buffer.get_latest()
+                        if pointer_state and pointer_state.laser_visible:
+                            return (pointer_state.x, pointer_state.y)
+        return None
 
 class MainMenu(Menu):
     def __init__(self, game):
@@ -81,6 +138,36 @@ class MainMenu(Menu):
             self.game.draw_text("SCREEN CALIBRATION", self.font_size, self.screen_calibration_x, self.screen_calibration_y, self.game.WHITE)
             self.game.draw_text("OPTIONS", self.font_size, self.options_x, self.options_y, self.game.WHITE)
             self.game.draw_text("QUIT", self.font_size, self.quit_x, self.quit_y, self.game.WHITE)
+
+            font = pygame.font.Font(self.game.font_name, self.font_size)
+            hitboxes = {
+                "Play": font.render("PLAY", True, self.game.WHITE).get_rect(center=(self.play_x, self.play_y)),
+                "Screen Calibration": font.render("SCREEN CALIBRATION", True, self.game.WHITE).get_rect(
+                    center=(self.screen_calibration_x, self.screen_calibration_y)),
+                "Options": font.render("OPTIONS", True, self.game.WHITE).get_rect(
+                    center=(self.options_x, self.options_y)),
+                "Quit": font.render("QUIT", True, self.game.WHITE).get_rect(center=(self.quit_x, self.quit_y))
+            }
+
+            laser_pos = self.get_laser_pos()
+            if laser_pos:
+                hovered_button, is_clicked = self.handle_laser_interaction(laser_pos[0], laser_pos[1], hitboxes)
+
+                if hovered_button and self.state != hovered_button:
+                    self.state = hovered_button
+
+                    if self.state == "Play":
+                        self.calculate_cursor_pos("Play", self.play_y, None)
+                    elif self.state == "Screen Calibration":
+                        self.calculate_cursor_pos("Screen Calibration", self.screen_calibration_y, None)
+                    elif self.state == "Options":
+                        self.calculate_cursor_pos("Options", self.options_y, None)
+                    elif self.state == "Quit":
+                        self.calculate_cursor_pos("Quit", self.quit_y, None)
+
+                if is_clicked:
+                    self.game.START_KEY = True
+                    self.check_input()
 
             self.draw_cursor()
             self.blit_screen()

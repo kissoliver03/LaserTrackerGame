@@ -301,7 +301,7 @@ class Game:
         large_font = pygame.font.Font(self.font_name, large_font_size)
 
         back_text = "X"
-        back_surface = large_font.render(back_text, True, (255, 50, 50))
+        back_surface = large_font.render(back_text, True, (255, 255, 0))
         self.display.blit(back_surface, (int(20 * self.ratio), int(10 * self.ratio)))
 
         start_y = int(20 * self.ratio)
