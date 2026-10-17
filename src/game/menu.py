@@ -319,9 +319,18 @@ class ScreenCalibration(Menu):
                 step = len(self.vision_core.calibration_points)
 
                 def draw_crosshair(x, y):
-                    pygame.draw.circle(self.game.display, (0, 255, 0), (x, y), 20, 2)
+                    # 1. Fekete "körvonal" a kontraszt miatt (extrém vastag)
+                    pygame.draw.circle(self.game.display, self.game.BLACK, (x, y), 55, 20)
+                    pygame.draw.line(self.game.display, self.game.BLACK, (x - 85, y), (x + 85, y), 20)
+                    pygame.draw.line(self.game.display, self.game.BLACK, (x, y - 85), (x, y + 85), 20)
 
-                    pygame.draw.circle(self.game.display, (0, 255, 0), (x, y), 3)
+                    # 2. Belső, rikító zöld vonalak (vastagabb)
+                    pygame.draw.circle(self.game.display, (255, 50, 50), (x, y), 55, 10)
+                    pygame.draw.line(self.game.display, (255, 50, 50), (x - 82, y), (x + 82, y), 10)
+                    pygame.draw.line(self.game.display, (255, 50, 50), (x, y - 82), (x, y + 82), 10)
+
+                    # 3. Piros "bullseye" a közepén (nagyobb)
+                    pygame.draw.circle(self.game.display, (255, 50, 50), (x, y), 12)
 
                 if step == 0:
                     draw_crosshair(0, 0)
@@ -331,7 +340,6 @@ class ScreenCalibration(Menu):
                     draw_crosshair(0, self.game.TARGET_H)
                 elif step == 3:
                     draw_crosshair(self.game.TARGET_W, self.game.TARGET_H)
-
 
                 mouse_is_pressed = pygame.mouse.get_pressed()[0]
 
@@ -349,10 +357,21 @@ class ScreenCalibration(Menu):
                 for pt in self.game.vision_core.calibration_points:
                     px = cam_x + pt[0]
                     py = cam_y + pt[1]
-                    pygame.draw.circle(self.game.display, (255, 0, 0), (int(px), int(py)), 5)
+                    pygame.draw.circle(self.game.display, self.game.BLACK, (int(px), int(py)), 8)
+                    pygame.draw.circle(self.game.display, (255, 50, 50), (int(px), int(py)), 6)
 
             step = min(len(self.game.vision_core.calibration_points), 4)
-            self.game.draw_text(self.instructions[step], int(self.font_size * 0.5), self.mid_w, self.mid_h, self.game.WHITE)
+            instruction_text = self.instructions[step]
+
+            font = pygame.font.Font(self.game.font_name, int(self.font_size * 0.75))
+            text_surface = font.render(instruction_text, True, self.game.WHITE)
+            text_rect = text_surface.get_rect(center=(self.mid_w, self.mid_h))
+
+            bg_rect = text_rect.inflate(40, 20)
+            pygame.draw.rect(self.game.display, (30, 30, 30), bg_rect)
+            pygame.draw.rect(self.game.display, [144, 238, 144], bg_rect, 2)
+
+            self.game.display.blit(text_surface, text_rect)
 
             self.blit_screen()
 
