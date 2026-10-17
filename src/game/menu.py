@@ -121,10 +121,11 @@ class GameSelector(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
 
-
         self.DARK_GREEN = (0, 150, 0)
         self.LIGHT_GREEN = (0, 255, 0)
         self.GREY = (100, 100, 100)
+        self.BOX_IDLE = (50, 60, 80)
+        self.BOX_HOVER = (100, 150, 255)
 
         self.start_x, self.start_y = self.mid_w, self.mid_h + (self.gap * 5)
 
@@ -137,16 +138,11 @@ class GameSelector(Menu):
         self.last_selected_game = None
         self.on_start_button = False
 
-        self.box_w = int(200 * self.game.ratio)
-        self.box_h = int(150 * self.game.ratio)
-        self.box_padding = int(50 * self.game.ratio)
+        self.box_w = int(320 * self.game.ratio)
+        self.box_h = int(220 * self.game.ratio)
+        self.box_padding = int(40 * self.game.ratio)
 
-        margin_x = int(100 * self.game.ratio)
-        available_width = self.game.DISPLAY_W - (margin_x * 2)
-
-        calculated_items = (available_width + self.box_padding) // (self.box_w + self.box_padding)
-
-        self.items_per_row = max(1, int(calculated_items))
+        self.items_per_row = 4
 
 
     def load_game_files(self):
@@ -155,14 +151,14 @@ class GameSelector(Menu):
         else:
             self.game_files = []
 
-
-
     def display_menu(self):
         self.current_index = 0
         self.last_index = 0
         self.selected_game = None
         self.last_selected_game = None
         self.on_start_button = False
+
+        self.visible_start_row = 0
 
         self.load_game_files()
 
@@ -176,51 +172,83 @@ class GameSelector(Menu):
             self.check_input()
             self.game.display.fill(self.game.BLACK)
 
-            self.game.draw_text("Select Game", int(self.font_size * 1.25), self.mid_w, self.mid_h - self.gap * 6, self.game.WHITE)
-
+            self.game.draw_text("Select Game", int(self.font_size * 1.25), self.mid_w, self.mid_h - self.gap * 6,
+                                self.game.WHITE)
 
             number_of_games = len(self.game_files)
 
             if number_of_games == 0:
                 self.game.draw_text("No games were found", self.font_size, self.mid_w, self.mid_h, self.game.WHITE)
             else:
-                cols = min(number_of_games, self.items_per_row)
-                rows = (number_of_games + self.items_per_row - 1) // self.items_per_row
+                max_visible_rows = 2
+                current_row = self.current_index // self.items_per_row
+                total_rows = (number_of_games + self.items_per_row - 1) // self.items_per_row
 
+                if current_row < self.visible_start_row:
+                    self.visible_start_row = current_row
+                elif current_row >= self.visible_start_row + max_visible_rows:
+                    self.visible_start_row = current_row - max_visible_rows + 1
+
+                cols = min(number_of_games, self.items_per_row)
                 total_width = (cols * self.box_w) + (cols - 1) * self.box_padding
-                total_height = (rows * self.box_h) + (rows - 1) * self.box_padding
 
                 box_start_x = self.mid_w - (total_width / 2)
-                box_start_y = self.mid_h - (total_height / 2) - self.gap
+
+                box_start_y = self.mid_h - self.gap - (self.box_h / 1.2)
 
                 for i, file_name in enumerate(self.game_files):
-                    col = i % self.items_per_row
                     row = i // self.items_per_row
+                    col = i % self.items_per_row
+
+                    if row < self.visible_start_row or row >= self.visible_start_row + max_visible_rows:
+                        continue
+
+                    relative_row = row - self.visible_start_row
 
                     x_pos = box_start_x + (col * (self.box_w + self.box_padding))
-                    y_pos = box_start_y + (row * (self.box_h + self.box_padding))
+                    y_pos = box_start_y + (relative_row * (self.box_h + self.box_padding))
 
                     rect = pygame.Rect(x_pos, y_pos, self.box_w, self.box_h)
 
                     if file_name == self.selected_game:
                         color = self.DARK_GREEN
                     elif i == self.current_index and not self.on_start_button:
-                        color = self.LIGHT_GREEN
+                        color = self.BOX_HOVER
                     else:
-                        color = self.GREY
+                        color = self.BOX_IDLE
 
                     pygame.draw.rect(self.game.display, color, rect)
+                    pygame.draw.rect(self.game.display, self.game.WHITE, rect, 3)
 
                     display_name = file_name.replace(".yaml", "")
-                    if len(display_name) > 9:
-                        display_name = display_name[:7] + ".."
+                    if len(display_name) > 12:
+                        display_name = display_name[:10] + ".."
 
-                    self.game.draw_text(display_name, int(self.font_size * 0.6), x_pos + self.box_w / 2,
+                    self.game.draw_text(display_name, int(self.font_size * 0.7), x_pos + self.box_w / 2,
                                         y_pos + self.box_h / 2, self.game.WHITE)
+
+                if total_rows > max_visible_rows:
+                    scrollbar_x = box_start_x + total_width + int(40 * self.game.ratio)
+                    scrollbar_y = box_start_y
+                    scrollbar_h = (max_visible_rows * self.box_h) + ((max_visible_rows - 1) * self.box_padding)
+
+                    self.game.draw_text("^", int(self.font_size * 0.8), scrollbar_x + 10,
+                                        scrollbar_y - int(30 * self.game.ratio), self.game.WHITE)
+                    self.game.draw_text("v", int(self.font_size * 0.8), scrollbar_x + 10,
+                                        scrollbar_y + scrollbar_h + int(30 * self.game.ratio), self.game.WHITE)
+
+                    pygame.draw.line(self.game.display, self.GREY, (scrollbar_x + 10, scrollbar_y),
+                                     (scrollbar_x + 10, scrollbar_y + scrollbar_h), 4)
+
+                    thumb_h = max(int(40 * self.game.ratio), scrollbar_h * (max_visible_rows / total_rows))
+                    progress = self.visible_start_row / (total_rows - max_visible_rows)
+                    thumb_y = scrollbar_y + progress * (scrollbar_h - thumb_h)
+
+                    thumb_rect = pygame.Rect(scrollbar_x, thumb_y, 20, int(thumb_h))
+                    pygame.draw.rect(self.game.display, self.game.WHITE, thumb_rect)
 
             if self.on_start_button:
                 start_button_color = self.LIGHT_GREEN
-
                 self.calculate_cursor_pos("Start", self.start_y, None)
                 self.draw_cursor()
             else:
@@ -319,17 +347,14 @@ class ScreenCalibration(Menu):
                 step = len(self.vision_core.calibration_points)
 
                 def draw_crosshair(x, y):
-                    # 1. Fekete "körvonal" a kontraszt miatt (extrém vastag)
                     pygame.draw.circle(self.game.display, self.game.BLACK, (x, y), 55, 20)
                     pygame.draw.line(self.game.display, self.game.BLACK, (x - 85, y), (x + 85, y), 20)
                     pygame.draw.line(self.game.display, self.game.BLACK, (x, y - 85), (x, y + 85), 20)
 
-                    # 2. Belső, rikító zöld vonalak (vastagabb)
                     pygame.draw.circle(self.game.display, (255, 50, 50), (x, y), 55, 10)
                     pygame.draw.line(self.game.display, (255, 50, 50), (x - 82, y), (x + 82, y), 10)
                     pygame.draw.line(self.game.display, (255, 50, 50), (x, y - 82), (x, y + 82), 10)
 
-                    # 3. Piros "bullseye" a közepén (nagyobb)
                     pygame.draw.circle(self.game.display, (255, 50, 50), (x, y), 12)
 
                 if step == 0:
