@@ -94,12 +94,10 @@ class GameLoader:
 
                         if hasattr(self.game, 'vision_core') and self.game.vision_core:
                             self.game.vision_core.set_active_sources(active_sources)
-                            print(f"GAMELOADER: Active lasers has been set: {active_sources}")
 
                         self.game.playing = True
 
                     except Exception as exc:
-                        print(f"GAMELOADER ERROR: Hibás YAML struktúra! Részletek: {exc}")
                         self.game.msg_popup("LOAD ERROR", [255, 0, 0], "Invalid YAML structure!")
                         self.game.playing = False
                         self.game.is_game_selected = False
@@ -117,3 +115,28 @@ class GameLoader:
                 self.game.is_game_selected = False
                 self.game.curr_menu = self.game.game_selector
                 return
+
+    def validate_all_games(self):
+        self.game.valid_games = []
+        games_dir = os.path.abspath('assets/games')
+
+        if not os.path.exists(games_dir):
+            self.game.msg_popup("DIR ERROR", [255, 0, 0], "Games directory not found!")
+            return
+
+        game_files = [f for f in os.listdir(games_dir) if f.endswith(".yaml")]
+
+        for file_name in game_files:
+            file_path = os.path.join(games_dir, file_name)
+
+            is_valid = self.game_parser.parse_game(file_path)
+
+            if is_valid:
+                try:
+                    layout = self.game_parser.get_layout()
+                    if not layout:
+                        raise ValueError("Missing 'layout' section")
+
+                    self.game.valid_games.append(file_name)
+                except Exception as e:
+                    self.game.msg_popup("STRUCT ERROR", [255, 0, 0], f"{file_name}: {str(e)}")

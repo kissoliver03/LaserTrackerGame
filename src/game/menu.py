@@ -150,8 +150,8 @@ class GameSelector(Menu):
 
 
     def load_game_files(self):
-        if os.path.exists(self.games_dir):
-            self.game_files = [files for files in os.listdir(self.games_dir) if files.endswith(".yaml")]
+        if hasattr(self.game, 'valid_games'):
+            self.game_files = self.game.valid_games
         else:
             self.game_files = []
 
@@ -167,6 +167,9 @@ class GameSelector(Menu):
         self.load_game_files()
 
         self.run_display = True
+
+        self.game.reset_keys()
+        pygame.event.clear()
 
         while self.run_display:
             self.game.check_events()

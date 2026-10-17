@@ -56,6 +56,8 @@ class Game:
         self.selected_game = None
         self.is_game_selected = False
 
+        self.game_loader.validate_all_games()
+
         self.all_sprites = None
 
         self.cell_h = None
