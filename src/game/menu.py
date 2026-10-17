@@ -385,7 +385,6 @@ class GameSelector(Menu):
 
             laser_pos = self.get_laser_pos()
             if laser_pos:
-                pygame.draw.circle(self.game.display, (0, 255, 255), (int(laser_pos[0]), int(laser_pos[1])), 8)
                 hovered_button, is_clicked = self.handle_laser_interaction(laser_pos, hitboxes)
 
                 if hovered_button:
