@@ -261,15 +261,16 @@ class GameSelector(Menu):
                     self.current_index = len(self.game_files) - 1
 
         elif self.game.START_KEY:
-            if not self.on_start_button:
-                self.selected_game = self.game_files[self.current_index]
-                self.last_selected_game = self.selected_game
-                self.last_index = self.current_index
-                self.on_start_button = True
-            else:
-                self.game.selected_game = os.path.join(self.games_dir, self.selected_game)
-                self.game.is_game_selected = True
-                self.run_display = False
+            if len(self.game_files) > 0:
+                if not self.on_start_button:
+                    self.selected_game = self.game_files[self.current_index]
+                    self.last_selected_game = self.selected_game
+                    self.last_index = self.current_index
+                    self.on_start_button = True
+                else:
+                    self.game.selected_game = os.path.join(self.games_dir, self.selected_game)
+                    self.game.is_game_selected = True
+                    self.run_display = False
 
 class ScreenCalibration(Menu):
     def __init__(self, game, vision_core):
