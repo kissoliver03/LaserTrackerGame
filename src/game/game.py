@@ -190,14 +190,14 @@ class Game:
 
             for player_name, stats in self.players.items():
                 if stats["lives"] <= 0:
-                    self.msg_popup("GAME OVER", [255, 0, 0], f"{player_name} LOST")
+                    self.msg_popup("GAME OVER", [0, 255, 255], f"{player_name} LOST")
                     self.playing = False
                     self.is_game_selected = False
                     self.curr_menu = self.game_selector
                     break
 
                 elif stats["score"] >= self.score:
-                    self.msg_popup("YOU WIN", [50, 255, 0], f"{player_name} WON")
+                    self.msg_popup("YOU WIN", [255, 200, 0], f"{player_name} WON")
                     self.playing = False
                     self.is_game_selected = False
                     self.curr_menu = self.game_selector
@@ -348,7 +348,7 @@ class Game:
             self.draw_text(text, int(40 * self.ratio), self.DISPLAY_W / 2, self.DISPLAY_H / 2, self.WHITE)
 
             ok_y = box_y + box_h - (50 * self.ratio)
-            self.draw_text("OK", int(60 * self.ratio), self.DISPLAY_W / 2, ok_y, (0, 255, 0))
+            self.draw_text("OK", int(60 * self.ratio), self.DISPLAY_W / 2, ok_y, (255, 200, 0))
             self.draw_text("*", int(70 * self.ratio), (self.DISPLAY_W / 2) - (50 * self.ratio), ok_y, self.WHITE)
 
             self.window.blit(self.display, (0, 0))
@@ -690,7 +690,7 @@ class Game:
 
         except Exception as exc:
             print(f"RULE PROCESSOR ERROR: Hibás szabály a YAML-ben! Részletek: {exc}")
-            self.msg_popup("RULE ERROR", [255, 0, 0], "Error in game rules!")
+            self.msg_popup("RULE ERROR", [0, 255, 255], "Error in game rules!")
             self.playing = False
             self.is_game_selected = False
             self.curr_menu = self.game_selector

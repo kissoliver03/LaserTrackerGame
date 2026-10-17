@@ -59,9 +59,16 @@ class Menu:
 
         self.cursor_rect.midtop = (x_position, y_position)
 
-    def handle_laser_interaction(self, laser_x, laser_y, hitboxes):
+    def handle_laser_interaction(self, laser_pos, hitboxes):
         current_target = None
         is_clicked = False
+
+        if not laser_pos:
+            self.hovered_target = None
+            self.hover_start_time = 0
+            return None, False
+
+        laser_x, laser_y = laser_pos
 
         for name, rect in hitboxes.items():
             if rect and rect.collidepoint(laser_x, laser_y):
@@ -80,8 +87,9 @@ class Menu:
                 fill_width = int(rect.width * progress)
 
                 if fill_width > 0:
-                    fill_rect = pygame.Rect(rect.x, rect.y, fill_width, rect.height)
-                    pygame.draw.rect(self.game.display, (0, 150, 0), fill_rect)
+                    bar_height = max(5, int(10 * self.game.ratio))
+                    fill_rect = pygame.Rect(rect.x, rect.bottom - bar_height, fill_width, bar_height)
+                    pygame.draw.rect(self.game.display, (255, 200, 0), fill_rect)
 
                 pygame.draw.rect(self.game.display, (255, 255, 255), rect, 2)
 
@@ -150,24 +158,23 @@ class MainMenu(Menu):
             }
 
             laser_pos = self.get_laser_pos()
-            if laser_pos:
-                hovered_button, is_clicked = self.handle_laser_interaction(laser_pos[0], laser_pos[1], hitboxes)
+            hovered_button, is_clicked = self.handle_laser_interaction(laser_pos, hitboxes)
 
-                if hovered_button and self.state != hovered_button:
-                    self.state = hovered_button
+            if hovered_button and self.state != hovered_button:
+                self.state = hovered_button
 
-                    if self.state == "Play":
-                        self.calculate_cursor_pos("Play", self.play_y, None)
-                    elif self.state == "Screen Calibration":
-                        self.calculate_cursor_pos("Screen Calibration", self.screen_calibration_y, None)
-                    elif self.state == "Options":
-                        self.calculate_cursor_pos("Options", self.options_y, None)
-                    elif self.state == "Quit":
-                        self.calculate_cursor_pos("Quit", self.quit_y, None)
+                if self.state == "Play":
+                    self.calculate_cursor_pos("Play", self.play_y, None)
+                elif self.state == "Screen Calibration":
+                    self.calculate_cursor_pos("Screen Calibration", self.screen_calibration_y, None)
+                elif self.state == "Options":
+                    self.calculate_cursor_pos("Options", self.options_y, None)
+                elif self.state == "Quit":
+                    self.calculate_cursor_pos("Quit", self.quit_y, None)
 
-                if is_clicked:
-                    self.game.START_KEY = True
-                    self.check_input()
+            if is_clicked:
+                self.game.START_KEY = True
+                self.check_input()
 
             self.draw_cursor()
             self.blit_screen()
@@ -218,8 +225,8 @@ class GameSelector(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
 
-        self.DARK_GREEN = (0, 150, 0)
-        self.LIGHT_GREEN = (0, 255, 0)
+        self.DARK_YELLOW = (150, 150, 0)
+        self.LIGHT_YELLOW = (255, 200, 0)
         self.GREY = (100, 100, 100)
         self.BOX_IDLE = (50, 60, 80)
         self.BOX_HOVER = (100, 150, 255)
@@ -308,7 +315,7 @@ class GameSelector(Menu):
                     rect = pygame.Rect(x_pos, y_pos, self.box_w, self.box_h)
 
                     if file_name == self.selected_game:
-                        color = self.DARK_GREEN
+                        color = self.DARK_YELLOW
                     elif i == self.current_index and not self.on_start_button:
                         color = self.BOX_HOVER
                     else:
@@ -345,7 +352,7 @@ class GameSelector(Menu):
                     pygame.draw.rect(self.game.display, self.game.WHITE, thumb_rect)
 
             if self.on_start_button:
-                start_button_color = self.LIGHT_GREEN
+                start_button_color = self.LIGHT_YELLOW
                 self.calculate_cursor_pos("Start", self.start_y, None)
                 self.draw_cursor()
             else:
@@ -354,6 +361,49 @@ class GameSelector(Menu):
             self.game.draw_text("Start", self.font_size, self.start_x, self.start_y, start_button_color)
 
             self.draw_back_button()
+
+            hitboxes = {}
+
+            if self.back_rect:
+                hitboxes["Back"] = self.back_rect
+
+            start_font = pygame.font.Font(self.game.font_name, self.font_size)
+            hitboxes["Start"] = start_font.render("Start", True, self.game.WHITE).get_rect(
+                center=(self.start_x, self.start_y))
+
+            if number_of_games > 0:
+                for i, file_name in enumerate(self.game_files):
+                    row = i // self.items_per_row
+                    col = i % self.items_per_row
+                    if row < self.visible_start_row or row >= self.visible_start_row + max_visible_rows:
+                        continue
+                    relative_row = row - self.visible_start_row
+                    x_pos = box_start_x + (col * (self.box_w + self.box_padding))
+                    y_pos = box_start_y + (relative_row * (self.box_h + self.box_padding))
+
+                    hitboxes[file_name] = pygame.Rect(x_pos, y_pos, self.box_w, self.box_h)
+
+            laser_pos = self.get_laser_pos()
+            if laser_pos:
+                pygame.draw.circle(self.game.display, (0, 255, 255), (int(laser_pos[0]), int(laser_pos[1])), 8)
+                hovered_button, is_clicked = self.handle_laser_interaction(laser_pos, hitboxes)
+
+                if hovered_button:
+                    if hovered_button == "Back":
+                        pass
+                    elif hovered_button == "Start":
+                        self.on_start_button = True
+                    else:
+                        self.on_start_button = False
+                        self.selected_game = hovered_button
+                        self.current_index = self.game_files.index(hovered_button)
+
+                if is_clicked:
+                    if hovered_button == "Back":
+                        self.game.BACK_KEY = True
+                    else:
+                        self.game.START_KEY = True
+                    self.check_input()
 
             self.blit_screen()
 
@@ -482,7 +532,7 @@ class ScreenCalibration(Menu):
                     px = cam_x + pt[0]
                     py = cam_y + pt[1]
                     pygame.draw.circle(self.game.display, self.game.BLACK, (int(px), int(py)), 8)
-                    pygame.draw.circle(self.game.display, (255, 50, 50), (int(px), int(py)), 6)
+                    pygame.draw.circle(self.game.display, (0, 255, 255), (int(px), int(py)), 6)
 
             step = min(len(self.game.vision_core.calibration_points), 4)
             instruction_text = self.instructions[step]
@@ -493,7 +543,7 @@ class ScreenCalibration(Menu):
 
             bg_rect = text_rect.inflate(40, 20)
             pygame.draw.rect(self.game.display, (30, 30, 30), bg_rect)
-            pygame.draw.rect(self.game.display, [144, 238, 144], bg_rect, 2)
+            pygame.draw.rect(self.game.display, (255, 200, 0), bg_rect, 2)
 
             self.game.display.blit(text_surface, text_rect)
 
