@@ -23,6 +23,16 @@ class Menu:
 
         self.cursor_rect = pygame.Rect(0, 0, self.cursor_size, self.cursor_size)
 
+        self.back_rect = None
+
+    def draw_back_button(self):
+        large_font_size = int(90 * self.game.ratio)
+        large_font = pygame.font.Font(self.game.font_name, large_font_size)
+        back_surface = large_font.render("X", True, (255, 50, 50))
+
+        self.back_rect = back_surface.get_rect(topleft=(int(20 * self.game.ratio), int(10 * self.game.ratio)))
+        self.game.display.blit(back_surface, self.back_rect)
+
     def draw_cursor(self):
         self.game.draw_text('*', self.cursor_size, self.cursor_rect.x, self.cursor_rect.y, self.game.WHITE)
 
@@ -256,6 +266,8 @@ class GameSelector(Menu):
 
             self.game.draw_text("Start", self.font_size, self.start_x, self.start_y, start_button_color)
 
+            self.draw_back_button()
+
             self.blit_screen()
 
     def check_input(self):
@@ -440,6 +452,9 @@ class Options(Menu):
             self.game.draw_text(f"< {self.game.music_enabled} >", self.font_size, self.music_x + self.gap * 6, self.music_y, self.game.WHITE)
 
             self.draw_cursor()
+
+            self.draw_back_button()
+
             self.blit_screen()
 
     def move_cursor(self):

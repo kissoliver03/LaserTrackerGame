@@ -297,29 +297,30 @@ class Game:
         font_size = int(50 * self.ratio)
         font = pygame.font.Font(self.font_name, font_size)
 
+        large_font_size = int(90 * self.ratio)
+        large_font = pygame.font.Font(self.font_name, large_font_size)
+
+        back_text = "X"
+        back_surface = large_font.render(back_text, True, (255, 50, 50))
+        self.display.blit(back_surface, (int(20 * self.ratio), int(10 * self.ratio)))
+
         start_y = int(20 * self.ratio)
-        line_spacing = int(60 * self.ratio)
+        vertical_spacing = int(60 * self.ratio)
 
         for index, (player_name, stats) in enumerate(self.players.items()):
             current_lives = stats.get("lives", 0)
             current_score = stats.get("score", 0)
 
-            current_y = start_y + (index * line_spacing)
+            display_name = f"{player_name.upper()}   " if len(self.players) > 1 else ""
 
-            if len(self.players) > 1:
-                display_name = player_name.upper() + " "
-            else:
-                display_name = ""
+            hud_text = f"{display_name}LIVES: {current_lives}   SCORE: {current_score}"
 
-            lives_text = f"{display_name}LIVES: {current_lives}"
-            lives_surface = font.render(lives_text, True, self.WHITE)
-            lives_rect = lives_surface.get_rect(topleft=(int(20 * self.ratio), current_y))
-            self.display.blit(lives_surface, lives_rect)
+            text_surface = font.render(hud_text, True, self.WHITE)
 
-            score_text = f"{display_name}SCORE: {current_score}"
-            score_surface = font.render(score_text, True, self.WHITE)
-            score_rect = score_surface.get_rect(topright=(self.TARGET_W - int(20 * self.ratio), current_y))
-            self.display.blit(score_surface, score_rect)
+            current_y = start_y + (index * vertical_spacing)
+            text_rect = text_surface.get_rect(topright=(self.TARGET_W - int(20 * self.ratio), current_y))
+
+            self.display.blit(text_surface, text_rect)
 
     def msg_popup(self, title, title_color, text):
         popup_running = True
