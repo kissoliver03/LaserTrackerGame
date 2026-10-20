@@ -399,7 +399,8 @@ class GameSelector(Menu):
 
                 if is_clicked:
                     if hovered_button == "Back":
-                        self.game.BACK_KEY = True
+                        self.on_start_button = False
+                        self.game.ESC_KEY = True
                     else:
                         self.game.START_KEY = True
                     self.check_input()
@@ -588,8 +589,54 @@ class Options(Menu):
             self.game.draw_text(f"< {self.game.music_enabled} >", self.font_size, self.music_x + self.gap * 6, self.music_y, self.game.WHITE)
 
             self.draw_cursor()
-
             self.draw_back_button()
+
+            hitboxes = {}
+            if self.back_rect:
+                hitboxes["Back"] = self.back_rect
+
+            font = pygame.font.Font(self.game.font_name, self.font_size)
+
+            def add_arrow_hitboxes(name, text, center_x, center_y):
+                text_width = font.size(text)[0]
+                box_size = int(self.font_size * 0.8)
+
+                left_rect = pygame.Rect(0, 0, box_size, box_size)
+                left_rect.center = (center_x - text_width / 2 + box_size / 2, center_y)
+
+                right_rect = pygame.Rect(0, 0, box_size, box_size)
+                right_rect.center = (center_x + text_width / 2 - box_size / 2, center_y)
+
+                hitboxes[f"{name}_Left"] = left_rect
+                hitboxes[f"{name}_Right"] = right_rect
+
+            val_x = self.camera_x + self.gap * 6
+            add_arrow_hitboxes("Camera", f"< {current_cam_name} >", val_x, self.camera_y)
+            add_arrow_hitboxes("Mouse", f"< {self.game.mouse_enabled} >", val_x, self.mouse_y)
+            add_arrow_hitboxes("Music", f"< {self.game.music_enabled} >", val_x, self.music_y)
+
+            laser_pos = self.get_laser_pos()
+            hovered_button, is_clicked = self.handle_laser_interaction(laser_pos, hitboxes)
+
+            if hovered_button and hovered_button != "Back":
+                base_state = hovered_button.split("_")[0]
+                if self.state != base_state:
+                    self.state = base_state
+                    if self.state == "Camera":
+                        self.calculate_cursor_pos("Camera input: ", self.camera_y, self.camera_x - self.gap * 6)
+                    elif self.state == "Mouse":
+                        self.calculate_cursor_pos("Mouse control: ", self.mouse_y, self.mouse_x - self.gap * 6)
+                    elif self.state == "Music":
+                        self.calculate_cursor_pos("Music: ", self.music_y, self.music_x - self.gap * 6)
+
+            if is_clicked:
+                if hovered_button == "Back":
+                    self.game.ESC_KEY = True
+                elif hovered_button.endswith("_Left"):
+                    self.game.LEFT_KEY = True
+                elif hovered_button.endswith("_Right"):
+                    self.game.RIGHT_KEY = True
+                self.check_input()
 
             self.blit_screen()
 
