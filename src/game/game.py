@@ -351,7 +351,7 @@ class Game:
         large_font = pygame.font.Font(self.font_name, large_font_size)
 
         back_text = "X"
-        back_surface = large_font.render(back_text, True, (255, 255, 0))
+        back_surface = large_font.render(back_text, True, (self.WHITE))
         self.hud_back_rect = back_surface.get_rect(topleft=(int(20 * self.ratio), int(10 * self.ratio)))
         self.display.blit(back_surface, self.hud_back_rect)
 

@@ -34,7 +34,7 @@ class Menu:
     def draw_back_button(self):
         large_font_size = int(90 * self.game.ratio)
         large_font = pygame.font.Font(self.game.font_name, large_font_size)
-        back_surface = large_font.render("<", True, (255, 255, 0))
+        back_surface = large_font.render("<", True, self.game.WHITE)
 
         self.back_rect = back_surface.get_rect(topleft=(int(20 * self.game.ratio), int(10 * self.game.ratio)))
         self.game.display.blit(back_surface, self.back_rect)
