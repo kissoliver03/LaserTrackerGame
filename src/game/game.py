@@ -94,6 +94,10 @@ class Game:
 
         self.background_image = None
 
+        self.hud_hover_start_time = 0
+        self.hud_back_rect = None
+        self.hud_target_lost_time = 0
+
 
 
     def game_loop(self):
@@ -251,6 +255,52 @@ class Game:
 
             self.draw_hud()
 
+            laser_pos = None
+            if self.mouse_enabled:
+                if pygame.mouse.get_pressed()[0]:
+                    laser_pos = pygame.mouse.get_pos()
+            else:
+                for laser_name in ["laser_red", "laser_green"]:
+                    buffer = self.vision_core.get_buffer(laser_name)
+                    if buffer:
+                        pointer_state = buffer.get_latest()
+                        if pointer_state and pointer_state.laser_visible:
+                            laser_pos = (pointer_state.x, pointer_state.y)
+                            break
+
+            on_target = laser_pos and self.hud_back_rect and self.hud_back_rect.collidepoint(laser_pos[0], laser_pos[1])
+
+            if not on_target:
+                if self.hud_hover_start_time > 0:
+                    if self.hud_target_lost_time == 0:
+                        self.hud_target_lost_time = time.time()
+                    elif time.time() - self.hud_target_lost_time > 0.3:
+                        self.hud_hover_start_time = 0
+                        self.hud_target_lost_time = 0
+            else:
+                self.hud_target_lost_time = 0
+
+                if self.hud_hover_start_time == 0:
+                    self.hud_hover_start_time = time.time()
+                else:
+                    elapsed = time.time() - self.hud_hover_start_time
+                    progress = min(1.0, elapsed / 2.0)
+
+                    fill_width = int(self.hud_back_rect.width * progress)
+                    if fill_width > 0:
+                        bar_height = max(5, int(10 * self.ratio))
+                        fill_rect = pygame.Rect(self.hud_back_rect.x, self.hud_back_rect.bottom - bar_height,
+                                                fill_width, bar_height)
+                        pygame.draw.rect(self.display, (255, 200, 0), fill_rect)
+
+                    pygame.draw.rect(self.display, (255, 255, 255), self.hud_back_rect, 2)
+
+                    if elapsed >= 2.0:
+                        self.playing = False
+                        self.is_game_selected = False
+                        self.curr_menu = self.game_selector
+                        self.hud_hover_start_time = 0
+
             self.window.blit(self.display, (0, 0))
             pygame.display.update()
 
@@ -302,7 +352,8 @@ class Game:
 
         back_text = "X"
         back_surface = large_font.render(back_text, True, (255, 255, 0))
-        self.display.blit(back_surface, (int(20 * self.ratio), int(10 * self.ratio)))
+        self.hud_back_rect = back_surface.get_rect(topleft=(int(20 * self.ratio), int(10 * self.ratio)))
+        self.display.blit(back_surface, self.hud_back_rect)
 
         start_y = int(20 * self.ratio)
         vertical_spacing = int(60 * self.ratio)
@@ -324,14 +375,15 @@ class Game:
 
     def msg_popup(self, title, title_color, text):
         popup_running = True
-
         self.reset_keys()
+
+        popup_hover_time = 0
+        popup_lost_time = 0
 
         while popup_running:
             self.check_events()
 
             text_length = len(text) * 40
-
             box_w = int(text_length * self.ratio)
             box_h = int(300 * self.ratio)
             box_x = (self.DISPLAY_W - box_w) / 2
@@ -349,7 +401,55 @@ class Game:
 
             ok_y = box_y + box_h - (50 * self.ratio)
             self.draw_text("OK", int(60 * self.ratio), self.DISPLAY_W / 2, ok_y, (255, 200, 0))
-            self.draw_text("*", int(70 * self.ratio), (self.DISPLAY_W / 2) - (50 * self.ratio), ok_y, self.WHITE)
+
+            font = pygame.font.Font(self.font_name, int(60 * self.ratio))
+            ok_surface = font.render("OK", True, (255, 200, 0))
+
+            base_rect = ok_surface.get_rect(center=(self.DISPLAY_W / 2, ok_y))
+            ok_rect = base_rect.inflate(int(80 * self.ratio), int(30 * self.ratio))
+
+            laser_pos = None
+            if self.mouse_enabled:
+                if pygame.mouse.get_pressed()[0]:
+                    laser_pos = pygame.mouse.get_pos()
+            else:
+                for laser_name in ["laser_red", "laser_green"]:
+                    buffer = self.vision_core.get_buffer(laser_name)
+                    if buffer:
+                        pointer_state = buffer.get_latest()
+                        if pointer_state and pointer_state.laser_visible:
+                            laser_pos = (pointer_state.x, pointer_state.y)
+                            break
+
+            on_target = laser_pos and ok_rect.collidepoint(laser_pos[0], laser_pos[1])
+
+            if not on_target:
+                if popup_hover_time > 0:
+                    if popup_lost_time == 0:
+                        popup_lost_time = time.time()
+                    elif time.time() - popup_lost_time > 0.3:
+                        popup_hover_time = 0
+                        popup_lost_time = 0
+            else:
+                popup_lost_time = 0
+                if popup_hover_time == 0:
+                    popup_hover_time = time.time()
+                else:
+                    elapsed = time.time() - popup_hover_time
+                    progress = min(1.0, elapsed / 2.0)
+
+                    fill_width = int(ok_rect.width * progress)
+                    if fill_width > 0:
+                        bar_height = max(5, int(10 * self.ratio))
+                        fill_rect = pygame.Rect(ok_rect.x, ok_rect.bottom - bar_height, fill_width, bar_height)
+                        pygame.draw.rect(self.display, (255, 200, 0), fill_rect)
+
+                    pygame.draw.rect(self.display, (255, 255, 255), ok_rect, 2)
+
+                    if elapsed >= 2.0:
+                        popup_running = False
+                        popup_hover_time = 0
+                        popup_lost_time = 0
 
             self.window.blit(self.display, (0, 0))
             pygame.display.update()

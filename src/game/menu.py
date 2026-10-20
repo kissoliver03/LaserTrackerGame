@@ -29,6 +29,7 @@ class Menu:
         self.hover_start_time = 0
         self.hovered_target = None
         self.hover_duration = 2.0
+        self.target_lost_time = 0
 
     def draw_back_button(self):
         large_font_size = int(90 * self.game.ratio)
@@ -64,9 +65,16 @@ class Menu:
         is_clicked = False
 
         if not laser_pos:
-            self.hovered_target = None
-            self.hover_start_time = 0
-            return None, False
+            if self.hovered_target:
+                if getattr(self, 'target_lost_time', 0) == 0:
+                    self.target_lost_time = time.time()
+                elif time.time() - self.target_lost_time > 0.3:
+                    self.hovered_target = None
+                    self.hover_start_time = 0
+                    self.target_lost_time = 0
+            return self.hovered_target, False
+        else:
+            self.target_lost_time = 0
 
         laser_x, laser_y = laser_pos
 
@@ -98,8 +106,13 @@ class Menu:
                     self.hovered_target = None
                     self.hover_start_time = 0
         else:
-            self.hovered_target = None
-            self.hover_start_time = 0
+            if self.hovered_target:
+                if getattr(self, 'target_lost_time', 0) == 0:
+                    self.target_lost_time = time.time()
+                elif time.time() - self.target_lost_time > 0.3:
+                    self.hovered_target = None
+                    self.hover_start_time = 0
+                    self.target_lost_time = 0
 
         return current_target, is_clicked
 
@@ -316,8 +329,6 @@ class GameSelector(Menu):
 
                     if file_name == self.selected_game:
                         color = self.DARK_YELLOW
-                    elif i == self.current_index and not self.on_start_button:
-                        color = self.BOX_HOVER
                     else:
                         color = self.BOX_IDLE
 
@@ -355,6 +366,8 @@ class GameSelector(Menu):
                 start_button_color = self.LIGHT_YELLOW
                 self.calculate_cursor_pos("Start", self.start_y, None)
                 self.draw_cursor()
+            elif self.selected_game:
+                start_button_color = self.game.WHITE
             else:
                 start_button_color = self.GREY
 
@@ -384,26 +397,31 @@ class GameSelector(Menu):
                     hitboxes[file_name] = pygame.Rect(x_pos, y_pos, self.box_w, self.box_h)
 
             laser_pos = self.get_laser_pos()
-            if laser_pos:
-                hovered_button, is_clicked = self.handle_laser_interaction(laser_pos, hitboxes)
 
-                if hovered_button:
-                    if hovered_button == "Back":
-                        pass
-                    elif hovered_button == "Start":
-                        self.on_start_button = True
-                    else:
-                        self.on_start_button = False
-                        self.selected_game = hovered_button
-                        self.current_index = self.game_files.index(hovered_button)
+            hovered_button, is_clicked = self.handle_laser_interaction(laser_pos, hitboxes)
 
-                if is_clicked:
-                    if hovered_button == "Back":
-                        self.on_start_button = False
-                        self.game.ESC_KEY = True
-                    else:
-                        self.game.START_KEY = True
+            if hovered_button:
+                if hovered_button == "Back":
+                    pass
+                elif hovered_button == "Start":
+                    pass
+                else:
+                    self.current_index = self.game_files.index(hovered_button)
+                    self.on_start_button = False
+
+            if is_clicked:
+                if hovered_button == "Back":
+                    self.game.ESC_KEY = True
                     self.check_input()
+                elif hovered_button == "Start":
+                    if self.selected_game:
+                        self.game.selected_game = os.path.join(self.games_dir, self.selected_game)
+                        self.game.is_game_selected = True
+                        self.run_display = False
+                else:
+                    self.selected_game = hovered_button
+                    self.last_selected_game = hovered_button
+                    self.last_index = self.game_files.index(hovered_button)
 
             self.blit_screen()
 
