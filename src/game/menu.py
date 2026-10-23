@@ -329,6 +329,11 @@ class GameSelector(Menu):
 
                     if file_name == self.selected_game:
                         color = self.DARK_YELLOW
+                    elif i == self.current_index and not self.on_start_button:
+                        if self.hovered_target == file_name:
+                            color = self.BOX_IDLE
+                        else:
+                            color = self.DARK_YELLOW
                     else:
                         color = self.BOX_IDLE
 
