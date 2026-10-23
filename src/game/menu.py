@@ -347,10 +347,14 @@ class GameSelector(Menu):
                     scrollbar_y = box_start_y
                     scrollbar_h = (max_visible_rows * self.box_h) + ((max_visible_rows - 1) * self.box_padding)
 
-                    self.game.draw_text("^", int(self.font_size * 0.8), scrollbar_x + 10,
-                                        scrollbar_y - int(30 * self.game.ratio), self.game.WHITE)
-                    self.game.draw_text("v", int(self.font_size * 0.8), scrollbar_x + 10,
-                                        scrollbar_y + scrollbar_h + int(30 * self.game.ratio), self.game.WHITE)
+                    self.up_x = scrollbar_x + 10
+                    self.up_y = scrollbar_y - int(30 * self.game.ratio)
+                    self.down_x = scrollbar_x + 10
+                    self.down_y = scrollbar_y + scrollbar_h + int(30 * self.game.ratio)
+
+                    self.game.draw_text("^", int(self.font_size * 0.8), self.up_x, self.up_y, self.game.WHITE)
+                    self.game.draw_text("v", int(self.font_size * 0.8), self.down_x, self.down_y, self.game.WHITE)
+
 
                     pygame.draw.line(self.game.display, self.GREY, (scrollbar_x + 10, scrollbar_y),
                                      (scrollbar_x + 10, scrollbar_y + scrollbar_h), 4)
@@ -396,18 +400,28 @@ class GameSelector(Menu):
 
                     hitboxes[file_name] = pygame.Rect(x_pos, y_pos, self.box_w, self.box_h)
 
-            laser_pos = self.get_laser_pos()
+            if total_rows > max_visible_rows:
+                box_size = int(80 * self.game.ratio)
 
+                hitboxes["Scroll_Up"] = pygame.Rect(0, 0, box_size, box_size)
+                hitboxes["Scroll_Up"].center = (self.up_x, self.up_y)
+
+                hitboxes["Scroll_Down"] = pygame.Rect(0, 0, box_size, box_size)
+                hitboxes["Scroll_Down"].center = (self.down_x, self.down_y)
+
+            laser_pos = self.get_laser_pos()
             hovered_button, is_clicked = self.handle_laser_interaction(laser_pos, hitboxes)
 
             if hovered_button:
                 if hovered_button == "Back":
                     pass
                 elif hovered_button == "Start":
-                    pass
-                else:
-                    self.current_index = self.game_files.index(hovered_button)
+                    self.on_start_button = True
+                elif hovered_button in ["Scroll_Up", "Scroll_Down"]:
                     self.on_start_button = False
+                else:
+                    self.on_start_button = False
+                    self.current_index = self.game_files.index(hovered_button)
 
             if is_clicked:
                 if hovered_button == "Back":
@@ -418,6 +432,13 @@ class GameSelector(Menu):
                         self.game.selected_game = os.path.join(self.games_dir, self.selected_game)
                         self.game.is_game_selected = True
                         self.run_display = False
+                elif hovered_button == "Scroll_Up":
+                    target_row = max(0, self.visible_start_row - 1)
+                    self.current_index = target_row * self.items_per_row
+                elif hovered_button == "Scroll_Down":
+                    target_row = self.visible_start_row + 2
+                    max_idx = max(0, len(self.game_files) - 1)
+                    self.current_index = min(max_idx, target_row * self.items_per_row)
                 else:
                     self.selected_game = hovered_button
                     self.last_selected_game = hovered_button
