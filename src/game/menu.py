@@ -744,7 +744,7 @@ class Options(Menu):
                     self.game.main_menu_music.stop()
                 else:
                     self.game.music_enabled = True
-                    self.game.main_menu_music.play()
+                    self.game.main_menu_music.play(loops=-1)
 
         elif self.game.LEFT_KEY:
             if self.state == "Camera":
@@ -763,4 +763,4 @@ class Options(Menu):
                     self.game.main_menu_music.stop()
                 else:
                     self.game.music_enabled = True
-                    self.game.main_menu_music.play()
+                    self.game.main_menu_music.play(loops=-1)
