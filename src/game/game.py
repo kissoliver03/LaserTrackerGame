@@ -56,7 +56,6 @@ class Game:
         self.selected_game = None
         self.is_game_selected = False
 
-        self.game_loader.validate_all_games()
 
         self.all_sprites = None
 
@@ -97,6 +96,8 @@ class Game:
         self.hud_hover_start_time = 0
         self.hud_back_rect = None
         self.hud_target_lost_time = 0
+
+        self.game_loader.validate_all_games()
 
 
 
