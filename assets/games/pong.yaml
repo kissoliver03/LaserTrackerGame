@@ -98,9 +98,6 @@ rules:
     action:
       - type: "bounce"
         axis: "x"
-      - type: "score"
-        targets: ["player1"] 
-        amount: 1
       - type: "sound"
         sound_effect: "assets/sound/bounce.mp3"
 

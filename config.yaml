@@ -60,7 +60,6 @@ rules:
       axis: "x / y" (flip: + "both")
       mode: "normal / paddle"
       target: ["hit_1 / hit_2"]
-      amount: 
       pos: [ , ]
       random_position: true / false
       sound_effect: " "
